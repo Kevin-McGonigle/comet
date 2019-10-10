@@ -39,7 +39,9 @@ In terms of functionality, we will seek to compute and display the following met
 - Class/Method Summaries
 
 ### Justification
-We believe that such a tool would be useful for a number of reasons. The most prominent reason would be that it would allow the developer to enhance their understanding of their code, how it works, and how it could be improved on both performance and structural bases. This would allow developers to produce more maintainable, robust and concise code that is readable and easily understood. The tool would help developers that work with complex and convoluted codebases and are looking to refactor them or simply to understand its functionality. Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
+We believe that such a tool would be useful for a number of reasons. The most prominent reason would be that it would allow the developer to enhance their understanding of their code, how it works, and how it could be improved on both performance and structural bases. This would allow developers to produce more maintainable, robust and concise code that is readable and easily understood. The tool would help developers that work with complex and convoluted codebases and are looking to refactor them or simply to understand its functionality.
+
+Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
 
 ### Programming language(s)
 
@@ -50,8 +52,11 @@ We believe that such a tool would be useful for a number of reasons. The most pr
 ### Learning Challenges
 
 ### Breakdown of work
+In general, we have decided to divide the work for all aspects of our project as evenly as possible. We will both be playing an active role in the design, development and testing of both the front and back ends of the application, dividing the work based on functionality from start to finish rather than restricting one an other to either server-side or user-facing development. In doing so, we will both gain vital experience working with all facets of our project so that we each have a comprehensive understanding of the architcture and functionality of the system.
 
-#### Student 1
+To manage our work process, we plan to use an issue-tracking service to enforce accountability and ensure that development is progressing on time and is producing high-quality output. We had hoped to use Jira Software for this, each of us having worked closesly with it while on our placements; however, we have decided to opt for a Trello board to avoid the costs that Jira incurs.
 
-#### Student 2
+#### Kevin McGonigle
+
+#### James Miles
 

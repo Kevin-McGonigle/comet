@@ -27,6 +27,7 @@ Our project will be designed and created with every level of developer in mind a
 
 In terms of functionality, we will seek to compute and display the following metrics, analytics and resources in a concise and intelligent manner.
 - Cyclomatic Complexity
+- Maintainability Index
 - Class Diagram
 - Technical Debt
 - Test Coverage
@@ -37,8 +38,8 @@ In terms of functionality, we will seek to compute and display the following met
 - Nesting Depth
 - Class/Method Summaries
 
-
 ### Justification
+We believe that such a tool would be useful for a number of reasons. The most prominent reason would be that it would allow the developer to enhance their understanding of their code, how it works, and how it could be improved on both performance and structural bases. This would allow developers to produce more maintainable, robust and concise code that is readable and easily understood. The tool would help developers that work with complex and convoluted codebases and are looking to refactor them or simply to understand its functionality. Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
 
 ### Programming language(s)
 

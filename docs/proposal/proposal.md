@@ -6,7 +6,7 @@
 |Student 1 Name:      | Kevin McGonigle   |
 |Student 1 ID:        | 16318486          |
 |Student 2 Name:      | James Miles       |
-|Student 2 ID:        | xxxxxx            |
+|Student 2 ID:        | 16349533          |
 |Project Supervisor:  | xxxxxx            |
 
 ## SECTION B

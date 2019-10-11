@@ -44,10 +44,17 @@ We believe that such a tool would be useful for a number of reasons. The most pr
 Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
 
 ### Programming language(s)
+We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API that will parse, execute and return any requests made. Javascript, HTML and CSS will be used to display the returned data. 
 
 ### Programming tools / Tech stack
+Swagger - Is a framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful web services. Aids in development across the entire API lifecycle - design, documentation & deployment.
+
+React/Redux - Is a Javascript library for building user interfaces. This will enable us to build encapsulated, easily testable and modular components and then compose them into larger more complex components. Redux allows these React components to fetch data from the Redux Store and dispatch actions to update the store.
+
+Node - Is a JavaScript run-time environment that executes JavaScript code outside of a browser. Node.js lets developers use JavaScript to write command line tools and for server-side scripting - running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser.
 
 ### Hardware
+While no special hardware is needed the user must have access to the internet.
 
 ### Learning Challenges
 

@@ -43,18 +43,18 @@ We believe that such a tool would be useful for a number of reasons. The most pr
 
 Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
 
-### Programming language(s)
+### Programming Language(s)
 We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API-based infrastrucure that will parse, execute and return the results for any requests made by the front-end. This front-end user interface will be created Javascript (with React and Redux), HTML and CSS, and will be used to allow input from the user and to display the returned data. 
 
-### Programming tools / Tech stack
+### Programming Tools / Tech stack
 
-####Swagger
+#### Swagger
 A framework backed by a large ecosystem of tools that helps developers design, build, debug, document, and consume RESTful web services. Swagger aids in development across the entire API lifecycle, and will hopefully greatly improve our design, development, documentation & deployment processes.
 
-####React/Redux
+#### React/Redux
 A JavaScript library for building modular user interfaces. This will enable us to build encapsulated, testable and simple components which may then be utilised for the composition of larger, more complex components. Redux allows these React components to fetch data from the Redux Store and dispatch actions to update the store.
 
-####Node
+#### Node
 A JavaScript run-time environment that executes JavaScript code outside of a browser. Node.js lets developers use JavaScript to write command line tools and for server-side scripting, i.e. running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser.
 
 ### Hardware
@@ -67,7 +67,7 @@ Alongside this we will need to create a generic language parser that can be fed 
 
 Although relatively (and in some cases exceptionally) comfortable with all of the languages that we have chosen to use, we both have somewhat limited experience working with React, Redux and JavaScript as a whole which means we will be required to develop our understanding and familiarity with the tools provided by the languages to employ them to their fullest potentials.
 
-### Breakdown of work
+### Breakdown of Work
 In general, we have decided to divide the work for all aspects of our project as evenly as possible. We will both be playing an active role in the design, development and testing of both the front and back ends of the application, dividing the work based on functionality from start to finish rather than restricting one an other to either server-side or user-facing development. In doing so, we will both gain vital experience working with all facets of our project so that we each have a comprehensive understanding of the architcture and functionality of the system.
 
 To manage our work process, we plan to use an issue-tracking service to enforce accountability and ensure that development is progressing on time and is producing high-quality output. We had hoped to use Jira Software for this, each of us having worked closesly with it while on our placements; however, we have decided to opt for a Trello board to avoid the costs that Jira incurs.

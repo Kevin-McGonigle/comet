@@ -57,7 +57,9 @@ Node - Is a JavaScript run-time environment that executes JavaScript code outsid
 While no special hardware is needed the user must have access to the internet.
 
 ### Learning Challenges
-In order for a user to have the best experience possible, we need to ensure effiency within the metric algorithms. Inefficient algorithms will create longer wait times between API calls, which could frustrate the user. Alongside this we need to create a generic language parser that can be fed a list of rules and text, which will then produce some form of AST from the parsed data.
+In order for a user to have the best experience possible, we need to ensure effiency within the metric algorithms. Inefficient algorithms will create longer wait times between API calls, which could frustrate the user. Alongside this we need to create a generic language parser that can be fed a list of rules and text, which will then produce some form of AST from the parsed data. 
+
+We both have limited experience with React, Redux and Javascript as a whole which means we will be required to learn a new framework from the ground up.
 
 ### Breakdown of work
 In general, we have decided to divide the work for all aspects of our project as evenly as possible. We will both be playing an active role in the design, development and testing of both the front and back ends of the application, dividing the work based on functionality from start to finish rather than restricting one an other to either server-side or user-facing development. In doing so, we will both gain vital experience working with all facets of our project so that we each have a comprehensive understanding of the architcture and functionality of the system.

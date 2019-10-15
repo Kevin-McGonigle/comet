@@ -3,7 +3,7 @@ import styles from './TreeGraph.css';
 import classnames from 'classnames';
 import Tree from 'react-tree-graph';
 
-const cx = args => classnames(styles, args)
+const cx = args => classnames(styles, args);
 
 const TreeGraph = props => {
     const {
@@ -14,7 +14,7 @@ const TreeGraph = props => {
     const onClickHandler = (event) => {
         const nodeId = event.target.parentNode.id;
         hideAllChildNodes(nodeId); // need to recursively hide all childNodes
-    }
+    };
 
     const treeWithOnClickHandler = {
         ...tree,
@@ -25,10 +25,10 @@ const TreeGraph = props => {
                     onClick: onClickHandler,
                     ...child.gProps,
                 }
-            })
+            });
             return acc;
         }, [])
-    }
+    };
 
     return (
         <Tree

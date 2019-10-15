@@ -6,12 +6,11 @@ import { actions as treeActions } from '../../../store/tree/tree';
 
 const mapStateToProps = state => ({
     tree: state.tree,
-})
+});
 
-const mapDispatchToProps = dispatch => bindActionCreators(treeActions, dispatch)
+const mapDispatchToProps = dispatch => bindActionCreators(treeActions, dispatch);
 
-
-export const TreeGraphContainer = connect(mapStateToProps, mapDispatchToProps)(TreeGraph)
+export const TreeGraphContainer = connect(mapStateToProps, mapDispatchToProps)(TreeGraph);
 
 
 

@@ -5,6 +5,6 @@ const createRootReducer = () => {
     return combineReducers({
         tree: treeReducer
     })
-}
+};
 
 export default createRootReducer;

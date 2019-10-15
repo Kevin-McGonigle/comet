@@ -4,7 +4,7 @@ import createRootReducer from './store/reducers';
 
 export default function configureStore(initialState = {}) {
   let composeEnhancers = compose;
-  const reduxSagaMonitorOptions = {};
+  let reduxSagaMonitorOptions = {};
 
   // If Redux Dev Tools and Saga Dev Tools Extensions are installed, enable them
   /* istanbul ignore next */

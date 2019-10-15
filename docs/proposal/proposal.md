@@ -44,22 +44,27 @@ We believe that such a tool would be useful for a number of reasons. The most pr
 Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
 
 ### Programming language(s)
-We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API that will parse, execute and return any requests made. Javascript, HTML and CSS will be used to display the returned data. 
+We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API-based infrastrucure that will parse, execute and return the results for any requests made by the front-end. This front-end user interface will be created Javascript (with React and Redux), HTML and CSS, and will be used to allow input from the user and to display the returned data. 
 
 ### Programming tools / Tech stack
-Swagger - Is a framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful web services. Aids in development across the entire API lifecycle - design, documentation & deployment.
+####Swagger
+A framework backed by a large ecosystem of tools that helps developers design, build, debug, document, and consume RESTful web services. Swagger aids in development across the entire API lifecycle, and will hopefully greatly improve our design, development, documentation & deployment processes.
 
-React/Redux - Is a Javascript library for building user interfaces. This will enable us to build encapsulated, easily testable and modular components and then compose them into larger more complex components. Redux allows these React components to fetch data from the Redux Store and dispatch actions to update the store.
+####React/Redux
+A JavaScript library for building modular user interfaces. This will enable us to build encapsulated, testable and simple components which may then be utilised for the composition of larger, more complex components. Redux allows these React components to fetch data from the Redux Store and dispatch actions to update the store.
 
-Node - Is a JavaScript run-time environment that executes JavaScript code outside of a browser. Node.js lets developers use JavaScript to write command line tools and for server-side scripting - running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser.
+####Node
+A JavaScript run-time environment that executes JavaScript code outside of a browser. Node.js lets developers use JavaScript to write command line tools and for server-side scripting, i.e. running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser.
 
 ### Hardware
-While no special hardware is needed the user must have access to the internet.
+We will have no unusual hardware requirements for the creation or usage of our project. We will however be making use of an Amazon Web Services EC2 instance to serve as a host for the back-end of our solution.
 
 ### Learning Challenges
-In order for a user to have the best experience possible, we need to ensure effiency within the metric algorithms. Inefficient algorithms will create longer wait times between API calls, which could frustrate the user. Alongside this we need to create a generic language parser that can be fed a list of rules and text, which will then produce some form of AST from the parsed data. 
+In order for a user to have the best experience possible, we need to ensure effiency within the metric calculatuon algorithms. Inefficient algorithms will create longer wait times between API calls, which could frustrate the user. We will therefore need to research this carefully and challenge ourselves to deliver efficient code.
 
-We both have limited experience with React, Redux and Javascript as a whole which means we will be required to learn a new framework from the ground up.
+Alongside this we will need to create a generic language parser that can be fed a list of rules and text, which will then produce some form of AST from the parsed data, something that neither of us have had to do before and will certainly pose a difficult but rewarding and insightful challenge. 
+
+Although relatively (and in some cases exceptionally) comfortable with all of the languages that we have chosen to use, we both have somewhat limited experience working with React, Redux and JavaScript as a whole which means we will be required to develop our understanding and familiarity with the tools provided by the languages to employ them to their fullest potentials.
 
 ### Breakdown of work
 In general, we have decided to divide the work for all aspects of our project as evenly as possible. We will both be playing an active role in the design, development and testing of both the front and back ends of the application, dividing the work based on functionality from start to finish rather than restricting one an other to either server-side or user-facing development. In doing so, we will both gain vital experience working with all facets of our project so that we each have a comprehensive understanding of the architcture and functionality of the system.
@@ -67,6 +72,21 @@ In general, we have decided to divide the work for all aspects of our project as
 To manage our work process, we plan to use an issue-tracking service to enforce accountability and ensure that development is progressing on time and is producing high-quality output. We had hoped to use Jira Software for this, each of us having worked closesly with it while on our placements; however, we have decided to opt for a Trello board to avoid the costs that Jira incurs.
 
 #### Kevin McGonigle
+In keeping with what was stated above, I will be participating heavily in every deliverable for the upcoming project, from the design phase right the way through to testing and documentation.
+
+Without having planned out on a low-level basis the specific tasks that each of us will be undertaking, something that we plan to do in an agile fashion as the project progresses, I have agreed to take the lead on the design, development and verification of the following metrics and analaytics:
+- Cyclomatic Complexity
+- Technical Debt
+- Test Coverage
+- Comment Coverage
+- Nesting Depth
+
+I will also be taking the lead in setting up the "back-end server" on an Amazon EC2 instance, having gained experience working with such technology on my third year project.
 
 #### James Miles
-
+- Maintainability Index
+- Class Diagram
+- Class/Method Summaries
+- Coupling
+- Abstractness
+- Inheritance Tree

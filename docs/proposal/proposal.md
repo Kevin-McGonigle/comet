@@ -46,8 +46,7 @@ Our project also lends itself as an educational resource, affording novice users
 ### Programming Language(s)
 We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API-based infrastrucure that will parse, execute and return the results for any requests made by the front-end. This front-end user interface will be created Javascript (with React and Redux), HTML and CSS, and will be used to allow input from the user and to display the returned data. 
 
-### Programming Tools / Tech stack
-
+### Programming Tools / Tech Stack
 #### Swagger
 A framework backed by a large ecosystem of tools that helps developers design, build, debug, document, and consume RESTful web services. Swagger aids in development across the entire API lifecycle, and will hopefully greatly improve our design, development, documentation & deployment processes.
 

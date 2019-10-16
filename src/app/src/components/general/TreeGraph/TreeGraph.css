@@ -1,0 +1,60 @@
+div.custom-container {
+	background-color: #242424;
+}
+
+.node circle {
+	fill: #F3F3FF;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}
+
+.class {
+	fill:#fd79a8;
+	cursor: pointer;
+}
+
+.class text {
+	font-size: 12px;
+	fill: #F4F4F4;
+	text-shadow: 0 1px 4px black;
+}
+
+.class-link {
+	fill: none;
+	stroke: #fd79a8;
+	stroke-width: 1px;
+}
+
+.variable {
+	fill: #55efc4;
+	cursor: pointer;
+}
+
+.variable text {
+	font-size: 12px;
+	fill: #F4F4F4;
+	text-shadow: 0 1px 4px black;
+}
+
+.variable-link {
+	fill: none;
+	stroke: #55efc4;
+	stroke-dasharray: 3;
+	stroke-width: 1px;
+}
+
+.node text {
+	font-size: 12px;
+	fill: #F4F4F4;
+	text-shadow: 0 1px 4px black;
+}
+
+.node {
+	cursor: pointer;
+}
+
+path.link {
+	fill: none;
+	stroke: #2593B8;
+	stroke-width: 1px;
+}

@@ -52,7 +52,7 @@ const initialState = {
             className: 'variable'
         }
     }]
-}
+};
 
 export const HIDE_ALL_CHILD_NODES = 'HIDE_ALL_CHILD_NODES';
 
@@ -60,12 +60,12 @@ const treeReducer = (state = initialState, action) => {
     switch(action.type) {
         case HIDE_ALL_CHILD_NODES:
             const nodeId = action.payload.nodeId;
-            return state
+            return state;
 
         default:
             return state;
     }
-}
+};
 
 export const actions = {
     hideAllChildNodes: (nodeId) => {
@@ -74,6 +74,6 @@ export const actions = {
             payload: nodeId
         }
     }
-}
+};
 
 export default treeReducer;

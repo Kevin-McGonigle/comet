@@ -56,9 +56,9 @@ const initialState = {
             className: 'variable'
         }
     }]
-}
+};
 
-test('Should render TreeGraph succesfully', () => { 
+test('Should render TreeGraph successfully', () => {
     const component = mount(<TreeGraph tree={initialState} />);
     expect(component.html()).toMatchSnapshot();
 });

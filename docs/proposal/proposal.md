@@ -1,13 +1,13 @@
 # School of Computing &mdash; Year 4 Project Proposal Form
 
 ## SECTION A
-|Project Title:       | xxxxx                |
-|---------------------|---------------------:|
-|Student 1 Name:      | Kevin McGonigle      |
-|Student 1 ID:        | 16318486             |
-|Student 2 Name:      | James Miles          |
-|Student 2 ID:        | 16349533             |
-|Project Supervisor:  | Dr. Geoff Hamilton   |
+|Project Title:       | comet - Code Metrics and Analysis Tool|
+|---------------------|---------------------------------------:|
+|Student 1 Name:      |                         Kevin McGonigle|
+|Student 1 ID:        |                                16318486|
+|Student 2 Name:      |                             James Miles|
+|Student 2 ID:        |                                16349533|
+|Project Supervisor:  |                      Dr. Geoff Hamilton|
 
 ## SECTION B
 
@@ -44,7 +44,7 @@ We believe that such a tool would be useful for a number of reasons. The most pr
 Our project also lends itself as an educational resource, affording novice users with clear explanations of what certain metrics mean and how they affect program performance and maintainability, as well as helping them to understand the code that they're writing with comprehensible diagrams and graphs. Ultimately, we believe that our project would be a practical resource that should improve the development experience across the board.
 
 ### Programming Language(s)
-We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API-based infrastrucure that will parse, execute and return the results for any requests made by the front-end. This front-end user interface will be created Javascript (with React and Redux), HTML and CSS, and will be used to allow input from the user and to display the returned data. 
+We plan to use Python to handle all back-end operations, using Django alongside Swagger to create an API-based infrastructure that will parse, execute and return the results for any requests made by the front-end. This front-end user interface will be created Javascript (with React and Redux), HTML and CSS, and will be used to allow input from the user and to display the returned data. 
 
 ### Programming Tools / Tech Stack
 #### Swagger
@@ -60,21 +60,21 @@ A JavaScript run-time environment that executes JavaScript code outside of a bro
 We will have no unusual hardware requirements for the creation or usage of our project. We will however be making use of an Amazon Web Services EC2 instance to serve as a host for the back-end of our solution.
 
 ### Learning Challenges
-In order for a user to have the best experience possible, we need to ensure effiency within the metric calculatuon algorithms. Inefficient algorithms will create longer wait times between API calls, which could frustrate the user. We will therefore need to research this carefully and challenge ourselves to deliver efficient code.
+In order for a user to have the best experience possible, we need to ensure efficiency within the metric calculation algorithms. Inefficient algorithms will create longer wait times between API calls, which could frustrate the user. We will therefore need to research this carefully and challenge ourselves to deliver efficient code.
 
 Alongside this we will need to create a generic language parser that can be fed a list of rules and text, which will then produce some form of AST from the parsed data, something that neither of us have had to do before and will certainly pose a difficult but rewarding and insightful challenge. 
 
 Although relatively (and in some cases exceptionally) comfortable with all of the languages that we have chosen to use, we both have somewhat limited experience working with React, Redux and JavaScript as a whole which means we will be required to develop our understanding and familiarity with the tools provided by the languages to employ them to their fullest potentials.
 
 ### Breakdown of Work
-In general, we have decided to divide the work for all aspects of our project as evenly as possible. We will both be playing an active role in the design, development and testing of both the front and back ends of the application, dividing the work based on functionality from start to finish rather than restricting one an other to either server-side or user-facing development. In doing so, we will both gain vital experience working with all facets of our project so that we each have a comprehensive understanding of the architcture and functionality of the system.
+In general, we have decided to divide the work for all aspects of our project as evenly as possible. We will both be playing an active role in the design, development and testing of both the front and back ends of the application, dividing the work based on functionality from start to finish rather than restricting one an other to either server-side or user-facing development. In doing so, we will both gain vital experience working with all facets of our project so that we each have a comprehensive understanding of the architecture and functionality of the system.
 
-To manage our work process, we plan to use an issue-tracking service to enforce accountability and ensure that development is progressing on time and is producing high-quality output. We had hoped to use Jira Software for this, each of us having worked closesly with it while on our placements; however, we have decided to opt for a Trello board to avoid the costs that Jira incurs.
+To manage our work process, we plan to use an issue-tracking service to enforce accountability and ensure that development is progressing on time and is producing high-quality output. We had hoped to use Jira Software for this, each of us having worked closely with it while on our placements; however, we have decided to opt for a Trello board to avoid the costs that Jira incurs.
 
 #### Kevin McGonigle
 In keeping with what was stated above, I will be participating heavily in every deliverable for the upcoming project, from the design phase right the way through to testing and documentation.
 
-Without having planned out on a low-level basis the specific tasks that each of us will be undertaking, something that we plan to do in an agile fashion as the project progresses, I have agreed to take the lead on the design, development and verification of the following metrics and analaytics:
+Without having planned out on a low-level basis the specific tasks that each of us will be undertaking, something that we plan to do in an agile fashion as the project progresses, I have agreed to take the lead on the design, development and verification of the following metrics and analytics:
 - Cyclomatic Complexity
 - Technical Debt
 - Test Coverage

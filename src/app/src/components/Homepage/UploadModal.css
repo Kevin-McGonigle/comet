@@ -1,0 +1,8 @@
+.uploadModalContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.filePicker {
+    justify-content: center;
+}

@@ -7,6 +7,7 @@
     "d3": "^5.12.0",
     "d3-hierarchy": "^1.1.8",
     "enzyme": "^3.10.0",
+    "evergreen-ui": "^4.21.2",
     "jest": "^24.9.0",
     "qs": "^6.9.0",
     "react": "^16.9.0",
@@ -18,7 +19,7 @@
     "react-tree-graph": "^4.0.1",
     "redux": "^4.0.4",
     "redux-saga": "^1.1.1"
-},
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -41,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "enzyme-adapter-react-16": "^1.14.0"
+    "enzyme-adapter-react-16": "^1.14.0",
+    "redux-mock-store": "^1.5.3"
   }
 }

@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import './App.css';
 import configureStore from './configureStore';
 import { TreeGraphContainer } from './components/general/TreeGraph/TreeGraphContainer';
+import Homepage from './components/Homepage/Homepage';
 
 function App() {
   const store = configureStore({});
@@ -10,7 +11,7 @@ function App() {
   return (
     <Provider store={store}>
         <div className="App">
-            <TreeGraphContainer />
+          <Homepage />
         </div>
       </Provider>
   );

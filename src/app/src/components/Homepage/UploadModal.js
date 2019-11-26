@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
 import { FilePicker, Alert, Dialog } from 'evergreen-ui';
+import UploadedItem from './UploadedItem';
 
 const cx = args => classnames(styles, args)
 
@@ -14,12 +15,25 @@ const UploadModal = props => {
     const {
         alertInfo,
         uploadModal,
+        uploadedFiles,
+        setUploadedFiles,
         uploadModalOnConfirmHandler,
         uploadModalOnCloseHandler,
         setAlertSuccess,
         setAlertDanger,
     } = props;
-    const onChangeHandler = (files) => readFileContent(files);
+
+    const createFileItem = (file) => {
+        return (
+            <UploadedItem 
+                name={file.name}
+                size={file.size}
+                fileType={file.type}
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+            />
+            )
+    }
 
     const createAlert = () => {
         if (alertInfo.show){
@@ -35,28 +49,47 @@ const UploadModal = props => {
             );
         }
     }
+       
+    const onChangeHandler = (files) => {
+        const currentFiles = Object.values(files).reduce((acc, file) => {
+            acc.push({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+            });
+            return acc;
+        }, []);
+        setUploadedFiles(currentFiles);
+        setAlertSuccess();
+    }
 
     return (
             <Dialog
                 isShown={uploadModal.isOpen}
                 title="Upload"
-                onConfirm={uploadModalOnConfirmHandler}
                 isConfirmLoading={uploadModal.isLoading}
                 confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}
+                onConfirm={uploadModalOnConfirmHandler}
                 onCloseComplete={uploadModalOnCloseHandler}
-                >
+            >
                 <div className={cx('uploadModalContainer')}>
                     <div className={cx('filePicker')}>
-                    { createAlert() }
+                        { createAlert() }
                         <FilePicker
                             id='filePicker'
                             multiple
-                            width={350}
+                            width={'100%'}
                             height={24}
                             onChange={onChangeHandler}
-                            placeholder="Choose file or folder"
+                            placeholder={uploadedFiles && "Choose file or folder" || `${uploadedFiles.length} file/s`}
                         />
                     </div>
+
+                    {uploadedFiles && (
+                        <div className={cx('fileListContainer')} > 
+                                { uploadedFiles.map(file => createFileItem(file)) }
+                            </div>
+                    )}
                 </div>
             </Dialog>
     );

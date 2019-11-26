@@ -6,3 +6,34 @@
 .filePicker {
     justify-content: center;
 }
+
+.fileItemTitle {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 2;
+}
+
+.fileItemContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #FAE2E2;
+    margin: 8px 0px 4px 0px;
+}
+.fileItems {
+    flex-grow: 1;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+    margin: 1em 3em;
+	color: #999;
+	border-left: 2px solid #999;
+	padding-left: 1em; 
+}
+
+.deleteIcon {
+    float: right;
+    padding-right: 1em; 
+    padding-left: 1em; 
+    cursor: pointer;
+}

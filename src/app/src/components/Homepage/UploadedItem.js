@@ -10,20 +10,9 @@ const UploadedItem = (props) => {
         name,
         fileType,
         size,
-        uploadedFiles,
-        setUploadedFiles
+        deleteOnClickHandler,
     } = props;
 
-    const deleteOnClickHandler = () => {
-        const removedFileObj = Object.values(uploadedFiles).reduce((acc, file) => {
-            if (file.name !== name) {
-                acc.push(file);
-            }
-            return acc;
-        }, []);
-        setUploadedFiles(removedFileObj);
-    }
-    
     return (
         <div className={cx('fileItemContainer')}>
             <div className={cx('fileItems')}>
@@ -32,10 +21,9 @@ const UploadedItem = (props) => {
                 <div className={'fileItem'}>File Type: <i>{ fileType }</i></div>
             </div>
             <div className={cx('deleteIcon')}>
-                <Icon icon="trash" onClick={deleteOnClickHandler} />
+                <Icon icon="trash" id='deleteIcon' onClick={name => deleteOnClickHandler(name)} />
             </div>
         </div>
-
     )
 }
 

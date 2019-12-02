@@ -18,7 +18,6 @@ const Homepage = props => {
     const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
     const [textArea, setTextArea] = useState({value: ''})
     const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
-    const [uploadedFiles, setUploadedFiles] = useState([]);
 
     // Handlers stop the creation a new functions each render 
     const createButtonOnClickHandler = () => setCreateModal({ isOpen: true, isLoading: false });
@@ -41,9 +40,6 @@ const Homepage = props => {
         // #TODO: hit API with file data
         setAlertNone();
         setUploadModal({ isOpen: true, isLoading: true })
-    }
-    const setUploadedFilesHandler = (files) => {
-        setUploadedFiles(files);
     }
 
     return (
@@ -68,8 +64,6 @@ const Homepage = props => {
     
                         <UploadModalContainer
                             uploadModal={uploadModal}
-                            uploadedFiles={uploadedFiles}
-                            setUploadedFiles={setUploadedFilesHandler}
                             onConfirm={uploadModalOnConfirmHandler}
                             isConfirmLoading={uploadModal.isLoading}
                             confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}

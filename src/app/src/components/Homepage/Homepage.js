@@ -64,10 +64,8 @@ const Homepage = props => {
     
                         <UploadModalContainer
                             uploadModal={uploadModal}
-                            onConfirm={uploadModalOnConfirmHandler}
-                            isConfirmLoading={uploadModal.isLoading}
-                            confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}
-                            onCloseComplete={uploadModalOnCloseHandler}
+                            uploadModalOnConfirmHandler={uploadModalOnConfirmHandler}
+                            uploadModalOnCloseHandler={uploadModalOnCloseHandler}
                         />
 
                         <Button

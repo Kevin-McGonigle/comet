@@ -16,7 +16,10 @@ class File(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     type = models.CharField(max_length=255)
     when_uploaded = models.DateTimeField(auto_now=True)
-    file = models.FileField(upload_to=uploaded_file_path)
+    file = models.FileField(upload_to=uploaded_file_path, unique=True)
+
+    def save(self, **kwargs):
+        super().save(**kwargs)
 
 
 class Class(models.Model):
@@ -31,12 +34,6 @@ class Method(models.Model):
     file_hash = models.ForeignKey("File", on_delete=models.CASCADE)
     name = models.CharField(max_length=255, db_index=True)
     return_type = models.CharField(max_length=255, default="void")
-
-
-class ClassParameter(models.Model):
-    class_hash = models.ForeignKey("Class", on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, default="")
 
 
 class MethodParameter(models.Model):

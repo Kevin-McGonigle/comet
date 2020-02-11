@@ -15,14 +15,14 @@ const alertReducer = (state = initialState, action) => {
             return {
                 id: 'dangerAlert',
                 show: true,
-                title: 'something dangerous',
+                title: action.payload,
                 intent: 'danger',
             }
         case SET_ALERT_SUCCESS:
             return {
                 id: 'successAlert',
                 show: true,
-                title: 'success',
+                title: action.payload,
                 intent: 'success',
             }
         case SET_ALERT_NONE:
@@ -38,14 +38,16 @@ const alertReducer = (state = initialState, action) => {
 }
 
 export const actions = {
-    setAlertSuccess: () => {
+    setAlertSuccess: (displayMessage) => {
         return {
             type: SET_ALERT_SUCCESS,
+            payload: displayMessage,
         }
     },
-    setAlertDanger: () => {
+    setAlertDanger: (displayMessage) => {
         return {
             type: SET_ALERT_DANGER,
+            payload: displayMessage,
         }
     },
     setAlertNone: () => {

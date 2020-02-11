@@ -16,8 +16,8 @@ const Homepage = props => {
         setAlertNone,
     } = props;
     const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
-    const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
     const [textArea, setTextArea] = useState({value: ''})
+    const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
 
     // Handlers stop the creation a new functions each render 
     const createButtonOnClickHandler = () => setCreateModal({ isOpen: true, isLoading: false });
@@ -64,10 +64,8 @@ const Homepage = props => {
     
                         <UploadModalContainer
                             uploadModal={uploadModal}
-                            onConfirm={uploadModalOnConfirmHandler}
-                            isConfirmLoading={uploadModal.isLoading}
-                            confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}
-                            onCloseComplete={uploadModalOnCloseHandler}
+                            uploadModalOnConfirmHandler={uploadModalOnConfirmHandler}
+                            uploadModalOnCloseHandler={uploadModalOnCloseHandler}
                         />
 
                         <Button

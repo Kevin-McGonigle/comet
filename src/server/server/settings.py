@@ -125,3 +125,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#media-root
 
 MEDIA_ROOT = 'uploads/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")

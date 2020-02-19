@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from .models import File
 from . import serializers
 
@@ -11,8 +11,7 @@ class FileUploadViewset(viewsets.ModelViewSet):
     serializer_class = serializers.FileSerializer
 
     def create(self, request, *args, **kwargs):
-        return JsonResponse({ "hash": self.queryset[len(self.queryset) - 1].hash}, safe=False)
-
-    def update(self, request, pk=None):
-        print(request)
-        pass
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return JsonResponse({'hash': serializer.data['hash']}, status=status.HTTP_201_CREATED, safe=False)

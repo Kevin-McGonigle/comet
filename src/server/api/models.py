@@ -13,7 +13,6 @@ def uploaded_file_path(instance, filename):
 
 def generate_hash(filename):
     """
-    :param instance: An instance of the File object for the file that was uploaded.
     :param filename: The original filename of the file that was uploaded.
     :return: A string representing the hash of the file.
     """

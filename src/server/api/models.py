@@ -35,9 +35,3 @@ class File(models.Model):
             "hash": self.hash,
             "name": self.name,
         })
-
-class FileHash(models.Model):
-    hash = models.CharField(max_length=64, primary_key=True, editable=False)
-
-    def __str__(self):
-        return self.hash

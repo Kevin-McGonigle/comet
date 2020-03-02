@@ -35,3 +35,28 @@ class File(models.Model):
             "hash": self.hash,
             "name": self.name,
         })
+
+class Method(models.Model):
+    method_hash = models.CharField(max_length=64, primary_key=True, editable=False)
+    parent = models.CharField(max_length=64, null=True)
+    name = models.CharField(max_length=64)
+    arguments = models.CharField(max_length=64) # JSON-serialized list
+    returns = models.CharField(max_length=64)
+    child_hash = models.CharField(max_length=64, null=True) 
+    
+    def save(self, *args, **kwargs):
+        self.method_hash = generate_hash(self.name)
+        super(Method, self).save(*args, **kwargs)
+
+class Class(models.Model):
+    class_hash = models.CharField(max_length=64, primary_key=True, editable=False)
+    parent = models.CharField(max_length=64, null=True)
+    name = models.CharField(max_length=64)
+    arguments = models.CharField(max_length=64) # JSON-serialized list [ { argName: argType }, ...]
+    methods = models.CharField(max_length=64) # JSON-serialized list [ { methodName: [ {argName: argType}, ...] }, ...]
+    returns = models.CharField(max_length=64, null=True)
+    child_hash = models.CharField(max_length=64, null=True) 
+
+    def save(self, *args, **kwargs):
+        self.class_hash = generate_hash(self.name)
+        super(Class, self).save(*args, **kwargs)

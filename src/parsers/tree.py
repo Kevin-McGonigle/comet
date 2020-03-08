@@ -1,5 +1,5 @@
-class AST(object):
-    def __init__(self, root=None) -> None:
+class Tree(object):
+    def __init__(self, root=None):
         self.root = root
         super().__init__()
 
@@ -8,11 +8,12 @@ class AST(object):
 
 
 class Node(object):
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         super().__init__()
 
     def __str__(self, *args):
-        s = self.__class__.__name__
+        s = self.name
         if len(args) > 0:
             for arg in args[:-1]:
                 arg_s = str(arg).splitlines()
@@ -27,19 +28,3 @@ class Node(object):
                     for line in arg_s[1:]:
                         s += f"\n   {line}"
         return s
-
-
-class Statements(Node):
-    def __init__(self, first_statement, next_statements=None) -> None:
-        self.first_statement = first_statement
-        self.next_statements = next_statements
-        super().__init__()
-
-    def __str__(self):
-        return super().__str__(self.first_statement, self.next_statements)
-
-
-if __name__ == "__main__":
-    statements = Statements("This", Statements("is", Statements("a", Statements("test"))))
-    ast = AST(statements)
-    print(ast)

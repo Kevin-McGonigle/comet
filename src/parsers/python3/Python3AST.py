@@ -1,20 +1,21 @@
 from sys import stdin
 
-from antlr4 import InputStream, CommonTokenStream, ParseTreeWalker
+from antlr4 import InputStream, CommonTokenStream
 
-from python3.Python3ASTVisitor import Python3ASTVisitor
+from python3.Python3CometVisitor import Python3CometVisitor
 from python3.Python3Lexer import Python3Lexer
 from python3.Python3Parser import Python3Parser
 
 
 def main():
-    input_stream = InputStream(stdin.read())
+    input_string = stdin.read()
+    input_stream = InputStream(input_string)
     lexer = Python3Lexer(input_stream)
     tokens = CommonTokenStream(lexer)
     parser = Python3Parser(tokens)
-    tree = parser.file_input()
-    visitor = Python3ASTVisitor()
-    output = visitor.visit(tree)
+    parse_tree = parser.file_input()
+    visitor = Python3CometVisitor()
+    output = visitor.visit(parse_tree)
     print(output)
 
 

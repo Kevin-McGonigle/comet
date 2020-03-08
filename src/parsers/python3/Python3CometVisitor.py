@@ -1,9 +1,30 @@
+from astree import *
 from python3.Python3Parser import Python3Parser
 from python3.Python3Visitor import Python3Visitor
-from tree import AST, Statements
+
+binary_operators = {
+    "|": "BITWISE_OR",
+    "^": "BITWISE_XOR",
+    "&": "BITWISE_AND",
+    "<<": "LEFT_SHIFT",
+    ">>": "RIGHT_SHIFT",
+    "+": "ADD",
+    "-": "SUBTRACT",
+    "*": "MULTIPLY",
+    "@": "MATRIX_MULTIPLY",
+    "%": "MODULO",
+    "//": "FLOOR_DIVIDE",
+    "**": "POWER",
+}
 
 
-class Python3ASTVisitor(Python3Visitor):
+def recursive_bin_op(children):
+    if len(children) == 1:
+        return children[0]
+    return BinOpNode(binary_operators[children[-2]], recursive_bin_op(children[:-2]), children[-1])
+
+
+class Python3CometVisitor(Python3Visitor):
     def __init__(self) -> None:
         super().__init__()
 
@@ -14,7 +35,9 @@ class Python3ASTVisitor(Python3Visitor):
         return super().visitChildren(node)
 
     def visitTerminal(self, node):
-        super().visitTerminal(node)
+        if node.symbol.text in binary_operators:
+            return node.symbol.text
+        return super().visitTerminal(node)
 
     def visitErrorNode(self, node):
         super().visitErrorNode(node)
@@ -23,7 +46,11 @@ class Python3ASTVisitor(Python3Visitor):
         super().defaultResult()
 
     def aggregateResult(self, aggregate, next_result):
-        return super().aggregateResult(aggregate, next_result)
+        if next_result is None:
+            return aggregate
+        if aggregate is None:
+            return [next_result]
+        return aggregate + [next_result]
 
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)
@@ -32,7 +59,7 @@ class Python3ASTVisitor(Python3Visitor):
         return super().visitSingle_input(ctx)
 
     def visitFile_input(self, ctx: Python3Parser.File_inputContext):
-        return Statements(ctx.getChild(0).accept(self), ctx.getChild(1).accept(self))
+        return StatementsNode(self.visitChildren(ctx))
 
     def visitEval_input(self, ctx: Python3Parser.Eval_inputContext):
         return super().visitEval_input(ctx)
@@ -206,22 +233,22 @@ class Python3ASTVisitor(Python3Visitor):
         return super().visitStar_expr(ctx)
 
     def visitExpr(self, ctx: Python3Parser.ExprContext):
-        return super().visitExpr(ctx)
+        return recursive_bin_op(self.visitChildren(ctx))
 
     def visitXor_expr(self, ctx: Python3Parser.Xor_exprContext):
-        return super().visitXor_expr(ctx)
+        return recursive_bin_op(self.visitChildren(ctx))
 
     def visitAnd_expr(self, ctx: Python3Parser.And_exprContext):
-        return super().visitAnd_expr(ctx)
+        return recursive_bin_op(self.visitChildren(ctx))
 
     def visitShift_expr(self, ctx: Python3Parser.Shift_exprContext):
-        return super().visitShift_expr(ctx)
+        return recursive_bin_op(self.visitChildren(ctx))
 
     def visitArith_expr(self, ctx: Python3Parser.Arith_exprContext):
-        return super().visitArith_expr(ctx)
+        return recursive_bin_op(self.visitChildren(ctx))
 
     def visitTerm(self, ctx: Python3Parser.TermContext):
-        return super().visitTerm(ctx)
+        return recursive_bin_op(self.visitChildren(ctx))
 
     def visitFactor(self, ctx: Python3Parser.FactorContext):
         return super().visitFactor(ctx)
@@ -251,7 +278,7 @@ class Python3ASTVisitor(Python3Visitor):
         return super().visitSliceop(ctx)
 
     def visitExprlist(self, ctx: Python3Parser.ExprlistContext):
-        return super().visitExprlist(ctx)
+        return ExpressionsNode(self.visitChildren(ctx))
 
     def visitTestlist(self, ctx: Python3Parser.TestlistContext):
         return super().visitTestlist(ctx)

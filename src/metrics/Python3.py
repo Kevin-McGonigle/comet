@@ -2,9 +2,9 @@ from sys import stdin
 
 from antlr4 import InputStream, CommonTokenStream
 
-from python3.Python3CometVisitor import Python3CometVisitor
-from python3.Python3Lexer import Python3Lexer
-from python3.Python3Parser import Python3Parser
+from parsers.python3.Python3CometVisitor import Python3CometVisitor
+from parsers.python3.Python3Lexer import Python3Lexer
+from parsers.python3.Python3Parser import Python3Parser
 
 
 def main():

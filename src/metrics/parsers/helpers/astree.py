@@ -1,4 +1,4 @@
-from tree import Node, Tree
+from .tree import Node, Tree
 
 
 class AST(Tree):

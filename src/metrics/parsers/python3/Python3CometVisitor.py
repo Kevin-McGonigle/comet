@@ -1,8 +1,8 @@
-from astree import *
-from cfgraph import CFG, CFGNode
-from comet_visitor import CometResult, CometNodeResult
-from python3.Python3Parser import Python3Parser
-from python3.Python3Visitor import Python3Visitor
+from parsers.helpers.astree import *
+from parsers.helpers.cfgraph import CFG, CFGNode
+from parsers.helpers.comet_visitor import CometResult, CometNodeResult
+from .Python3Parser import Python3Parser
+from .Python3Visitor import Python3Visitor
 
 binary_operators = {
     "|": "BITWISE_OR",

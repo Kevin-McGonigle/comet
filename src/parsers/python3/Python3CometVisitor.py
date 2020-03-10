@@ -1,4 +1,6 @@
 from astree import *
+from cfgraph import CFG, CFGNode
+from comet_visitor import CometResult, CometNodeResult
 from python3.Python3Parser import Python3Parser
 from python3.Python3Visitor import Python3Visitor
 
@@ -17,49 +19,102 @@ binary_operators = {
     "**": "POWER",
 }
 
+unary_operators = {
+    "+": "POSITIVE",
+    "-": "ARITH_NEGATION",
+    "~": "BITWISE_INVERSION",
+}
 
-def recursive_bin_op(children):
-    if len(children) == 1:
-        return children[0]
-    return BinOpNode(binary_operators[children[-2]], recursive_bin_op(children[:-2]), children[-1])
+logical_operators = {
+    "and": "AND",
+    "or": "OR",
+    "not": "NOT"
+}
+
+comparison_operators = {
+    "<": "LESS_THAN",
+    ">": "GREATER_THAN",
+    "==": "EQUAL",
+    ">=": "GREATER_THAN_OR_EQUAL",
+    "<=": "LESS_THAN_OR_EQUAL",
+    "!=": "NOT_EQUAL",
+    "<>": "NOT_EQUAL",
+    "in": "IN",
+    "is": "IS"
+}
+
+
+def r_ast_bin_op(children):
+    if not children:
+        return None
+
+    if isinstance(children[-1], ASTNode) or isinstance(children[-1], str):
+        if len(children) == 1:
+            return children[0]
+        return ASTBinOpNode(binary_operators[children[-2]], r_ast_bin_op(children[:-2]), children[-1])
+
+    raise ValueError(f"Invalid children list: {children}")
 
 
 class Python3CometVisitor(Python3Visitor):
+    # Overrides
     def __init__(self) -> None:
         super().__init__()
 
+    # Behaviour
     def visit(self, tree):
-        return AST(super().visit(tree))
+        node_result = super().visit(tree)
+        ast = AST(node_result.ast_node)
+        print(ast)
+        cfg = CFG(node_result.cfg_node)
+
+        return CometResult(ast, cfg)
 
     def visitChildren(self, node):
-        return super().visitChildren(node)
+        result = []
+        for i in range(node.getChildCount()):
+            if not self.shouldVisitNextChild(node, result):
+                return result
+
+            result = self.aggregateResult(result, node.getChild(i).accept(self))
+
+        return result
 
     def visitTerminal(self, node):
-        if node.symbol.text in binary_operators:
-            return node.symbol.text
-        return super().visitTerminal(node)
+        return node.getText()
 
     def visitErrorNode(self, node):
         super().visitErrorNode(node)
 
     def defaultResult(self):
-        super().defaultResult()
+        return CometNodeResult(None, None)
 
     def aggregateResult(self, aggregate, next_result):
-        if next_result is None:
-            return aggregate
-        if aggregate is None:
-            return [next_result]
-        return aggregate + [next_result]
+        if next_result:
+            if isinstance(next_result, list):
+                return aggregate + next_result
+            return aggregate + [next_result]
 
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)
 
+    # Utilities
+    def ast_children(self, ctx):
+        return [child.ast_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
+
+    def ast_bin_op(self, ctx):
+        return r_ast_bin_op(self.ast_children(ctx))
+
+    def ast_un_op(self, ctx):
+        children = self.ast_children(ctx)
+        return ASTUnOpNode(unary_operators[children[0]], children[1])
+
+    # Visits
     def visitSingle_input(self, ctx: Python3Parser.Single_inputContext):
         return super().visitSingle_input(ctx)
 
     def visitFile_input(self, ctx: Python3Parser.File_inputContext):
-        return StatementsNode(self.visitChildren(ctx))
+        return CometNodeResult(ASTStatementsNode(self.ast_children(ctx)), None)
 
     def visitEval_input(self, ctx: Python3Parser.Eval_inputContext):
         return super().visitEval_input(ctx)
@@ -179,6 +234,12 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitAsync_stmt(ctx)
 
     def visitIf_stmt(self, ctx: Python3Parser.If_stmtContext):
+        children = self.visitChildren(ctx)
+        success = super().visitIf_stmt(ctx).cfg_node
+        if success is None:
+            success = CFGNode()
+
+        if_node = CFGNode()
         return super().visitIf_stmt(ctx)
 
     def visitWhile_stmt(self, ctx: Python3Parser.While_stmtContext):
@@ -233,28 +294,30 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitStar_expr(ctx)
 
     def visitExpr(self, ctx: Python3Parser.ExprContext):
-        return recursive_bin_op(self.visitChildren(ctx))
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitXor_expr(self, ctx: Python3Parser.Xor_exprContext):
-        return recursive_bin_op(self.visitChildren(ctx))
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitAnd_expr(self, ctx: Python3Parser.And_exprContext):
-        return recursive_bin_op(self.visitChildren(ctx))
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitShift_expr(self, ctx: Python3Parser.Shift_exprContext):
-        return recursive_bin_op(self.visitChildren(ctx))
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitArith_expr(self, ctx: Python3Parser.Arith_exprContext):
-        return recursive_bin_op(self.visitChildren(ctx))
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitTerm(self, ctx: Python3Parser.TermContext):
-        return recursive_bin_op(self.visitChildren(ctx))
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitFactor(self, ctx: Python3Parser.FactorContext):
+        if ctx.getChildCount() == 2:
+            return CometNodeResult(self.ast_un_op(ctx), None)
         return super().visitFactor(ctx)
 
     def visitPower(self, ctx: Python3Parser.PowerContext):
-        return super().visitPower(ctx)
+        return CometNodeResult(self.ast_bin_op(ctx), None)
 
     def visitAtom_expr(self, ctx: Python3Parser.Atom_exprContext):
         return super().visitAtom_expr(ctx)
@@ -278,7 +341,7 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitSliceop(ctx)
 
     def visitExprlist(self, ctx: Python3Parser.ExprlistContext):
-        return ExpressionsNode(self.visitChildren(ctx))
+        return ASTExpressionsNode(self.visitChildren(ctx))
 
     def visitTestlist(self, ctx: Python3Parser.TestlistContext):
         return super().visitTestlist(ctx)

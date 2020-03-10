@@ -9,52 +9,55 @@ class ASTNode(Node):
     pass
 
 
-class StatementsNode(ASTNode):
+class ASTStatementsNode(ASTNode):
     def __init__(self, statements):
         self.first_statement = statements[0]
         if len(statements) > 1:
-            self.next_statements = StatementsNode(statements[1:])
+            self.next_statements = ASTStatementsNode(statements[1:])
         else:
             self.next_statements = None
-        super(StatementsNode, self).__init__("Statements")
+        super().__init__("Statements")
 
     def __str__(self):
-        return super(StatementsNode, self).__str__(self.first_statement, self.next_statements)
+        return super().__str__(self.first_statement, self.next_statements)
 
 
-class DelStatementNode(ASTNode):
+class ASTDelStatementNode(ASTNode):
     def __init__(self, expressions):
         self.expressions = expressions
-        super(DelStatementNode, self).__init__("Del")
+        super().__init__("Del")
 
     def __str__(self):
-        return super(DelStatementNode, self).__str__(self.expressions)
+        return super().__str__(self.expressions)
 
 
-class ExpressionsNode(ASTNode):
+class ASTExpressionsNode(ASTNode):
     def __init__(self, expressions):
         self.first_expression = expressions[0]
         if len(expressions) > 1:
-            self.next_expressions = ExpressionsNode(expressions[1:])
+            self.next_expressions = ASTExpressionsNode(expressions[1:])
         else:
             self.next_expressions = None
-        super(ExpressionsNode, self).__init__("Expressions")
+        super().__init__("Expressions")
 
     def __str__(self):
-        return super(ExpressionsNode, self).__str__(self.first_expression, self.next_expressions)
+        return super().__str__(self.first_expression, self.next_expressions)
 
 
-class BinOpNode(ASTNode):
+class ASTBinOpNode(ASTNode):
     def __init__(self, operation, left, right):
         self.left = left
         self.right = right
-        super(BinOpNode, self).__init__(operation)
+        super().__init__(operation)
 
     def __str__(self):
-        return super(BinOpNode, self).__str__(self.left, self.right)
+        return super().__str__(self.left, self.right)
 
 
-if __name__ == "__main__":
-    stmts = StatementsNode(["This", "is", "a", "test"])
-    ast = Tree(stmts)
-    print(ast)
+class ASTUnOpNode(ASTNode):
+    def __init__(self, operation, child):
+        self.child = child
+        super().__init__(operation)
+
+    def __str__(self):
+        return super().__str__(self.child)

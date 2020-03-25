@@ -3,6 +3,7 @@ from parsers.helpers.cfgraph import CFG, CFGNode
 from parsers.helpers.comet_visitor import CometResult, CometNodeResult
 from .Python3Parser import Python3Parser
 from .Python3Visitor import Python3Visitor
+from parsers.helpers.inheritance_tree import InheritanceTree, InheritanceNode
 
 binary_operators = {
     "|": "BITWISE_OR",
@@ -59,13 +60,13 @@ def r_ast_bin_op(children):
 class Python3CometVisitor(Python3Visitor):
     # Overrides
     def __init__(self) -> None:
+        self.inheritance_tree = InheritanceTree()
         super().__init__()
 
     # Behaviour
     def visit(self, tree):
         node_result = super().visit(tree)
         ast = AST(node_result.ast_node)
-        print(ast)
         cfg = CFG(node_result.cfg_node)
 
         return CometResult(ast, cfg)
@@ -349,7 +350,9 @@ class Python3CometVisitor(Python3Visitor):
     def visitDictorsetmaker(self, ctx: Python3Parser.DictorsetmakerContext):
         return super().visitDictorsetmaker(ctx)
 
-    def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
+    def visitClassdef(self, ctx: Python3Parser.ClassdefContext):  
+        inheritance_node = InheritanceNode(self.visitChildren(ctx))
+        self.inheritance_tree.add_node(inheritance_node)
         return super().visitClassdef(ctx)
 
     def visitArglist(self, ctx: Python3Parser.ArglistContext):

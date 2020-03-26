@@ -1,4 +1,4 @@
-from .tree import Node, Tree
+from tree import Node, Tree
 import itertools
 
 class InheritanceTree(Tree):
@@ -9,7 +9,7 @@ class InheritanceTree(Tree):
         self.root[node] = node.parent
 
     def get_parent_node(self, node):
-        return [node.ast_node for node in self.root[node]]
+        return [node for node in self.root[node]]
 
     def get_children(self, parent_node):
         children = []
@@ -17,7 +17,7 @@ class InheritanceTree(Tree):
             # Class -> [Inherits from mapping]
             if node == parent_node:
                 continue
-            if parent_node.name in [n.ast_node for n in self.root[node]]:
+            if parent_node.name in [n for n in self.root[node]]:
                 children.append(node.name)
 
         return children

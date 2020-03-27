@@ -1,8 +1,8 @@
-from parsers.helpers.astree import *
-from parsers.helpers.cfgraph import CFG, CFGNode
-from parsers.helpers.comet_visitor import CometResult, CometNodeResult
 from .Python3Parser import Python3Parser
 from .Python3Visitor import Python3Visitor
+from ...structures.astree import *
+from ...structures.cfgraph import *
+from ...structures.results import CometResult, CometNodeResult
 
 binary_operators = {
     "|": "BITWISE_OR",
@@ -65,7 +65,6 @@ class Python3CometVisitor(Python3Visitor):
     def visit(self, tree):
         node_result = super().visit(tree)
         ast = AST(node_result.ast_node)
-        print(ast)
         cfg = CFG(node_result.cfg_node)
 
         return CometResult(ast, cfg)
@@ -75,7 +74,6 @@ class Python3CometVisitor(Python3Visitor):
         for i in range(node.getChildCount()):
             if not self.shouldVisitNextChild(node, result):
                 return result
-
             result = self.aggregateResult(result, node.getChild(i).accept(self))
 
         return result
@@ -234,12 +232,6 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitAsync_stmt(ctx)
 
     def visitIf_stmt(self, ctx: Python3Parser.If_stmtContext):
-        children = self.visitChildren(ctx)
-        success = super().visitIf_stmt(ctx).cfg_node
-        if success is None:
-            success = CFGNode()
-
-        if_node = CFGNode()
         return super().visitIf_stmt(ctx)
 
     def visitWhile_stmt(self, ctx: Python3Parser.While_stmtContext):

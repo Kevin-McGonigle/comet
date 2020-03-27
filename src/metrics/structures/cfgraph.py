@@ -117,3 +117,12 @@ class CFGWhileElseNode(CFGNode):
         self.fail_block.add_child(self.exit_block)
 
         super().__init__([self.success_block, self.fail_block])
+
+
+class CFGBreakNode(CFGNode):
+    def __init__(self, break_node=None):
+        if break_node is None:
+            break_node = CFGNode()
+        self.break_node = break_node
+
+        super().__init__([self.break_node])

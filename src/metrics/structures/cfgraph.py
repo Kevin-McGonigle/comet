@@ -126,3 +126,7 @@ class CFGBreakNode(CFGNode):
         self.break_node = break_node
 
         super().__init__([self.break_node])
+
+
+if __name__ == '__main__':
+    pass

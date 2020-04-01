@@ -2,12 +2,13 @@ from .tree import Node, Tree
 import itertools
 
 class InheritanceTree(Tree):
-    def __init__(self):
-        super().__init__({})
+    def __init__(self, tree={}):
+        super().__init__(tree)
 
     def add_node(self, node):
         self.root[node] = node.parent 
-        
+        # TODO: get inherited classes from parent
+
     def get_parent_node(self, node):
         return [node for node in self.root[node]]
 

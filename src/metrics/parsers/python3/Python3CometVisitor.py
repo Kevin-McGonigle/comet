@@ -102,9 +102,13 @@ class Python3CometVisitor(Python3Visitor):
     # Utilities
     def ast_children(self, ctx):
         return [child.ast_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
+    
+    def inheritance_children(self, ctx):
+        return [child.inheritance_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
 
     def ast_bin_op(self, ctx):
         return r_ast_bin_op(self.ast_children(ctx))
+
 
     def ast_un_op(self, ctx):
         children = self.ast_children(ctx)
@@ -115,7 +119,9 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitSingle_input(ctx)
 
     def visitFile_input(self, ctx: Python3Parser.File_inputContext):
-        return CometNodeResult(ASTStatementsNode(self.ast_children(ctx)), None, None)
+        # TODO: Implement AST/CFG 
+        # return CometNodeResult(ASTStatementsNode(self.ast_children(ctx)), None, None)
+        return CometNodeResult(None, None, InheritanceNode(self.visitChildren(ctx)))
 
     def visitEval_input(self, ctx: Python3Parser.Eval_inputContext):
         return super().visitEval_input(ctx)
@@ -353,8 +359,7 @@ class Python3CometVisitor(Python3Visitor):
     def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
         self.inheritance_tree.add_node(InheritanceNode(self.visitChildren(ctx)))
         return CometNodeResult(None, None, InheritanceNode(self.visitChildren(ctx)))
-        return super().visitClassdef(ctx)
-     
+
     def visitArglist(self, ctx: Python3Parser.ArglistContext):
         return super().visitArglist(ctx)
 

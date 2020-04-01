@@ -352,6 +352,7 @@ class Python3CometVisitor(Python3Visitor):
 
     def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
         self.inheritance_tree.add_node(InheritanceNode(self.visitChildren(ctx)))
+        return CometNodeResult(None, None, InheritanceNode(self.visitChildren(ctx)))
         return super().visitClassdef(ctx)
      
     def visitArglist(self, ctx: Python3Parser.ArglistContext):

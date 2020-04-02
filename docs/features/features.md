@@ -25,7 +25,7 @@ Where:
 #### Logical Lines of Code
 
 ##### Description
-The number of statements in a program, irrespective of whitespace, comments or code style differences.
+The number of statements in a section of code, irrespective of whitespace, comments or code style differences.
 
 ##### Formula
 LLOC = Number of statement nodes in AST.
@@ -35,8 +35,10 @@ LLOC = Number of statement nodes in AST.
 #### Lines of Comment
 
 ##### Description
+The number of lines of comment in a section of code.
 
 ##### Formula
+LOC = Number of lines of comment.
 
 ##### Priority
 

@@ -15,10 +15,9 @@ Indicate complexity of a program. Defined as the number of linearly independent 
 CC = E - N + 2C
 
 Where:
-* CC = Cyclomatic complexity.
 * E = Number of edges in the control flow graph.
 * N = Number of nodes in the control flow graph.
-* P = Number of connected components.
+* C = Number of connected components.
 
 ##### Priority
 
@@ -45,7 +44,9 @@ LOC = Number of lines of comment.
 #### Afferent Coupling
 
 ##### Description
-The number of other packages/types/methods that depend on a given package/type/method.
+The number of other packages/types/methods that depend on a given package/type/method. This indicates how dependent
+other packages/types/methods are on the examined artifact. An AC value of zero indicates potentially "dead" code that is
+not in use.
 
 ##### Formula
 AC = Number of arrows pointing to dependency graph node.
@@ -53,8 +54,11 @@ AC = Number of arrows pointing to dependency graph node.
 ##### Priority
 
 #### Efferent Coupling
+The number of other packages/types/methods that are depended upon by a given package/type/method. This indicates how
+dependent the examined artifact is on other packages/types/methods.
 
 ##### Description
+EC = Number of arrows pointing away from dependency graph node.
 
 ##### Formula
 
@@ -63,40 +67,68 @@ AC = Number of arrows pointing to dependency graph node.
 #### Instability
 
 ##### Description
+The ratio of efferent coupling to total coupling, indicating a package/type/method's resilience to change.
 
 ##### Formula
+I = EC / (EC + AC)
+
+Where:
+* EC = Efferent coupling.
+* AC = Afferent coupling.
 
 ##### Priority
 
 #### Abstractness
 
 ##### Description
+The ratio of the number of abstract types/methods to the number of total types/methods (both abstract and concrete).
 
 ##### Formula
+A = AB / (AB + CO)
+
+Where:
+* AB = Number of abstract types/methods.
+* CO = Number of concrete types/methods.
 
 ##### Priority
 
 #### Method Cohesion
 
 ##### Description
+A measurement of a class's adherence to the single responsibility principle by examining how many instance fields are 
+used in each method.
 
 ##### Formula
+MC = MF / (M * F)
+
+Where:
+* MF = The sum of the number of methods using a given instance field for each instance field of the class.
+* M = The number of methods in the class.
+* F = The number of instance fields in the class.
 
 ##### Priority
 
 #### Relational Cohesion
 
 ##### Description
+The number of internal relationships per type, giving an indication of coupling within a package.
 
 ##### Formula
+RC = R / T
+
+Where:
+* R = The number of internal relationships.
+* T = The number of types.
 
 ##### Priority
 
 #### Nesting Depth
 
 ##### Description
+The maximum number of encapsulated scopes within a given method, indicating complexity and maintainability.
 
 ##### Formula
+ND = Maximum number of encapsulated scopes.
 
 ##### Priority
 

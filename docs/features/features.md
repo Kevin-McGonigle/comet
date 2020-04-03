@@ -45,8 +45,10 @@ LOC = Number of lines of comment.
 #### Afferent Coupling
 
 ##### Description
+The number of other packages/types/methods that depend on a given package/type/method.
 
 ##### Formula
+AC = Number of arrows pointing to dependency graph node.
 
 ##### Priority
 
@@ -124,11 +126,8 @@ LOC = Number of lines of comment.
 
 ##### Priority
 
-## Priorities
+#### Dependency Graphs
 
-| Feature               | Priority |
-|-----------------------|----------|
-| Cyclomatic Complexity |          |
-| AST                   |          |
-| CFG                   |          |
-| Inheritance Tree      |          |
+##### Description
+
+##### Priority

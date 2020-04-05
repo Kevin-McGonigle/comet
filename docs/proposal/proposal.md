@@ -1,13 +1,13 @@
 # School of Computing &mdash; Year 4 Project Proposal Form
 
 ## SECTION A
-|Project Title:       | comet - Code Metrics and Analysis Tool|
-|---------------------|---------------------------------------:|
-|Student 1 Name:      |                         Kevin McGonigle|
-|Student 1 ID:        |                                16318486|
-|Student 2 Name:      |                             James Miles|
-|Student 2 ID:        |                                16349533|
-|Project Supervisor:  |                      Dr. Geoff Hamilton|
+| Project Title:       | comet - Code Metrics and Analysis Tool |
+|----------------------|---------------------------------------:|
+| Student 1 Name:      |                         Kevin McGonigle|
+| Student 1 ID:        |                                16318486|
+| Student 2 Name:      |                             James Miles|
+| Student 2 ID:        |                                16349533|
+| Project Supervisor:  |                      Dr. Geoff Hamilton|
 
 ## SECTION B
 

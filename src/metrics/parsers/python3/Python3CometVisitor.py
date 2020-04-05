@@ -3,6 +3,7 @@ from .Python3Visitor import Python3Visitor
 from ...structures.astree import *
 from ...structures.cfgraph import *
 from ...structures.results import CometResult, CometNodeResult
+from parsers.helpers.inheritance_tree import InheritanceTree, InheritanceNode
 
 binary_operators = {
     "|": "BITWISE_OR",
@@ -60,6 +61,7 @@ class Python3CometVisitor(Python3Visitor):
     # Overrides
     def __init__(self) -> None:
         super().__init__()
+        self.inheritance_tree = InheritanceTree()
 
     # Behaviour
     def visit(self, tree):
@@ -67,7 +69,7 @@ class Python3CometVisitor(Python3Visitor):
         ast = AST(node_result.ast_node)
         cfg = CFG(node_result.cfg_node)
 
-        return CometResult(ast, cfg)
+        return CometResult(ast, cfg, self.inheritance_tree)
 
     def visitChildren(self, node):
         result = []
@@ -85,7 +87,7 @@ class Python3CometVisitor(Python3Visitor):
         super().visitErrorNode(node)
 
     def defaultResult(self):
-        return CometNodeResult(None, None)
+        return CometNodeResult(None, None, None)
 
     def aggregateResult(self, aggregate, next_result):
         if next_result:
@@ -100,8 +102,12 @@ class Python3CometVisitor(Python3Visitor):
     def ast_children(self, ctx):
         return [child.ast_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
 
+    def inheritance_children(self, ctx):
+        return [child.inheritance_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
+
     def ast_bin_op(self, ctx):
         return r_ast_bin_op(self.ast_children(ctx))
+
 
     def ast_un_op(self, ctx):
         children = self.ast_children(ctx)
@@ -112,7 +118,9 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitSingle_input(ctx)
 
     def visitFile_input(self, ctx: Python3Parser.File_inputContext):
-        return CometNodeResult(ASTStatementsNode(self.ast_children(ctx)), None)
+        # TODO: Implement AST/CFG
+        # return CometNodeResult(ASTStatementsNode(self.ast_children(ctx)), None, None)
+        return CometNodeResult(None, None, InheritanceNode(self.visitChildren(ctx)))
 
     def visitEval_input(self, ctx: Python3Parser.Eval_inputContext):
         return super().visitEval_input(ctx)
@@ -286,30 +294,30 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitStar_expr(ctx)
 
     def visitExpr(self, ctx: Python3Parser.ExprContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitXor_expr(self, ctx: Python3Parser.Xor_exprContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitAnd_expr(self, ctx: Python3Parser.And_exprContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitShift_expr(self, ctx: Python3Parser.Shift_exprContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitArith_expr(self, ctx: Python3Parser.Arith_exprContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitTerm(self, ctx: Python3Parser.TermContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitFactor(self, ctx: Python3Parser.FactorContext):
         if ctx.getChildCount() == 2:
-            return CometNodeResult(self.ast_un_op(ctx), None)
+            return CometNodeResult(self.ast_un_op(ctx), None, None)
         return super().visitFactor(ctx)
 
     def visitPower(self, ctx: Python3Parser.PowerContext):
-        return CometNodeResult(self.ast_bin_op(ctx), None)
+        return CometNodeResult(self.ast_bin_op(ctx), None, None)
 
     def visitAtom_expr(self, ctx: Python3Parser.Atom_exprContext):
         return super().visitAtom_expr(ctx)
@@ -342,7 +350,8 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitDictorsetmaker(ctx)
 
     def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
-        return super().visitClassdef(ctx)
+        self.inheritance_tree.add_node(InheritanceNode(self.visitChildren(ctx)))
+        return CometNodeResult(None, None, InheritanceNode(self.visitChildren(ctx)))
 
     def visitArglist(self, ctx: Python3Parser.ArglistContext):
         return super().visitArglist(ctx)

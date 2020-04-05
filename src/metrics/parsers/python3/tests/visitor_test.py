@@ -16,7 +16,7 @@ def main():
     parse_tree = parser.file_input()
     visitor = Python3CometVisitor()
     output = visitor.visit(parse_tree)
-    print(output.cfg)
+    print(output)
 
 
 if __name__ == "__main__":

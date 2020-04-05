@@ -521,6 +521,7 @@ def serializedATN():
         return buf.getvalue()
 
 
+# noinspection PyPropertyAccess,PyPropertyAccess,PyArgumentList,PyArgumentList,PyArgumentList,PyAttributeOutsideInit,PyAttributeOutsideInit,PyAttributeOutsideInit,PyAttributeOutsideInit,PyAttributeOutsideInit,PyAttributeOutsideInit
 class Python3Lexer(Lexer):
 
     atn = ATNDeserializer().deserialize(serializedATN())

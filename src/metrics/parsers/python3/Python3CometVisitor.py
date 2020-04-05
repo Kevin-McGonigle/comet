@@ -2,8 +2,8 @@ from .Python3Parser import Python3Parser
 from .Python3Visitor import Python3Visitor
 from ...structures.astree import *
 from ...structures.cfgraph import *
-from ...structures.results import CometResult, CometNodeResult
-from parsers.helpers.inheritance_tree import InheritanceTree, InheritanceNode
+from ...structures.inheritance_tree import *
+from ...structures.results import *
 
 binary_operators = {
     "|": "BITWISE_OR",
@@ -103,11 +103,11 @@ class Python3CometVisitor(Python3Visitor):
         return [child.ast_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
 
     def inheritance_children(self, ctx):
-        return [child.inheritance_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
+        return [child.inheritance_node if isinstance(child, CometNodeResult) else child
+                for child in self.visitChildren(ctx)]
 
     def ast_bin_op(self, ctx):
         return r_ast_bin_op(self.ast_children(ctx))
-
 
     def ast_un_op(self, ctx):
         children = self.ast_children(ctx)

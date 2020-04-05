@@ -6,6 +6,7 @@ from metrics.structures.cfgraph import CFG
 class TestCFG(TestCase):
     def setUp(self):
         with self.assertRaises(Exception):
+            # noinspection PyArgumentList
             self.cfg = CFG()
         super().setUp()
 

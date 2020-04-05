@@ -9,6 +9,7 @@ else:
 	from typing.io import TextIO
 
 
+# noinspection PyInconsistentIndentation
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3e")
@@ -961,9 +962,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def file_input(self):
 
         localctx = Python3Parser.File_inputContext(self, self._ctx, self.state)
@@ -1040,9 +1039,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def eval_input(self):
 
         localctx = Python3Parser.Eval_inputContext(self, self._ctx, self.state)
@@ -1116,9 +1113,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def decorator(self):
 
         localctx = Python3Parser.DecoratorContext(self, self._ctx, self.state)
@@ -1189,9 +1184,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def decorators(self):
 
         localctx = Python3Parser.DecoratorsContext(self, self._ctx, self.state)
@@ -1396,9 +1389,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def funcdef(self):
 
         localctx = Python3Parser.FuncdefContext(self, self._ctx, self.state)
@@ -1468,9 +1459,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def parameters(self):
 
         localctx = Python3Parser.ParametersContext(self, self._ctx, self.state)
@@ -1554,9 +1543,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def typedargslist(self):
 
         localctx = Python3Parser.TypedargslistContext(self, self._ctx, self.state)
@@ -1814,9 +1801,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def tfpdef(self):
 
         localctx = Python3Parser.TfpdefContext(self, self._ctx, self.state)
@@ -1900,9 +1885,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def varargslist(self):
 
         localctx = Python3Parser.VarargslistContext(self, self._ctx, self.state)
@@ -2276,9 +2259,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def simple_stmt(self):
 
         localctx = Python3Parser.Simple_stmtContext(self, self._ctx, self.state)
@@ -2486,9 +2467,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def expr_stmt(self):
 
         localctx = Python3Parser.Expr_stmtContext(self, self._ctx, self.state)
@@ -2597,9 +2576,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def annassign(self):
 
         localctx = Python3Parser.AnnassignContext(self, self._ctx, self.state)
@@ -2673,9 +2650,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def testlist_star_expr(self):
 
         localctx = Python3Parser.Testlist_star_exprContext(self, self._ctx, self.state)
@@ -2801,9 +2776,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def augassign(self):
 
         localctx = Python3Parser.AugassignContext(self, self._ctx, self.state)
@@ -3138,9 +3111,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def return_stmt(self):
 
         localctx = Python3Parser.Return_stmtContext(self, self._ctx, self.state)
@@ -3250,9 +3221,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def raise_stmt(self):
 
         localctx = Python3Parser.Raise_stmtContext(self, self._ctx, self.state)
@@ -3463,9 +3432,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def import_from(self):
 
         localctx = Python3Parser.Import_fromContext(self, self._ctx, self.state)
@@ -3584,9 +3551,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def import_as_name(self):
 
         localctx = Python3Parser.Import_as_nameContext(self, self._ctx, self.state)
@@ -3648,9 +3613,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def dotted_as_name(self):
 
         localctx = Python3Parser.Dotted_as_nameContext(self, self._ctx, self.state)
@@ -3715,9 +3678,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def import_as_names(self):
 
         localctx = Python3Parser.Import_as_namesContext(self, self._ctx, self.state)
@@ -3793,9 +3754,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def dotted_as_names(self):
 
         localctx = Python3Parser.Dotted_as_namesContext(self, self._ctx, self.state)
@@ -3861,9 +3820,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def dotted_name(self):
 
         localctx = Python3Parser.Dotted_nameContext(self, self._ctx, self.state)
@@ -3932,9 +3889,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def global_stmt(self):
 
         localctx = Python3Parser.Global_stmtContext(self, self._ctx, self.state)
@@ -4005,9 +3960,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def nonlocal_stmt(self):
 
         localctx = Python3Parser.Nonlocal_stmtContext(self, self._ctx, self.state)
@@ -4076,9 +4029,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def assert_stmt(self):
 
         localctx = Python3Parser.Assert_stmtContext(self, self._ctx, self.state)
@@ -4367,9 +4318,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def if_stmt(self):
 
         localctx = Python3Parser.If_stmtContext(self, self._ctx, self.state)
@@ -4468,9 +4417,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def while_stmt(self):
 
         localctx = Python3Parser.While_stmtContext(self, self._ctx, self.state)
@@ -4560,9 +4507,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def for_stmt(self):
 
         localctx = Python3Parser.For_stmtContext(self, self._ctx, self.state)
@@ -4655,9 +4600,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def try_stmt(self):
 
         localctx = Python3Parser.Try_stmtContext(self, self._ctx, self.state)
@@ -4782,9 +4725,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def with_stmt(self):
 
         localctx = Python3Parser.With_stmtContext(self, self._ctx, self.state)
@@ -4855,9 +4796,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def with_item(self):
 
         localctx = Python3Parser.With_itemContext(self, self._ctx, self.state)
@@ -4922,9 +4861,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def except_clause(self):
 
         localctx = Python3Parser.Except_clauseContext(self, self._ctx, self.state)
@@ -5004,9 +4941,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def suite(self):
 
         localctx = Python3Parser.SuiteContext(self, self._ctx, self.state)
@@ -5098,9 +5033,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def test(self):
 
         localctx = Python3Parser.TestContext(self, self._ctx, self.state)
@@ -5247,9 +5180,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def lambdef(self):
 
         localctx = Python3Parser.LambdefContext(self, self._ctx, self.state)
@@ -5317,9 +5248,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def lambdef_nocond(self):
 
         localctx = Python3Parser.Lambdef_nocondContext(self, self._ctx, self.state)
@@ -5386,9 +5315,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def or_test(self):
 
         localctx = Python3Parser.Or_testContext(self, self._ctx, self.state)
@@ -5455,9 +5382,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def and_test(self):
 
         localctx = Python3Parser.And_testContext(self, self._ctx, self.state)
@@ -5594,9 +5519,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def comparison(self):
 
         localctx = Python3Parser.ComparisonContext(self, self._ctx, self.state)
@@ -5859,9 +5782,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def expr(self):
 
         localctx = Python3Parser.ExprContext(self, self._ctx, self.state)
@@ -5928,9 +5849,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def xor_expr(self):
 
         localctx = Python3Parser.Xor_exprContext(self, self._ctx, self.state)
@@ -5997,9 +5916,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def and_expr(self):
 
         localctx = Python3Parser.And_exprContext(self, self._ctx, self.state)
@@ -6072,9 +5989,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def shift_expr(self):
 
         localctx = Python3Parser.Shift_exprContext(self, self._ctx, self.state)
@@ -6152,9 +6067,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def arith_expr(self):
 
         localctx = Python3Parser.Arith_exprContext(self, self._ctx, self.state)
@@ -6250,9 +6163,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def term(self):
 
         localctx = Python3Parser.TermContext(self, self._ctx, self.state)
@@ -6328,9 +6239,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def factor(self):
 
         localctx = Python3Parser.FactorContext(self, self._ctx, self.state)
@@ -6403,9 +6312,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def power(self):
 
         localctx = Python3Parser.PowerContext(self, self._ctx, self.state)
@@ -6471,9 +6378,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def atom_expr(self):
 
         localctx = Python3Parser.Atom_exprContext(self, self._ctx, self.state)
@@ -6587,9 +6492,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def atom(self):
 
         localctx = Python3Parser.AtomContext(self, self._ctx, self.state)
@@ -6746,9 +6649,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def testlist_comp(self):
 
         localctx = Python3Parser.Testlist_compContext(self, self._ctx, self.state)
@@ -6873,9 +6774,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def trailer(self):
 
         localctx = Python3Parser.TrailerContext(self, self._ctx, self.state)
@@ -6964,9 +6863,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def subscriptlist(self):
 
         localctx = Python3Parser.SubscriptlistContext(self, self._ctx, self.state)
@@ -7043,9 +6940,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def subscript(self):
 
         localctx = Python3Parser.SubscriptContext(self, self._ctx, self.state)
@@ -7131,9 +7026,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def sliceop(self):
 
         localctx = Python3Parser.SliceopContext(self, self._ctx, self.state)
@@ -7203,9 +7096,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def exprlist(self):
 
         localctx = Python3Parser.ExprlistContext(self, self._ctx, self.state)
@@ -7305,9 +7196,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def testlist(self):
 
         localctx = Python3Parser.TestlistContext(self, self._ctx, self.state)
@@ -7413,9 +7302,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def dictorsetmaker(self):
 
         localctx = Python3Parser.DictorsetmakerContext(self, self._ctx, self.state)
@@ -7618,9 +7505,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def classdef(self):
 
         localctx = Python3Parser.ClassdefContext(self, self._ctx, self.state)
@@ -7699,9 +7584,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def arglist(self):
 
         localctx = Python3Parser.ArglistContext(self, self._ctx, self.state)
@@ -7784,9 +7667,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def argument(self):
 
         localctx = Python3Parser.ArgumentContext(self, self._ctx, self.state)
@@ -7951,9 +7832,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def comp_for(self):
 
         localctx = Python3Parser.Comp_forContext(self, self._ctx, self.state)
@@ -8028,9 +7907,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def comp_if(self):
 
         localctx = Python3Parser.Comp_ifContext(self, self._ctx, self.state)
@@ -8135,9 +8012,7 @@ class Python3Parser ( Parser ):
             else:
                 return visitor.visitChildren(self)
 
-
-
-
+    # noinspection PyAttributeOutsideInit
     def yield_expr(self):
 
         localctx = Python3Parser.Yield_exprContext(self, self._ctx, self.state)

@@ -12,4 +12,5 @@ class CometNodeResult(object):
         self.inheritance_node = inheritance_node
 
     def __eq__(self, other):
-        return isinstance(other, CometNodeResult) and self.ast_node == other.ast_node and self.cfg_node == other.cfg_node
+        return isinstance(other, CometNodeResult) and self.ast_node == other.ast_node \
+               and self.cfg_node == other.cfg_node

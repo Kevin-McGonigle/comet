@@ -1,6 +1,6 @@
 # Features
 This document contains an overview of each of the desired metrics and models to be delivered as part of comet, the code
-metrics and analysis tool, including their respective formulae, priorities and other details.
+metrics and analysis tool, including their respective formulae.
 
 ## Overview
 
@@ -19,8 +19,6 @@ Where:
 * N = Number of nodes in the control flow graph.
 * C = Number of connected components.
 
-##### Priority
-
 #### Logical Lines of Code
 
 ##### Description
@@ -29,8 +27,6 @@ The number of statements in a section of code, irrespective of whitespace, comme
 ##### Formula
 LLOC = Number of statement nodes in AST.
 
-##### Priority
-
 #### Lines of Comment
 
 ##### Description
@@ -38,8 +34,6 @@ The number of lines of comment in a section of code.
 
 ##### Formula
 LOC = Number of lines of comment.
-
-##### Priority
 
 #### Afferent Coupling
 
@@ -51,8 +45,6 @@ not in use.
 ##### Formula
 AC = Number of arrows pointing to dependency graph node.
 
-##### Priority
-
 #### Efferent Coupling
 The number of other packages/types/methods that are depended upon by a given package/type/method. This indicates how
 dependent the examined artifact is on other packages/types/methods.
@@ -61,8 +53,6 @@ dependent the examined artifact is on other packages/types/methods.
 EC = Number of arrows pointing away from dependency graph node.
 
 ##### Formula
-
-##### Priority
 
 #### Instability
 
@@ -76,8 +66,6 @@ Where:
 * EC = Efferent coupling.
 * AC = Afferent coupling.
 
-##### Priority
-
 #### Abstractness
 
 ##### Description
@@ -89,8 +77,6 @@ A = AB / (AB + CO)
 Where:
 * AB = Number of abstract types/methods.
 * CO = Number of concrete types/methods.
-
-##### Priority
 
 #### Method Cohesion
 
@@ -106,8 +92,6 @@ Where:
 * M = The number of methods in the class.
 * F = The number of instance fields in the class.
 
-##### Priority
-
 #### Relational Cohesion
 
 ##### Description
@@ -120,8 +104,6 @@ Where:
 * R = The number of internal relationships.
 * T = The number of types.
 
-##### Priority
-
 #### Nesting Depth
 
 ##### Description
@@ -130,36 +112,10 @@ The maximum number of encapsulated scopes within a given method, indicating comp
 ##### Formula
 ND = Maximum number of encapsulated scopes.
 
-##### Priority
-
 ### Models
 
-#### Abstract Syntax Tree (AST)
-
-##### Description
-
-##### Priority
-
-#### Control Flow Graph (CFG)
-
-##### Description
-
-##### Priority
-
-#### Inheritance Tree
-
-##### Description
-
-##### Priority
-
-#### Class Diagram
-
-##### Description
-
-##### Priority
-
-#### Dependency Graphs
-
-##### Description
-
-##### Priority
+* Abstract Syntax Tree (AST)
+* Control Flow Graph (CFG)
+* Inheritance Tree
+* Dependency Graph
+* Class Diagram

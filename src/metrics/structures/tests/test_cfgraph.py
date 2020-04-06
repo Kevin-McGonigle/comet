@@ -220,7 +220,7 @@ class TestCFGBreakNode(TestCase):
 
         self.assertEqual(self.break_node.break_to_node, break_to_node)
 
-        self.assertIn(break_to_node, self.break_node.break_to_node)
+        self.assertIn(break_to_node, self.break_node.children)
 
     def tearDown(self):
         super().tearDown()

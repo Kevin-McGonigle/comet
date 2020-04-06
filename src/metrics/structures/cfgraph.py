@@ -158,6 +158,13 @@ class CFGIfElseNode(CFGNode):
 
 class CFGWhileNode(CFGNode):
     def __init__(self, success_block=None, exit_block=None):
+        """
+        Initialise a while statement control flow graph structure.
+        :param success_block: The node to visit if the condition is true.
+        :type success_block: CFGNode
+        :param exit_block: The node to following the while statement.
+        :type exit_block: CFGNode
+        """
         if success_block is None:
             success_block = CFGNode()
         self.success_block = success_block
@@ -170,11 +177,25 @@ class CFGWhileNode(CFGNode):
         super().__init__([self.success_block, self.exit_block])
 
     def add_child(self, child):
+        """
+        Add a child to the while structure's exit block.
+        :param child: The child to add.
+        :type child: CFGNode
+        """
         self.exit_block.add_child(child)
 
 
 class CFGWhileElseNode(CFGNode):
     def __init__(self, success_block=None, fail_block=None, exit_block=None):
+        """
+        Initialise a while-else statement control flow graph structure.
+        :param success_block: The node to visit if the condition is true.
+        :type success_block: CFGNode
+        :param fail_block: The node to visit if the condition is false.
+        :type fail_block: CFGNode
+        :param exit_block: The node following the while-else statement.
+        :type exit_block: CFGNode
+        """
         if success_block is None:
             success_block = CFGNode()
         self.success_block = success_block
@@ -193,19 +214,34 @@ class CFGWhileElseNode(CFGNode):
         super().__init__([self.success_block, self.fail_block])
 
     def add_child(self, child):
+        """
+        Add a child to the while-else structure's exit block.
+        :param child: The child to add.
+        :type child: CFGNode
+        """
         self.exit_block.add_child(child)
 
 
 class CFGBreakNode(CFGNode):
-    def __init__(self, break_to_node=None):
-        if break_to_node is None:
-            break_to_node = CFGNode()
-        self.break_to_node = break_to_node
+    def __init__(self, break_to_block=None):
+        """
+        Initialise a breaks statement control flow graph structure.
+        :param break_to_block: The node to break to.
+        :type break_to_block: CFGNode
+        """
+        if break_to_block is None:
+            break_to_block = CFGNode()
+        self.break_to_block = break_to_block
 
-        super().__init__([self.break_to_node])
+        super().__init__([self.break_to_block])
 
     def add_child(self, child):
-        self.break_to_node.add_child(child)
+        """
+        Add a child to the break structure's break-to block.
+        :param child: The child to add.
+        :type child: CFGNode
+        """
+        self.break_to_block.add_child(child)
 
 
 if __name__ == '__main__':

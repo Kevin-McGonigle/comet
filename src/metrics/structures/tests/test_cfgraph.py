@@ -6,18 +6,22 @@ from metrics.structures.cfgraph import *
 class TestCFG(TestCase):
     def setUp(self):
         super().setUp()
+
         with self.assertRaises(Exception):
             # noinspection PyArgumentList
             self.cfg = CFG()
+
+        self.entry_node = CFGWhileElseNode()
+        self.cfg = CFG(self.entry_node)
 
     def tearDown(self):
         super().tearDown()
 
     def test_node_count(self):
-        self.fail()
+        self.assertEqual(self.cfg.node_count(), self.entry_node.node_count())
 
     def test_edge_count(self):
-        self.fail()
+        self.assertEqual(self.cfg.edge_count(), self.entry_node.edge_count())
 
 
 class TestCFGNode(TestCase):
@@ -141,19 +145,67 @@ class TestCFGWhileNode(TestCase):
     def setUp(self):
         super().setUp()
 
+        success_block = CFGNode()
+        exit_block = CFGNode()
+
+        self.while_node = CFGWhileNode(success_block, exit_block)
+
+        self.assertEqual(self.while_node.edge_count(), 3)
+        self.assertEqual(self.while_node.node_count(), 3)
+
+        self.assertEqual(self.while_node.success_block, success_block)
+        self.assertEqual(self.while_node.exit_block, exit_block)
+
+        self.assertIn(success_block, self.while_node.children)
+        self.assertIn(exit_block, self.while_node.children)
+        self.assertIn(self.while_node, success_block.children)
+
     def tearDown(self):
         super().tearDown()
 
     def test_add_child(self):
-        self.fail()
+        child_node = CFGNode()
+        self.while_node.add_child(child_node)
+
+        self.assertEqual(self.while_node.node_count(), 4)
+        self.assertEqual(self.while_node.edge_count(), 4)
+
+        self.assertIn(child_node, self.while_node.exit_block.children)
 
 
 class TestCFGWhileElseNode(TestCase):
     def setUp(self):
         super().setUp()
 
+        success_block = CFGNode()
+        fail_block = CFGNode()
+        exit_block = CFGNode()
+
+        self.while_else_node = CFGWhileElseNode(success_block, fail_block, exit_block)
+
+        self.assertEqual(self.while_else_node.node_count(), 4)
+        self.assertEqual(self.while_else_node.edge_count(), 4)
+
+        self.assertEqual(self.while_else_node.success_block, success_block)
+        self.assertEqual(self.while_else_node.fail_block, fail_block)
+        self.assertEqual(self.while_else_node.exit_block, exit_block)
+
+        self.assertIn(success_block, self.while_else_node.children)
+        self.assertIn(fail_block, self.while_else_node.children)
+        self.assertIn(self.while_else_node, success_block.children)
+        self.assertIn(exit_block, fail_block.children)
+
     def tearDown(self):
         super().tearDown()
+
+    def test_add_child(self):
+        child_node = CFGNode()
+        self.while_else_node.add_child(child_node)
+
+        self.assertEqual(self.while_else_node.node_count(), 5)
+        self.assertEqual(self.while_else_node.edge_count(), 5)
+
+        self.assertIn(child_node, self.while_else_node.exit_block.children)
 
 
 class TestCFGBreakNode(TestCase):

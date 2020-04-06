@@ -126,12 +126,15 @@ class CFGWhileElseNode(CFGNode):
 
 
 class CFGBreakNode(CFGNode):
-    def __init__(self, break_node=None):
-        if break_node is None:
-            break_node = CFGNode()
-        self.break_node = break_node
+    def __init__(self, break_to_node=None):
+        if break_to_node is None:
+            break_to_node = CFGNode()
+        self.break_to_node = break_to_node
 
-        super().__init__([self.break_node])
+        super().__init__([self.break_to_node])
+
+    def add_child(self, child):
+        self.break_to_node.add_child(child)
 
 
 if __name__ == '__main__':

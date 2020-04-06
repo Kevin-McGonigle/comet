@@ -212,5 +212,24 @@ class TestCFGBreakNode(TestCase):
     def setUp(self):
         super().setUp()
 
+        break_to_node = CFGNode()
+        self.break_node = CFGBreakNode(break_to_node)
+
+        self.assertEqual(self.break_node.node_count(), 2)
+        self.assertEqual(self.break_node.edge_count(), 1)
+
+        self.assertEqual(self.break_node.break_to_node, break_to_node)
+
+        self.assertIn(break_to_node, self.break_node.break_to_node)
+
     def tearDown(self):
         super().tearDown()
+
+    def test_add_child(self):
+        child_node = CFGNode()
+        self.break_node.add_child(child_node)
+
+        self.assertEqual(self.break_node.node_count(), 3)
+        self.assertEqual(self.break_node.edge_count(), 2)
+
+        self.assertIn(child_node, self.break_node.break_to_node.children)

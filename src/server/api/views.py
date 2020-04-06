@@ -1,111 +1,68 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
+from django.http import JsonResponse
+from rest_framework import viewsets, status
+from .models import File, Method, Class
+from . import serializers
+import json
 
-from .serializers import *
+class FileUploadViewset(viewsets.ModelViewSet):
+    """
+    API endpoint to upload file data.
+    """
+    queryset = File.objects.all()
+    serializer_class = serializers.FileSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return JsonResponse({'hash': serializer.data['hash']}, status=status.HTTP_201_CREATED, safe=False)
 
-@csrf_exempt
-def file(request):
-    if request.method == "GET":
-        files_list = File.objects.all()
-        serializer = FileSerializer(files_list, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method == "POST":
-        serializer = FileSerializer(data=JSONParser().parse(request))
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+class FileInformationViewset(viewsets.ModelViewSet):
+    """
+    API endpoint to return a file's information from a given hash
+    """
+    serializer_class = serializers.FileSerializer
 
-    return HttpResponse(status=405)
+    def get_queryset(self):
+        if self.request.method == 'GET':
+            file_hash = self.request.GET.get('hash', None)
+            if file_hash is not None:
+                return File.objects.all().filter(hash=file_hash)
 
+            return File.objects.all()
+            
 
-@csrf_exempt
-def file_detail(request, pk):
-    try:
-        f = File.objects.get(pk=pk)
-    except File.DoesNotExist:
-        return HttpResponse(status=404)
+class MethodViewpoint(viewsets.ModelViewSet):
+    """
+    API endpoint to return a method's information from a given hash
+    """
+    serializer_class = serializers.MethodSerializer
 
-    if request.method == "GET":
-        return JsonResponse(FileSerializer(f).data)
-    elif request.method == "PUT":
-        serializer = FileSerializer(f, data=JSONParser().parse(request))
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == "DELETE":
-        f.delete()
-        return HttpResponse(status=204)
-
-
-@csrf_exempt
-def class_(request):
-    if request.method == "GET":
-        classes_list = Class.objects.all()
-        serializer = ClassSerializer(classes_list, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method == "POST":
-        serializer = ClassSerializer(data=JSONParser().parse(request))
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-    return HttpResponse(status=405)
+    def get_queryset(self):
+        if self.request.method == "GET":
+            method_hash = self.request.GET.get('method_hash', None)
+            if method_hash is not None:
+                return Method.objects.all().filter(method_hash=method_hash)
+            
+            return Method.objects.all()
 
 
-@csrf_exempt
-def class_detail(request, pk):
-    try:
-        c = Class.objects.get(pk=pk)
-    except Class.DoesNotExist:
-        return HttpResponse(status=404)
+class ClassViewpoint(viewsets.ModelViewSet):
+    """
+    API endpoint to return a class' information from a given hash
+    """
+    serializer_class = serializers.ClassSerializer
 
-    if request.method == "GET":
-        return JsonResponse(ClassSerializer(c).data)
-    elif request.method == "PUT":
-        serializer = ClassSerializer(c, data=JSONParser().parse(request))
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == "DELETE":
-        c.delete()
-        return HttpResponse(status=204)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return JsonResponse({'hash': serializer.data['class_hash']}, status=status.HTTP_201_CREATED, safe=False)
 
-
-@csrf_exempt
-def method(request):
-    if request.method == "GET":
-        methods_list = Method.objects.all()
-        serializer = MethodSerializer(methods_list, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    elif request.method == "POST":
-        serializer = MethodSerializer(data=JSONParser().parse(request))
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-    return HttpResponse(status=405)
-
-
-@csrf_exempt
-def method_detail(request, pk):
-    try:
-        m = Method.objects.get(pk=pk)
-    except Method.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == "GET":
-        return JsonResponse(MethodSerializer(m).data)
-    elif request.method == "PUT":
-        serializer = MethodSerializer(m, data=JSONParser().parse(request))
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == "DELETE":
-        m.delete()
-        return HttpResponse(status=204)
+    def get_queryset(self):
+        if self.request.method == "GET":
+            class_hash = self.request.GET.get('class_hash', None)
+            if class_hash is not None:
+                return Class.objects.all().filter(class_hash=class_hash)
+            
+            return Class.objects.all()

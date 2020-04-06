@@ -106,8 +106,35 @@ class TestCFGIfElseNode(TestCase):
     def setUp(self):
         super().setUp()
 
+        success_block = CFGNode()
+        fail_block = CFGNode()
+        exit_block = CFGNode()
+
+        self.if_else_node = CFGIfElseNode(success_block, fail_block, exit_block)
+
+        self.assertEqual(self.if_else_node.node_count(), 4)
+        self.assertEqual(self.if_else_node.edge_count(), 4)
+
+        self.assertEqual(self.if_else_node.success_block, success_block)
+        self.assertEqual(self.if_else_node.fail_block, fail_block)
+        self.assertEqual(self.if_else_node.exit_block, exit_block)
+
+        self.assertIn(success_block, self.if_else_node.children)
+        self.assertIn(fail_block, self.if_else_node.children)
+        self.assertIn(exit_block, success_block.children)
+        self.assertIn(exit_block, fail_block.children)
+
     def tearDown(self):
         super().tearDown()
+
+    def test_add_child(self):
+        child_node = CFGNode()
+        self.if_else_node.add_child(child_node)
+
+        self.assertEqual(self.if_else_node.node_count(), 5)
+        self.assertEqual(self.if_else_node.edge_count(), 5)
+
+        self.assertIn(child_node, self.if_else_node.exit_block.children)
 
 
 class TestCFGWhileNode(TestCase):

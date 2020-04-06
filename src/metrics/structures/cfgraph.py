@@ -81,6 +81,9 @@ class CFGIfElseNode(CFGNode):
         self.fail_block.add_child(self.exit_block)
         super().__init__([self.success_block, self.fail_block])
 
+    def add_child(self, child):
+        self.exit_block.add_child(child)
+
 
 class CFGWhileNode(CFGNode):
     def __init__(self, success_block=None, exit_block=None):

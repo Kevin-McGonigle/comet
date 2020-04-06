@@ -20,7 +20,7 @@ class CFGNode(object):
         super().__init__()
 
     def add_child(self, child):
-        if isinstance(child, CFGNode):
+        if isinstance(child, CFGNode) and child not in self.children:
             self.children.append(child)
         else:
             raise ValueError

@@ -77,7 +77,7 @@ class CFGNode(object):
             return 0
 
         visited.append(self)
-        return len(self.children) + sum([child.edge_count(visited) for child in self.children])
+        return len(self.children) + sum([child.r_edge_count(visited) for child in self.children])
 
     def add_child(self, child):
         """

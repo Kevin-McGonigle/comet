@@ -11,7 +11,7 @@ class TestCFG(TestCase):
             # noinspection PyArgumentList
             self.cfg = CFG()
 
-        self.entry_node = CFGWhileElseNode()
+        self.entry_node = CFGLoopElseNode()
         self.cfg = CFG(self.entry_node)
 
     def tearDown(self):
@@ -148,7 +148,7 @@ class TestCFGWhileNode(TestCase):
         success_block = CFGNode()
         exit_block = CFGNode()
 
-        self.while_node = CFGWhileNode(success_block, exit_block)
+        self.while_node = CFGLoopNode(success_block, exit_block)
 
         self.assertEqual(self.while_node.edge_count(), 3)
         self.assertEqual(self.while_node.node_count(), 3)
@@ -181,7 +181,7 @@ class TestCFGWhileElseNode(TestCase):
         fail_block = CFGNode()
         exit_block = CFGNode()
 
-        self.while_else_node = CFGWhileElseNode(success_block, fail_block, exit_block)
+        self.while_else_node = CFGLoopElseNode(success_block, fail_block, exit_block)
 
         self.assertEqual(self.while_else_node.node_count(), 4)
         self.assertEqual(self.while_else_node.edge_count(), 4)
@@ -206,6 +206,37 @@ class TestCFGWhileElseNode(TestCase):
         self.assertEqual(self.while_else_node.edge_count(), 5)
 
         self.assertIn(child_node, self.while_else_node.exit_block.children)
+
+
+class TestCFGSwitchNode(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        case_blocks = [CFGNode(), CFGNode(), CFGNode(), CFGNode()]
+        exit_block = CFGNode()
+        self.switch_node = CFGSwitchNode(case_blocks, exit_block)
+
+        self.assertEqual(self.switch_node.node_count(), 6)
+        self.assertEqual(self.switch_node.edge_count(), 8)
+
+        self.assertEqual(self.switch_node.case_blocks, case_blocks)
+        self.assertEqual(self.switch_node.exit_block, exit_block)
+
+        for case_block in case_blocks:
+            self.assertIn(case_block, self.switch_node.children)
+            self.assertIn(exit_block, case_block.children)
+
+    def tearDown(self):
+        super().tearDown()
+
+    def test_add_child(self):
+        child_node = CFGNode()
+        self.switch_node.add_child(child_node)
+
+        self.assertEqual(self.switch_node.node_count(), 7)
+        self.assertEqual(self.switch_node.edge_count(), 9)
+
+        self.assertIn(child_node, self.switch_node.exit_block.children)
 
 
 class TestCFGBreakNode(TestCase):

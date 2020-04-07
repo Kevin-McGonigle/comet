@@ -1,3 +1,6 @@
+from typing import List
+
+
 class CFG(object):
     def __init__(self, entry):
         """
@@ -12,6 +15,7 @@ class CFG(object):
         """
         Get the number of nodes in the control flow graph.
         :return: Number of nodes in control flow graph.
+        :rtype: int
         """
         return self.entry.node_count()
 
@@ -19,6 +23,7 @@ class CFG(object):
         """
         Get the number of edges in the control flow graph.
         :return: Number of nodes in control flow graph.
+        :rtype: int
         """
         return self.entry.edge_count()
 
@@ -28,7 +33,7 @@ class CFGNode(object):
         """
         Initialise a generic control flow graph node.
         :param children: List of child nodes.
-        :type children: list
+        :type children: List[CFGNode]
         """
         if children is None:
             self.children = []
@@ -41,6 +46,7 @@ class CFGNode(object):
         """
         Get the number of reachable nodes for this node (inclusive).
         :return: The number of reachable nodes for this node (inclusive).
+        :rtype: int
         """
         visited = [self]
         return 1 + sum([child.r_node_count(visited) for child in self.children])
@@ -49,8 +55,9 @@ class CFGNode(object):
         """
         Recursive helper for calculating node count.
         :param visited: Nodes already visited during this count.
-        :type visited: list
+        :type visited: List[CFGNode]
         :return: 1 + the sum of the node counts of all child nodes. 0 if already visited.
+        :rtype: int
         """
         if self in visited:
             return 0
@@ -62,6 +69,7 @@ class CFGNode(object):
         """
         Get the number of reachable edges for this node (inclusive).
         :return: The number of reachable edges for this node (inclusive).
+        :rtype: int
         """
         visited = [self]
         return len(self.children) + sum([child.r_edge_count(visited) for child in self.children])
@@ -70,8 +78,9 @@ class CFGNode(object):
         """
         Recursive helper for calculating edge count.
         :param visited: Nodes already visited during this count.
-        :type visited: list
+        :type visited: List[CFGNode]
         :return: The number of child nodes + the sum of the edge counts for all child nodes. 0 if already visited.
+        :rtype: int
         """
         if self in visited:
             return 0
@@ -156,7 +165,7 @@ class CFGIfElseNode(CFGNode):
         self.exit_block.add_child(child)
 
 
-class CFGWhileNode(CFGNode):
+class CFGLoopNode(CFGNode):
     def __init__(self, success_block=None, exit_block=None):
         """
         Initialise a while statement control flow graph structure.
@@ -185,7 +194,7 @@ class CFGWhileNode(CFGNode):
         self.exit_block.add_child(child)
 
 
-class CFGWhileElseNode(CFGNode):
+class CFGLoopElseNode(CFGNode):
     def __init__(self, success_block=None, fail_block=None, exit_block=None):
         """
         Initialise a while-else statement control flow graph structure.
@@ -216,6 +225,37 @@ class CFGWhileElseNode(CFGNode):
     def add_child(self, child):
         """
         Add a child to the while-else structure's exit block.
+        :param child: The child to add.
+        :type child: CFGNode
+        """
+        self.exit_block.add_child(child)
+
+
+class CFGSwitchNode(CFGNode):
+    def __init__(self, case_blocks=None, exit_block=None):
+        """
+        Initialise a switch statement control flow graph structure.
+        :param case_blocks: The nodes representing each respective case.
+        :type case_blocks: List[CFGNode]
+        :param exit_block: The node following the switch statement.
+        :type exit_block: CFGNode
+        """
+        if case_blocks is None:
+            case_blocks = []
+        self.case_blocks = case_blocks
+
+        if exit_block is None:
+            exit_block = CFGNode
+        self.exit_block = exit_block
+
+        for case_block in self.case_blocks:
+            case_block.add_child(self.exit_block)
+
+        super().__init__(case_blocks)
+
+    def add_child(self, child):
+        """
+        Add a child to the switch structure's exit block.
         :param child: The child to add.
         :type child: CFGNode
         """

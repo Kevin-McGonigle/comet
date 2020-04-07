@@ -1,6 +1,6 @@
 import itertools
 
-from metrics.structures.tree import Node, Tree
+from metrics.structures.base.tree import *
 
 
 class InheritanceTree(Tree):

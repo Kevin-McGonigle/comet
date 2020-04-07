@@ -1,4 +1,4 @@
-from .tree import Node, Tree
+from metrics.structures.base.tree import *
 
 
 class AST(Tree):

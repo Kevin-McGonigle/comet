@@ -1,5 +1,4 @@
 from django.db import models
-from metrics import parsers
 
 import hashlib
 import json

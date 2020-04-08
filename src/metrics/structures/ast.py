@@ -247,7 +247,7 @@ class ASTReturnStatementNode(ASTNode):
         return super().__str__(self.expression)
 
 
-class ASTThrowStatement(ASTNode):
+class ASTThrowStatementNode(ASTNode):
     def __init__(self, exception=None):
         self.exception = exception
         super().__init__("Throw")
@@ -256,7 +256,7 @@ class ASTThrowStatement(ASTNode):
         return super().__str__(self.exception)
 
 
-class ASTImportStatement(ASTNode):
+class ASTImportStatementNode(ASTNode):
     def __init__(self, libraries):
         self.libraries = libraries
         super().__init__("Import")
@@ -265,7 +265,7 @@ class ASTImportStatement(ASTNode):
         return super().__str__(*self.libraries)
 
 
-class ASTImportFromStatement(ASTNode):
+class ASTImportFromStatementNode(ASTNode):
     def __init__(self, _from, libraries):
         self._from = _from
         self.libraries = libraries
@@ -275,7 +275,7 @@ class ASTImportFromStatement(ASTNode):
         return super().__str__(self._from, *self.libraries)
 
 
-class ASTGlobalStatement(ASTNode):
+class ASTGlobalStatementNode(ASTNode):
     def __init__(self, variables):
         self.variables = variables
         super().__init__("Global")
@@ -284,7 +284,7 @@ class ASTGlobalStatement(ASTNode):
         return super().__str__(*self.variables)
 
 
-class ASTNonLocalStatement(ASTNode):
+class ASTNonLocalStatementNode(ASTNode):
     def __init__(self, variables):
         self.variables = variables
         super().__init__("Non-Local")
@@ -293,7 +293,7 @@ class ASTNonLocalStatement(ASTNode):
         return super().__str__(*self.variables)
 
 
-class ASTAssertStatement(ASTNode):
+class ASTAssertStatementNode(ASTNode):
     def __init__(self, condition, message=None):
         self.condition = condition
         self.message = message
@@ -303,7 +303,7 @@ class ASTAssertStatement(ASTNode):
         return super().__str__(self.condition, self.message)
 
 
-class ASTIfStatement(ASTNode):
+class ASTIfStatementNode(ASTNode):
     def __init__(self, condition, body):
         self.condition = condition
         self.body = body
@@ -313,7 +313,7 @@ class ASTIfStatement(ASTNode):
         return super().__str__(self.condition, self.body)
 
 
-class ASTIfElseStatement(ASTNode):
+class ASTIfElseStatementNode(ASTNode):
     def __init__(self, condition, body, else_body):
         self.condition = condition
         self.body = body
@@ -324,7 +324,7 @@ class ASTIfElseStatement(ASTNode):
         return super().__str__(self.condition, self.body, self.else_body)
 
 
-class ASTLoopStatement(ASTNode):
+class ASTLoopStatementNode(ASTNode):
     def __init__(self, condition, body):
         self.condition = condition
         self.body = body
@@ -334,7 +334,7 @@ class ASTLoopStatement(ASTNode):
         return super().__str__(self.condition, self.body)
 
 
-class ASTLoopElseStatement(ASTNode):
+class ASTLoopElseStatementNode(ASTNode):
     def __init__(self, condition, body, else_body):
         self.condition = condition
         self.body = body
@@ -343,3 +343,56 @@ class ASTLoopElseStatement(ASTNode):
 
     def __str__(self):
         return super().__str__(self.condition, self.body, self.else_body)
+
+
+class ASTTryStatementNode(ASTNode):
+    def __init__(self, body, catches=None, _finally=None):
+        if not (catches or _finally):
+            raise ValueError
+
+        self.body = body
+        self.catches = catches
+        self._finally = _finally
+        super().__init__("Try")
+
+    def __str__(self):
+        return super().__str__(self.body, *self.catches, self._finally)
+
+
+class ASTCatchStatementNode(ASTNode):
+    def __init__(self, exceptions, body):
+        self.exceptions = exceptions
+        self.body = body
+        super().__init__("Catch")
+
+    def __str__(self):
+        return super().__str__(self.exceptions, self.body)
+
+
+class ASTFinallyStatementNode(ASTNode):
+    def __init__(self, body):
+        self.body = body
+        super().__init__("Finally")
+
+    def __str__(self):
+        return super().__str__(self.body)
+
+
+class ASTAsStatementNode(ASTNode):
+    def __init__(self, expression, alias):
+        self.expression = expression
+        self.alias = alias
+        super().__init__("As")
+
+    def __str__(self):
+        return super().__str__(self.expression, self.alias)
+
+
+class ASTWithStatementNode(ASTNode):
+    def __init__(self, expressions, body):
+        self.expressions = expressions
+        self.body = body
+        super().__init__("With")
+
+    def __str__(self):
+        return super().__str__(*self.expressions, self.body)

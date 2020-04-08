@@ -1,8 +1,8 @@
 from antlr4 import InputStream, CommonTokenStream
 
-from server.metrics.parsers.python3.Python3CometVisitor import Python3CometVisitor
-from server.metrics.parsers.python3.Python3Lexer import Python3Lexer
-from server.metrics.parsers.python3.Python3Parser import Python3Parser
+from metrics.parsers.python3.Python3CometVisitor import Python3CometVisitor
+from metrics.parsers.python3.Python3Lexer import Python3Lexer
+from metrics.parsers.python3.Python3Parser import Python3Parser
 
 
 class Error(Exception):

@@ -1,32 +1,35 @@
 from antlr4 import InputStream, CommonTokenStream
 
-from ..parsers.python3.Python3CometVisitor import Python3CometVisitor
-from ..parsers.python3.Python3Lexer import Python3Lexer
-from ..parsers.python3.Python3Parser import Python3Parser
+from server.metrics.parsers.python3.Python3CometVisitor import Python3CometVisitor
+from server.metrics.parsers.python3.Python3Lexer import Python3Lexer
+from server.metrics.parsers.python3.Python3Parser import Python3Parser
 
 
 class Error(Exception):
     """Base class for other exceptions"""
     pass
 
+
 class BaseParseTreeError(Error):
     """Raised when the base parse tree cannot be generated"""
     pass
+
 
 class InheritanceTreeError(Error):
     """Raised when inheritance tree cannot be generated"""
     pass
 
+
 class Manager:
     def __init__(self, data, comet_result=False):
         self.data = self.read_file_content(data)
         self.parse_tree = self.generate_base_parse_tree()
-        
+
         if comet_result:
             self.comet_result = self.generate_comet_result()
         else:
             self.comet_result = None
-    
+
     def read_file_content(self, file):
         f = file.open()
         data = f.read()

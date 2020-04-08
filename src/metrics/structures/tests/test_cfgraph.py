@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from metrics.structures.cfgraph import *
+from metrics.structures.cfg import *
 
 
 class TestCFG(TestCase):

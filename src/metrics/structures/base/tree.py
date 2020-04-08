@@ -1,5 +1,10 @@
 class Tree(object):
     def __init__(self, root=None):
+        """
+        Initialise a generic tree.
+        :param root: The root node of the tree.
+        :type root: Node
+        """
         self.root = root
         super().__init__()
 
@@ -9,6 +14,11 @@ class Tree(object):
 
 class Node(object):
     def __init__(self, name):
+        """
+        Initialise a generic tree node.
+        :param name: The name of the node.
+        :type name: str
+        """
         self.name = name
         super().__init__()
 

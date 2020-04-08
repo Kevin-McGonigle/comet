@@ -1,47 +1,64 @@
 from .Python3Parser import Python3Parser
 from .Python3Visitor import Python3Visitor
-from ...structures.astree import *
-from ...structures.cfgraph import *
+from ...structures.ast import *
+from ...structures.cfg import *
 from ...structures.inheritance_tree import *
 from ...structures.results import *
 
 binary_operators = {
-    "|": "BITWISE_OR",
-    "^": "BITWISE_XOR",
-    "&": "BITWISE_AND",
-    "<<": "LEFT_SHIFT",
-    ">>": "RIGHT_SHIFT",
-    "+": "ADD",
-    "-": "SUBTRACT",
-    "*": "MULTIPLY",
-    "@": "MATRIX_MULTIPLY",
-    "%": "MODULO",
-    "//": "FLOOR_DIVIDE",
-    "**": "POWER",
+    "+": AST.ADD,
+    "-": AST.SUBTRACT,
+    "*": AST.MULTIPLY,
+    "/": AST.DIVIDE,
+    "//": AST.FLOOR_DIVIDE,
+    "%": AST.MODULO,
+    "**": AST.POWER,
+    "|": AST.BITWISE_OR,
+    "^": AST.BITWISE_XOR,
+    "&": AST.BITWISE_AND,
+    "<<": AST.LEFT_SHIFT,
+    ">>": AST.RIGHT_SHIFT,
+    "@": AST.MATRIX_MULTIPLY,
 }
 
 unary_operators = {
-    "+": "POSITIVE",
-    "-": "ARITH_NEGATION",
-    "~": "BITWISE_INVERSION",
+    "+": AST.POSITIVE,
+    "-": AST.ARITH_NEGATION,
+    "~": AST.BITWISE_INVERSION,
 }
 
 logical_operators = {
-    "and": "AND",
-    "or": "OR",
-    "not": "NOT"
+    "and": AST.LOGICAL_AND,
+    "or": AST.LOGICAL_OR,
+    "not": AST.LOGICAL_NEGATION,
 }
 
 comparison_operators = {
-    "<": "LESS_THAN",
-    ">": "GREATER_THAN",
-    "==": "EQUAL",
-    ">=": "GREATER_THAN_OR_EQUAL",
-    "<=": "LESS_THAN_OR_EQUAL",
-    "!=": "NOT_EQUAL",
-    "<>": "NOT_EQUAL",
-    "in": "IN",
-    "is": "IS"
+    "==": AST.EQUAL,
+    "!=": AST.NOT_EQUAL,
+    "<>": AST.NOT_EQUAL,
+    "<": AST.LESS_THAN,
+    ">": AST.GREATER_THAN,
+    "<=": AST.LESS_THAN_OR_EQUAL,
+    ">=": AST.GREATER_THAN_OR_EQUAL,
+    "in": AST.IN,
+    "is": AST.IS,
+}
+
+augmented_assignment = {
+    "+=": AST.INPLACE_ADD,
+    "-=": AST.INPLACE_SUBTRACT,
+    "*=": AST.INPLACE_MULTIPLY,
+    "/=": AST.INPLACE_DIVIDE,
+    "//=": AST.INPLACE_FLOOR_DIVIDE,
+    "%=": AST.INPLACE_MODULO,
+    "**=": AST.INPLACE_POWER,
+    "&=": AST.INPLACE_BITWISE_AND,
+    "|=": AST.INPLACE_BITWISE_OR,
+    "^=": AST.INPLACE_BITWISE_XOR,
+    "<<=": AST.INPLACE_LEFT_SHIFT,
+    ">>=": AST.INPLACE_RIGHT_SHIFT,
+    "@=": AST.INPLACE_MATRIX_MULTIPLY,
 }
 
 
@@ -341,7 +358,8 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitSliceop(ctx)
 
     def visitExprlist(self, ctx: Python3Parser.ExprlistContext):
-        return ASTExpressionsNode(self.visitChildren(ctx))
+        # return ASTExpressionsNode(, self.visitChildren(ctx)
+        pass
 
     def visitTestlist(self, ctx: Python3Parser.TestlistContext):
         return super().visitTestlist(ctx)

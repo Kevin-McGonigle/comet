@@ -1,8 +1,8 @@
 class Graph(object):
     def __init__(self, entry):
         """
-        Initialise a graph.
-        :param entry: The entry node for the graph.
+        Initialise a generic graph.
+        :param entry: The entry node of the graph.
         :type entry: Node
         """
         super().__init__()

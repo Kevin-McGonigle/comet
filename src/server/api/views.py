@@ -12,13 +12,16 @@ class FileUploadViewset(viewsets.ModelViewSet):
     serializer_class = serializers.FileSerializer
 
     def create(self, request, *args, **kwargs):
+        # Avoid circular import
+        from server.metrics.managers.manager import Manager
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
-        # file_manager = Manager(self.queryset.get(hash=serializer.data['hash']).file)
-        # comet_result = file_manager.generate_comet_result()
-        return JsonResponse({'hash': serializer.data['hash'], 'content': serializer.data['file']}, status=status.HTTP_201_CREATED, safe=False)
+        file_manager = Manager(self.queryset.get(hash=serializer.data['hash']).file)
+        comet_result = file_manager.generate_comet_result()
+        return JsonResponse({'hash': serializer.data['hash'], 'content': comet_result.inheritance_tree}, status=status.HTTP_201_CREATED, safe=False)
 
 class FileInformationViewset(viewsets.ModelViewSet):
     """

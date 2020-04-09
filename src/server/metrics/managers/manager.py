@@ -1,5 +1,8 @@
 from antlr4 import InputStream, CommonTokenStream
 
+import sys
+sys.path.append('C:\\Users\\Mames\\Desktop\\2020-ca400-mcgonik2-milesj2\\src')
+
 from server.metrics.parsers.python3.Python3CometVisitor import Python3CometVisitor
 from server.metrics.parsers.python3.Python3Lexer import Python3Lexer
 from server.metrics.parsers.python3.Python3Parser import Python3Parser

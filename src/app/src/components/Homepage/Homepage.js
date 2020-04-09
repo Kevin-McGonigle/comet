@@ -31,13 +31,16 @@ const Homepage = props => {
         setCreateModal({ isOpen: true, isLoading: true })
     }
 
-    const uploadButtonOnClickHandler = () => setUploadModal({ isOpen: true, isLoading: false });
+    const uploadButtonOnClickHandler = () => {
+        setUploadModal({ isOpen: true, isLoading: false });
+    }
+    
     const uploadModalOnCloseHandler = () => {
         setAlertNone();
         setUploadModal({ isOpen: false, isLoading: false });
     }
+    
     const uploadModalOnConfirmHandler = () => {
-        // #TODO: hit API with file data
         setAlertNone();
         setUploadModal({ isOpen: true, isLoading: true })
     }

@@ -1,26 +1,31 @@
 from django.http import JsonResponse
 from rest_framework import viewsets, status
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
 from api.models import File, Method, Class
 from metrics.managers.manager import Manager
 
+import json
 
 class FileUploadViewset(viewsets.ModelViewSet):
     """
     API endpoint to upload file data.
     """
     queryset = File.objects.all()
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     serializer_class = FileSerializer
 
     def create(self, request, *args, **kwargs):
+        print('REQUEST', request.data, request.FILES)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
         file_manager = Manager(self.queryset.get(hash=serializer.data['hash']).file)
         comet_result = file_manager.generate_comet_result()
-        return JsonResponse({'hash': serializer.data['hash'], 'content': comet_result.inheritance_tree},
+        print(comet_result.inheritance_tree.get_json())
+        return JsonResponse({'hash': serializer.data['hash'], 'inheritance_tree': comet_result.inheritance_tree.get_json()},
                             status=status.HTTP_201_CREATED, safe=False)
 
 

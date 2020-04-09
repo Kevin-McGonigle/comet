@@ -3,6 +3,7 @@ import styles from './UploadModal.css';
 import classnames from 'classnames';
 import { FilePicker, Alert, Dialog } from 'evergreen-ui';
 import UploadedItem from './UploadedItem';
+import POST from '../../api/API';
 
 const cx = args => classnames(styles, args)
 
@@ -74,19 +75,14 @@ const UploadModal = props => {
     }
 
     const onChangeHandler = (files) => {
-        const fileInfo = files.map(file => readFile(file));
-        Promise.all(fileInfo).then(value => {
-            const shapedData = Object.values(files).map((file, index) => {
-                return {
-                    name: file.name,
-                    size: file.size,
-                    fileType: file.type,
-                    content: value[index],
-                }
-            });
-            setFileData(shapedData);
-            setAlertSuccess('Successful upload');
-        });
+        setFileData(files);
+        setAlertSuccess('Successfully added');
+    };
+
+    const upload = () => {
+        console.log(fileData);
+        uploadModalOnConfirmHandler();
+        POST(fileData);
     }
 
     return (
@@ -96,7 +92,7 @@ const UploadModal = props => {
                 title="Upload"
                 isConfirmLoading={uploadModal.isLoading}
                 confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}
-                onConfirm={uploadModalOnConfirmHandler}
+                onConfirm={upload}
                 onCloseComplete={uploadModalOnCloseHandler}
             >
                 <div className={cx('uploadModalContainer')}>

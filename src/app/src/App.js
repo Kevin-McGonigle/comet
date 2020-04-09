@@ -2,8 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import './App.css';
 import configureStore from './configureStore';
-import { TreeGraphContainer } from './components/general/TreeGraph/TreeGraphContainer';
-import Homepage from './components/Homepage/Homepage';
+import Main from './components/Main';
 
 function App() {
   const store = configureStore({});
@@ -11,7 +10,7 @@ function App() {
   return (
     <Provider store={store}>
         <div className="App">
-          <Homepage />
+          <Main />
         </div>
       </Provider>
   );

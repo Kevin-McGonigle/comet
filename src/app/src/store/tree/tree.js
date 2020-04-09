@@ -1,53 +1,43 @@
 const initialState = {
     name: '/src',
     children: [{
-        name: 'TreeGraph.js',
+        name: 'A',
         gProps: {
             className: 'class',
-            id: 'TreeGraph.js',
+            id: 'A',
             'data-testid': 'TreeGraph.js'
         },
         children: [{
-            name: 'arguments',
+            name: 'B',
             gProps: {
                 className: 'variable',
-                id: 'arguments'
+                id: 'B'
             },
             pathProps: {
                 className: 'class-link'
             },
             children: [{
-                name: 'Int arg1',
+                name: 'C',
                 gProps: {
                     className: 'variable',
-                    id: 'Int arg1'
+                    id: 'C'
                 },
                 pathProps: {
-                    className: 'variable-link'
+                    className: 'class-link'
                 }
             }, {
-                name: 'Int arg2',
+                name: 'D',
                 gProps: {
                     className: 'variable',
-                    id: 'Int arg2'
+                    id: 'D'
                 },
                 pathProps: {
-                    className: 'variable-link'
+                    className: 'class-link'
                 }
             }]
-        }, {
-            name: 'functions',
-            pathProps: {
-                className: 'class-link'
-            },
-            children: [{
-                name: 'square -> Int arg1, Int arg2'
-            }, {
-                name: 'sum -> Int arg1, Int arg2'
-            }]
-        }]
+        },]
     }, {
-        name: 'TreeGraph.css',
+        name: 'E',
         gProps: {
             className: 'variable'
         }

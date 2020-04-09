@@ -22,8 +22,14 @@ class InheritanceTree(Tree):
                 children.append(node.class_name)
         return children
 
+    def get_json(self):
+        json_dict = {}
+        for node in self.root:
+            json_dict[node.class_name] = self.get_children(node)
+        return json_dict
+
     def get_inheritance_depth(self):
-        print(self.root)
+        # Incorrect fix later
         return 1 + max([len(self.get_children(node)) for node in self.root])
 
     def __str__(self):

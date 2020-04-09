@@ -13,7 +13,8 @@ const TreeGraph = props => {
 
     const onClickHandler = (event) => {
         const nodeId = event.target.parentNode.id;
-        hideAllChildNodes(nodeId); // need to recursively hide all childNodes
+        // Set ClassDiagram 
+        console.log(nodeId);
     };
 
     const treeWithOnClickHandler = {

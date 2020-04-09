@@ -1,9 +1,8 @@
-from .Python3Parser import Python3Parser
-from .Python3Visitor import Python3Visitor
-from ...structures.ast import *
-from ...structures.cfg import *
-from ...structures.inheritance_tree import *
-from ...structures.results import *
+from metrics.parsers.python3.base.Python3Parser import Python3Parser
+from metrics.parsers.python3.base.Python3Visitor import Python3Visitor
+from metrics.structures.ast import *
+from metrics.structures.inheritance_tree import *
+from metrics.structures.results import *
 
 binary_operators = {
     "+": AST.ADD,
@@ -62,31 +61,14 @@ augmented_assignment = {
 }
 
 
-def r_ast_bin_op(children):
-    if not children:
-        return None
-
-    if isinstance(children[-1], ASTNode) or isinstance(children[-1], str):
-        if len(children) == 1:
-            return children[0]
-        return ASTBinOpNode(binary_operators[children[-2]], r_ast_bin_op(children[:-2]), children[-1])
-
-    raise ValueError(f"Invalid children list: {children}")
-
-
-class Python3CometVisitor(Python3Visitor):
+class Python3ASTVisitor(Python3Visitor):
     # Overrides
     def __init__(self) -> None:
         super().__init__()
-        self.inheritance_tree = InheritanceTree()
 
     # Behaviour
     def visit(self, tree):
-        node_result = super().visit(tree)
-        ast = AST(node_result.ast_node)
-        cfg = CFG(node_result.cfg_node)
-
-        return CometResult(ast, cfg, self.inheritance_tree)
+        return AST(super().visit(tree))
 
     def visitChildren(self, node):
         result = []
@@ -98,13 +80,13 @@ class Python3CometVisitor(Python3Visitor):
         return result
 
     def visitTerminal(self, node):
-        return node.getText()
+        return super().visitTerminal(node)
 
     def visitErrorNode(self, node):
         super().visitErrorNode(node)
 
     def defaultResult(self):
-        return CometNodeResult(None, None, None)
+        return super().defaultResult()
 
     def aggregateResult(self, aggregate, next_result):
         if next_result:
@@ -115,29 +97,12 @@ class Python3CometVisitor(Python3Visitor):
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)
 
-    # Utilities
-    def ast_children(self, ctx):
-        return [child.ast_node if isinstance(child, CometNodeResult) else child for child in self.visitChildren(ctx)]
-
-    def inheritance_children(self, ctx):
-        return [child.inheritance_node if isinstance(child, CometNodeResult) else child
-                for child in self.visitChildren(ctx)]
-
-    def ast_bin_op(self, ctx):
-        return r_ast_bin_op(self.ast_children(ctx))
-
-    def ast_un_op(self, ctx):
-        children = self.ast_children(ctx)
-        return ASTUnOpNode(unary_operators[children[0]], children[1])
-
     # Visits
     def visitSingle_input(self, ctx: Python3Parser.Single_inputContext):
         return super().visitSingle_input(ctx)
 
     def visitFile_input(self, ctx: Python3Parser.File_inputContext):
-        # TODO: Implement AST/CFG
-        # return CometNodeResult(ASTStatementsNode(self.ast_children(ctx)), None, None)
-        return CometNodeResult(None, None, InheritanceNode(self.visitChildren(ctx)))
+        return build_statements(self.visitChildren(ctx))
 
     def visitEval_input(self, ctx: Python3Parser.Eval_inputContext):
         return super().visitEval_input(ctx)
@@ -155,16 +120,45 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitAsync_funcdef(ctx)
 
     def visitFuncdef(self, ctx: Python3Parser.FuncdefContext):
-        return super().visitFuncdef(ctx)
+        name = ctx.getChild(1).getText()
+        arguments = ctx.getChild(2).accept(self)
+        if ctx.getChildCount() == 5:
+            return ASTFunctionDefinitionNode(name, ctx.getChild(4).accept(self), arguments)
+        else:
+            return ASTFunctionDefinitionNode(name, ctx.getChild(6).accept(self), arguments,
+                                             ctx.getChild(4).accept(self))
 
     def visitParameters(self, ctx: Python3Parser.ParametersContext):
-        return super().visitParameters(ctx)
+        if ctx.getChildCount() == 3:
+            return ctx.getChild(1).accept(self)
+        return self.defaultResult()
 
     def visitTypedargslist(self, ctx: Python3Parser.TypedargslistContext):
-        return super().visitTypedargslist(ctx)
+        parameters = []
+        i = 0
+        child_count = ctx.getChildCount()
+        while i < child_count:
+            child = ctx.getChild(i)
+            if child.getText() == "*" or child.getText() == "**":
+                i += 1
+                parameter = ctx.getChild(i).accept(self)
+                if child.getText() == "*":
+                    parameters.append(ASTPositionalArgumentsParameter(parameter.name, parameter.type))
+                else:
+                    parameters.append(ASTKeywordArgumentsParameter(parameter.name, parameter.type))
+            else:
+                parameter = ctx.getChild(i).accept(self)
+                if parameter:
+                    if i + 1 < child_count and i < ctx.getChild(i + 1).getText == "=":
+                        i += 2
+                        parameter.default = ctx.getChild(i).accept(self)
+                    parameters.append(parameter)
+            i += 1
 
     def visitTfpdef(self, ctx: Python3Parser.TfpdefContext):
-        return super().visitTfpdef(ctx)
+        if ctx.getChildCount() > 1:
+            return ASTParameterNode(ctx.getChild(0).getText(), ctx.getChild(1).getText())
+        return ASTParameterNode(ctx.getChild(0).getText())
 
     def visitVarargslist(self, ctx: Python3Parser.VarargslistContext):
         return super().visitVarargslist(ctx)
@@ -182,16 +176,29 @@ class Python3CometVisitor(Python3Visitor):
         return super().visitSmall_stmt(ctx)
 
     def visitExpr_stmt(self, ctx: Python3Parser.Expr_stmtContext):
-        return super().visitExpr_stmt(ctx)
+        # Assignment, Annotation Assignment or Augmented Assignment
+        children = self.visitChildren(ctx)
+
+        if isinstance(children[1], ASTAugmentedAssignmentNode) or isinstance(children[1], ASTAnnotationAssignmentNode):
+            children[1].variables = children[0]
+            if isinstance(children[1], ASTAugmentedAssignmentNode):
+                children[1].values = children[2]
+            return children[1]
+
+        return build_assignments(children)
 
     def visitAnnassign(self, ctx: Python3Parser.AnnassignContext):
-        return super().visitAnnassign(ctx)
+        children = self.visitChildren(ctx)
+        if len(children) == 1:
+            return ASTAnnotationAssignmentNode(children[0])
+        else:
+            return ASTAnnotationAssignmentNode(children[1], values=children[1])
 
     def visitTestlist_star_expr(self, ctx: Python3Parser.Testlist_star_exprContext):
         return super().visitTestlist_star_expr(ctx)
 
     def visitAugassign(self, ctx: Python3Parser.AugassignContext):
-        return super().visitAugassign(ctx)
+        return ASTAugmentedAssignmentNode(augmented_assignment[ctx.getText()])
 
     def visitDel_stmt(self, ctx: Python3Parser.Del_stmtContext):
         return super().visitDel_stmt(ctx)
@@ -394,3 +401,19 @@ class Python3CometVisitor(Python3Visitor):
 
     def visitYield_arg(self, ctx: Python3Parser.Yield_argContext):
         return super().visitYield_arg(ctx)
+
+
+def build_statements(statements):
+    return ASTStatementsNode(statements[0], build_statements(statements[1:]) if len(statements) > 1 else None)
+
+
+def build_expressions(expressions):
+    return ASTExpressionsNode(expressions[0], build_expressions(expressions[1:]) if len(expressions) > 1 else None)
+
+
+def build_assignments(assignments):
+    return ASTAssignmentNode(assignments[0],
+                             build_assignments(assignments[1:]) if len(assignments) > 1 else assignments[1])
+
+
+def build_parameters()

@@ -89,7 +89,7 @@ class ASTDelStatementNode(ASTNode):
 
 
 class ASTExpressionsNode(ASTNode):
-    def __init__(self, first_expression, next_expressions=None):
+    def __init__(self, first_expression=None, next_expressions=None):
         """
         Initialise an expressions node.
         :param first_expression:
@@ -142,60 +142,60 @@ class ASTUnOpNode(ASTNode):
 
 
 class ASTAssignmentNode(ASTNode):
-    def __init__(self, variable, value):
+    def __init__(self, variables=None, values=None):
         """
         Initialise an assignment node.
-        :param variable: The variable(s) being assigned to.
-        :type variable: ASTNode
-        :param value: The values being assigned.
-        :type value: ASTNode
+        :param variables: The variable(s) being assigned to.
+        :type variables: ASTNode
+        :param values: The values being assigned.
+        :type values: ASTNode
         """
-        self.variable = variable
-        self.value = value
+        self.variables = variables
+        self.values = values
         super().__init__("Assignment")
 
     def __str__(self):
-        return super().__str__(self.variable, self.value)
+        return super().__str__(self.variables, self.values)
 
 
 class ASTAugmentedAssignmentNode(ASTNode):
-    def __init__(self, operation, variable, value):
+    def __init__(self, operation, variables=None, values=None):
         """
         Initialise an augmented assignment node.
         :param operation: The operation being performed.
         :type operation: str
-        :param variable: The variable(s) being assigned to.
-        :type variable: ASTNode
-        :param value: The value(s) being assigned.
-        :type value: ASTNode
+        :param variables: The variable(s) being assigned to.
+        :type variables: ASTNode
+        :param values: The value(s) being assigned.
+        :type values: ASTNode
         """
         self.operation = operation
-        self.variable = variable
-        self.value = value
+        self.variables = variables
+        self.values = values
         super().__init__(self.operation)
 
     def __str__(self):
-        return super().__str__(self.variable, self.value)
+        return super().__str__(self.variables, self.values)
 
 
 class ASTAnnotationAssignmentNode(ASTNode):
-    def __init__(self, variable, annotation, value=None):
+    def __init__(self, annotation, variables=None, values=None):
         """
         Initialise an annotation assignment node.
-        :param variable: The variable(s) being assigned to.
-        :type variable: ASTNode
+        :param variables: The variable(s) being assigned to.
+        :type variables: ASTNode
         :param annotation: The annotation being applied.
         :type annotation: ASTNode
-        :param value: The value(s) being assigned.
-        :type value: ASTNode
+        :param values: The value(s) being assigned.
+        :type values: ASTNode
         """
-        self.variable = variable
         self.annotation = annotation
-        self.value = value
+        self.variables = variables
+        self.values = values
         super().__init__("Annotation Assignment")
 
     def __str__(self):
-        return super().__str__(self.variable, self.annotation, self.variable)
+        return super().__str__(self.variables, self.annotation, self.variables)
 
 
 class ASTYieldStatementNode(ASTNode):
@@ -399,14 +399,15 @@ class ASTWithStatementNode(ASTNode):
 
 
 class ASTFunctionDefinitionNode(ASTNode):
-    def __init__(self, name, body, arguments=None):
+    def __init__(self, name, body, parameters=None, return_type=None):
         self.name = name
         self.body = body
-        self.arguments = arguments
+        self.parameters = parameters
+        self.return_type = return_type
         super().__init__("Function Definition")
 
     def __str__(self):
-        return super().__str__(self.name, self.arguments, self.body)
+        return super().__str__(self.name, self.parameters, self.return_type, self.body)
 
 
 class ASTClassDefinitionNode(ASTNode):
@@ -427,3 +428,45 @@ class ASTAsyncNode(ASTNode):
 
     def __str__(self):
         return super().__str__(self.child)
+
+
+class ASTParametersNode(ASTNode):
+    def __init__(self, first_parameter, next_parameters=None):
+        self.first_parameter = first_parameter
+        self.next_parameters = next_parameters
+        super().__init__("Parameters")
+
+    def __str__(self):
+        super(ASTParametersNode, self).__str__(self.first_parameter, self.next_parameters)
+
+
+class ASTParameterNode(ASTNode):
+    def __init__(self, name, type=None, default=None):
+        self.name = name
+        self.type = type
+        self.default = default
+        super().__init__("Parameter")
+
+    def __str__(self):
+        return super().__str__(self.name, self.type, self.default)
+
+
+class ASTPositionalArgumentsParameter(ASTNode):
+    def __init__(self, name, _type=None):
+        self.name = name
+        self.type = _type
+        super().__init__("Positional Arguments Parameter")
+
+
+    def __str__(self):
+        return super().__str__(self.name, self.type)
+
+
+class ASTKeywordArgumentsParameter(ASTNode):
+    def __init__(self, name, _type=None):
+        self.name = name
+        self.type = _type
+        super().__init__("Keyword Arguments Parameter")
+
+    def __str__(self):
+        return super().__str__(self.name, self.type)

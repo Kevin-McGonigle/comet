@@ -17,3 +17,6 @@ __pycache__/
 
 # Ignore auto-generated static files.
 /src/server/static/
+
+# Ignore uploads.
+/src/server/uploads/

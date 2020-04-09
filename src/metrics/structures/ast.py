@@ -396,3 +396,34 @@ class ASTWithStatementNode(ASTNode):
 
     def __str__(self):
         return super().__str__(*self.expressions, self.body)
+
+
+class ASTFunctionDefinitionNode(ASTNode):
+    def __init__(self, name, body, arguments=None):
+        self.name = name
+        self.body = body
+        self.arguments = arguments
+        super().__init__("Function Definition")
+
+    def __str__(self):
+        return super().__str__(self.name, self.arguments, self.body)
+
+
+class ASTClassDefinitionNode(ASTNode):
+    def __init__(self, name, body, arguments=None):
+        self.name = name
+        self.body = body
+        self.arguments = arguments
+        super().__init__("Class Definition")
+
+    def __str__(self):
+        return super().__str__(self.name, self.arguments, self.body)
+
+
+class ASTAsyncNode(ASTNode):
+    def __init__(self, child):
+        self.child = child
+        super().__init__("Async")
+
+    def __str__(self):
+        return super().__str__(self.child)

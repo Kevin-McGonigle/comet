@@ -1,7 +1,7 @@
 import unittest
 
-from server.metrics.structures.inheritance_tree import InheritanceTree, InheritanceNode
-from server.metrics.structures.results import CometNodeResult
+from metrics.structures.inheritance_tree import InheritanceTree, InheritanceNode
+from metrics.structures.results import CometNodeResult
 
 
 class InheritanceTreeTestCase(unittest.TestCase):

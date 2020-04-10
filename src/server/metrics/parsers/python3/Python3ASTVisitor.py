@@ -416,4 +416,5 @@ def build_assignments(assignments):
                              build_assignments(assignments[1:]) if len(assignments) > 1 else assignments[1])
 
 
-def build_parameters()
+def build_parameters(parameters):
+    return ASTParametersNode(parameters[0], build_parameters(parameters[1:]) if len(parameters) > 1 else None)

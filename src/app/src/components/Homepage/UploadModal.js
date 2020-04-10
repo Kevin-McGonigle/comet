@@ -1,19 +1,19 @@
 import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
-import { FilePicker, Alert, Dialog } from 'evergreen-ui';
+import {Alert, Dialog, FilePicker} from 'evergreen-ui';
 import UploadedItem from './UploadedItem';
-import POST from '../../api/API';
+import upload_files from '../../api/API';
 
 const cx = args => classnames(styles, args)
 
 export const removeFileFromUploadedFiles = (files, name) => {
     return Object.values(files).reduce((acc, file) => {
-            if (file.name !== name) {
-                acc.push(file);
-            }
-            return acc;
-        }, []);
+        if (file.name !== name) {
+            acc.push(file);
+        }
+        return acc;
+    }, []);
 }
 
 export async function readFile(file) {
@@ -50,7 +50,7 @@ const UploadModal = props => {
 
     const createFileItem = (file) => {
         return (
-            <UploadedItem 
+            <UploadedItem
                 name={file.name}
                 size={file.size}
                 fileType={file.type}
@@ -60,9 +60,9 @@ const UploadModal = props => {
     }
 
     const createAlert = () => {
-        if (alertInfo.show){
+        if (alertInfo.show) {
             return (
-                <Alert 
+                <Alert
                     id={`${alertInfo.intent}Alert`}
                     intent={alertInfo.intent}
                     title={alertInfo.title}
@@ -82,39 +82,39 @@ const UploadModal = props => {
     const upload = () => {
         console.log(fileData);
         uploadModalOnConfirmHandler();
-        POST(fileData);
+        upload_files(fileData);
     }
 
     return (
-            <Dialog
-                isShown={uploadModal.isOpen}
-                id="uploadModal"
-                title="Upload"
-                isConfirmLoading={uploadModal.isLoading}
-                confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}
-                onConfirm={upload}
-                onCloseComplete={uploadModalOnCloseHandler}
-            >
-                <div className={cx('uploadModalContainer')}>
-                    <div className={cx('filePicker')}>
-                        { createAlert() }
-                        <FilePicker
-                            id='filePicker'
-                            multiple
-                            width={'100%'}
-                            height={24}
-                            onChange={onChangeHandler}
-                            placeholder={"Choose file or folder"}
-                        />
-                    </div>
-
-                    { fileData && (
-                        <div className={cx('fileListContainer')} > 
-                                { Object.values(fileData).map(file => createFileItem(file)) }
-                            </div>
-                    )}
+        <Dialog
+            isShown={uploadModal.isOpen}
+            id="uploadModal"
+            title="Upload"
+            isConfirmLoading={uploadModal.isLoading}
+            confirmLabel={uploadModal.isLoading ? "Uploading.." : 'Upload'}
+            onConfirm={upload}
+            onCloseComplete={uploadModalOnCloseHandler}
+        >
+            <div className={cx('uploadModalContainer')}>
+                <div className={cx('filePicker')}>
+                    {createAlert()}
+                    <FilePicker
+                        id='filePicker'
+                        multiple
+                        width={'100%'}
+                        height={24}
+                        onChange={onChangeHandler}
+                        placeholder={"Choose file or folder"}
+                    />
                 </div>
-            </Dialog>
+
+                {fileData && (
+                    <div className={cx('fileListContainer')}>
+                        {Object.values(fileData).map(file => createFileItem(file))}
+                    </div>
+                )}
+            </div>
+        </Dialog>
     );
 };
 

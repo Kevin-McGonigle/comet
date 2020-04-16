@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
 import {Alert, Dialog, FilePicker} from 'evergreen-ui';
+import { useHistory } from "react-router-dom";
 import UploadedItem from './UploadedItem';
 import upload_files from '../../api/API';
 
@@ -31,6 +32,20 @@ export async function readFile(file) {
     return await promise;
 }
 
+export const shapeFileData = (fileData) => {
+    const shapedData = fileData.map((file) => {
+        const data = readFile(file);
+        return {
+            name: file.name,
+            lastModified: file.lastModified,
+            size: file.size,
+            type: file.type,
+            content: data,      // Returning a promise fix later
+        };
+    });
+    return shapedData;
+}
+
 const UploadModal = props => {
     const {
         fileData,
@@ -41,7 +56,9 @@ const UploadModal = props => {
         setAlertSuccess,
         setAlertDanger,
         setFileData,
+        setInheritanceTree,
     } = props;
+    const history = useHistory();
 
     const fileItemDeleteOnClickHandler = (name) => {
         const updatedUploadedFiles = removeFileFromUploadedFiles(fileData, name);
@@ -49,6 +66,7 @@ const UploadModal = props => {
     }
 
     const createFileItem = (file) => {
+        console.log(file);
         return (
             <UploadedItem
                 name={file.name}
@@ -80,9 +98,18 @@ const UploadModal = props => {
     };
 
     const upload = () => {
-        console.log(fileData);
         uploadModalOnConfirmHandler();
-        upload_files(fileData);
+        upload_files(fileData).then((data) => {
+            if (data.ok) {
+                const shapedData = shapeFileData(fileData);
+                setFileData(shapedData);
+                setInheritanceTree(data.json());
+                setAlertSuccess("Uploaded succesfully!")
+                history.push('/metrics');
+            } else {
+                setAlertDanger("Could not upload, please try again!")
+            }
+        });
     }
 
     return (

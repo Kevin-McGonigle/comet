@@ -198,20 +198,18 @@ class ASTAnnotationAssignmentNode(ASTNode):
         return super().__str__(self.variables, self.annotation, self.variables)
 
 
-class ASTYieldStatementNode(ASTNode):
-    def __init__(self, _from=False, arg=None):
+class ASTYieldNode(ASTNode):
+    def __init__(self, value=None):
         """
         Initialise a yield statement node.
-        :param arg: Optional yield argument.
-        :type arg: ASTNode
+        :param value: The expression(s) to yield.
+        :type value: ASTNode
         """
-        self._from = _from
-        self.arg = arg
-
-        super().__init__("Yield From" if self._from else "Yield")
+        self.value = value
+        super().__init__("Yield")
 
     def __str__(self):
-        return super().__str__(self.arg)
+        return super().__str__(self.value)
 
 
 class ASTPassStatementNode(ASTNode):
@@ -262,17 +260,7 @@ class ASTImportStatementNode(ASTNode):
         super().__init__("Import")
 
     def __str__(self):
-        return super().__str__(*self.libraries)
-
-
-class ASTImportFromStatementNode(ASTNode):
-    def __init__(self, _from, libraries):
-        self._from = _from
-        self.libraries = libraries
-        super().__init__("Import From")
-
-    def __str__(self):
-        return super().__str__(self._from, *self.libraries)
+        return super().__str__(self.libraries)
 
 
 class ASTGlobalStatementNode(ASTNode):
@@ -346,27 +334,25 @@ class ASTLoopElseStatementNode(ASTNode):
 
 
 class ASTTryStatementNode(ASTNode):
-    def __init__(self, body, catches=None, _finally=None):
-        if not (catches or _finally):
-            raise ValueError
-
+    def __init__(self, body, catches=None, _else=None, _finally=None):
         self.body = body
         self.catches = catches
+        self._else = _else
         self._finally = _finally
         super().__init__("Try")
 
     def __str__(self):
-        return super().__str__(self.body, *self.catches, self._finally)
+        return super().__str__(self.body, *self.catches, self._else, self._finally)
 
 
 class ASTCatchStatementNode(ASTNode):
-    def __init__(self, exceptions, body):
-        self.exceptions = exceptions
+    def __init__(self, exception=None, body=None):
+        self.exception = exception
         self.body = body
         super().__init__("Catch")
 
     def __str__(self):
-        return super().__str__(self.exceptions, self.body)
+        return super().__str__(self.exception, self.body)
 
 
 class ASTFinallyStatementNode(ASTNode):
@@ -378,7 +364,7 @@ class ASTFinallyStatementNode(ASTNode):
         return super().__str__(self.body)
 
 
-class ASTAsStatementNode(ASTNode):
+class ASTAsNode(ASTNode):
     def __init__(self, expression, alias):
         self.expression = expression
         self.alias = alias
@@ -470,3 +456,186 @@ class ASTKeywordArgumentsParameter(ASTNode):
 
     def __str__(self):
         return super().__str__(self.name, self.type)
+
+
+class ASTFromNode(ASTNode):
+    def __init__(self, source, expressions):
+        self.source = source
+        self.expressions = expressions
+        super().__init__("From")
+
+    def __str__(self):
+        return super().__str__(self.source, self.expressions)
+
+
+class ASTAnonymousFunctionDefinitionNode(ASTNode):
+    def __init__(self, body, parameters=None):
+        self.body = body
+        self.parameters = parameters
+        super().__init__("Anonymous Function Definition")
+
+    def __str__(self):
+        return super().__str__(self.parameters, self.body)
+
+
+class ASTUnpackExpressionNode(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
+        super().__init__("Unpack")
+
+    def __str__(self):
+        return super().__str__(self.expression)
+
+
+class ASTAwaitNode(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
+        super().__init__("Await")
+
+    def __str__(self):
+        return super().__str__(self.expression)
+
+
+class ASTAccessNode(ASTNode):
+    def __init__(self, name, subscript):
+        self.name = name
+        self.subscript = subscript
+        super().__init__("Access")
+
+    def __str__(self):
+        return super().__str__(self.name, self.subscript)
+
+
+class ASTSubscriptsNode(ASTNode):
+    def __init__(self, first_subscript, next_subscripts):
+        self.first_subscript = first_subscript
+        self.next_subscripts = next_subscripts
+        super().__init__("Subscripts")
+
+    def __str__(self):
+        return super().__str__(self.first_subscript, self.next_subscripts)
+
+
+class ASTIndexNode(ASTNode):
+    def __init__(self, index):
+        self.index = index
+        super().__init__("Index")
+
+    def __str__(self):
+        return super().__str__(self.index)
+
+
+class ASTSliceNode(ASTNode):
+    def __init__(self, start, stop, step):
+        self.start = start
+        self.stop = stop
+        self.step = step
+        super().__init__("Slice")
+
+    def __str__(self):
+        return super().__str__(self.start, self.stop, self.step)
+
+
+class ASTCallNode(ASTNode):
+    def __init__(self, name, arguments=None):
+        self.name = name
+        self.arguments = arguments
+        super().__init__("Call")
+
+    def __str__(self):
+        return super().__str__(self.name, self.arguments)
+
+
+class ASTArgumentsNode(ASTNode):
+    def __init__(self, first_argument, next_arguments):
+        self.first_argument = first_argument
+        self.next_arguments = next_arguments
+        super().__init__("Arguments")
+
+    def __str__(self):
+        return super().__str__(self.first_argument, self.next_arguments)
+
+
+class ASTMemberNode(ASTNode):
+    def __init__(self, parent, child):
+        self.parent = parent
+        self.child = child
+        super().__init__("Member")
+
+    def __str__(self):
+        return super().__str__(self.parent, self.child)
+
+
+class ASTItemsNode(ASTNode):
+    def __init__(self, first_item, next_items):
+        self.first_item = first_item
+        self.next_items = next_items
+        super().__init__("Items")
+
+    def __str__(self):
+        return super().__str__(self.first_item, self.next_items)
+
+
+class ASTListNode(ASTNode):
+    def __init__(self, items):
+        self.items = items
+        super().__init__("List")
+
+    def __str__(self):
+        return super().__str__(self.items)
+
+
+class ASTTupleNode(ASTNode):
+    def __init__(self, items):
+        self.items = items
+        super().__init__("Tuple")
+
+    def __str__(self):
+        return super().__str__(self.items)
+
+
+class ASTGeneratorExpressionNode(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
+        super().__init__("Generator Expression")
+
+    def __str__(self):
+        return super().__str__(self.expression)
+
+
+class ASTComprehensionNode(ASTNode):
+    def __init__(self, value, loop):
+        self.value = value
+        self.loop = loop
+        super().__init__("Comprehension")
+
+    def __str__(self):
+        return super().__str__(self.value, self.loop)
+
+
+class ASTMapNode(ASTNode):
+    def __init__(self, items):
+        self.items = items
+        super().__init__("Map")
+
+    def __str__(self):
+        return super().__str__(self.items)
+
+
+class ASTSetNode(ASTNode):
+    def __init__(self, items):
+        self.items = items
+        super().__init__("Set")
+
+    def __str__(self):
+        return super().__str__(self.items)
+
+
+class ASTKeyValuePairNode(ASTNode):
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        super().__init__("Key-Value Pair")
+
+    def __str__(self):
+        return super().__str__(self.key, self.value)

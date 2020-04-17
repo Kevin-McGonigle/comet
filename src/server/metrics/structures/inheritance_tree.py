@@ -36,7 +36,7 @@ class InheritanceNode(Node):
         self.class_name = statements[1]
         self.parent = parse_args(statements[3:])
         self.methods = generate_methods(statements)
-        super().__init__(self.class_name)
+        super().__init__(self.class_name, self.parent, self.methods)
 
 
 def generate_methods(statements) -> dict:

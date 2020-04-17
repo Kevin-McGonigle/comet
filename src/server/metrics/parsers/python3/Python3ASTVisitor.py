@@ -1,7 +1,7 @@
+from antlr4.tree.Tree import TerminalNodeImpl, ParserRuleContext
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 from metrics.parsers.python3.base.Python3Visitor import Python3Visitor
 from metrics.structures.ast import *
-from metrics.structures.ast import ASTTryStatementNode, ASTCatchStatementNode
 
 
 class Python3ASTVisitor(Python3Visitor):
@@ -11,14 +11,11 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitChildren(self, node):
         result = []
-        n = node.getChildCount()
-        for i in range(n):
+        for i in range(node.getChildCount()):
             if not self.shouldVisitNextChild(node, result):
                 return result
 
-            c = node.getChild(i)
-            child_result = c.accept(self)
-            result = self.aggregateResult(result, child_result)
+            result = self.aggregateResult(result, node.getChild(i).accept(self))
 
         return result
 
@@ -32,47 +29,43 @@ class Python3ASTVisitor(Python3Visitor):
         return super().defaultResult()
 
     def aggregateResult(self, aggregate, next_result):
-        return aggregate + [next_result]
+        return aggregate + [next_result] if next_result is not None else aggregate
 
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)
 
     # Visits
     def visitSingle_input(self, ctx: Python3Parser.Single_inputContext):
-        stmt = ctx.simple_stmt()
+        statement = ctx.simple_stmt()
+        if not statement:
+            statement = ctx.compound_stmt()
 
-        if stmt:
-            return stmt.accept(self)
-        else:
-            stmt = ctx.compound_stmt()
-            if stmt:
-                return stmt.accept(self)
+        if statement:
+            return statement.accept(self)
 
         return self.defaultResult()
 
     def visitFile_input(self, ctx: Python3Parser.File_inputContext):
-        statements = ctx.stmt()
-
-        if statements:
-            return build_right_associative_sequence([statement.accept(self) for statement in statements],
-                                                    ASTStatementsNode)
-
-        return self.defaultResult()
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitEval_input(self, ctx: Python3Parser.Eval_inputContext):
         return ctx.testlist().accept(self)
 
     def visitDecorator(self, ctx: Python3Parser.DecoratorContext):
-        return super().visitDecorator(ctx)
+        arguments = ctx.arglist()
+        if arguments:
+            return ASTDecoratorNode(ctx.dotted_name().accept(self), arguments.accept(self))
+
+        return ASTDecoratorNode(ctx.dotted_name().accept(self))
 
     def visitDecorators(self, ctx: Python3Parser.DecoratorsContext):
-        return super().visitDecorators(ctx)
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTDecoratorsNode)
 
     def visitDecorated(self, ctx: Python3Parser.DecoratedContext):
-        return super().visitDecorated(ctx)
+        return ASTDecoratedNode(*self.visitChildren(ctx))
 
     def visitAsync_funcdef(self, ctx: Python3Parser.Async_funcdefContext):
-        return ASTAsyncNode(ctx.funcdef().accept(self))
+        return ASTAsyncNode(*self.visitChildren(ctx))
 
     def visitFuncdef(self, ctx: Python3Parser.FuncdefContext):
         name = ctx.NAME().getText()
@@ -87,110 +80,106 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitParameters(self, ctx: Python3Parser.ParametersContext):
         parameters = ctx.typedargslist()
-
         if parameters:
-            return build_right_associative_sequence(parameters.accept(self), ASTParametersNode)
+            return parameters.accept(self)
 
         return self.defaultResult()
 
     def visitTypedargslist(self, ctx: Python3Parser.TypedargslistContext):
         parameters = []
 
+        children = ctx.getChildren()
         child_count = ctx.getChildCount()
+
         i = 0
         while i < child_count:
-            child = ctx.getChild(i)
-            if child.getText() == "*" or child.getText() == "**":
-                i += 1
-                parameter = ctx.getChild(i).accept(self)
-                if child.getText() == "*":
-                    parameters.append(ASTPositionalArgumentsParameter(parameter.name, parameter.type))
-                else:
-                    parameters.append(ASTKeywordArgumentsParameter(parameter.name, parameter.type))
+            child = children[i]
+            if isinstance(child, TerminalNodeImpl):
+                if child.symbol.type == Python3Parser.STAR:
+                    if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.TfpdefContext):
+                        parameters.append(ASTPositionalArgumentsParameter(**children[i + 1].accept(self)))
+                        i += 1
+                    else:
+                        parameters.append("*")
+                elif child.symbol.type == Python3Parser.POWER:
+                    parameters.append(ASTKeywordArgumentsParameter(**children[i + 1].accept(self)))
+                    i += 1
             else:
-                parameter = ctx.getChild(i).accept(self)
-                if parameter:
-                    if i + 1 < child_count and i < ctx.getChild(i + 1).getText == "=":
+                if isinstance(child, Python3Parser.TfpdefContext):
+                    if i + 2 < child_count and isinstance(children[i + 2], Python3Parser.TestContext):
+                        parameters.append(ASTParameterNode(**child.accept(self), default=children[i + 2].accept(self)))
                         i += 2
-                        parameter.default = ctx.getChild(i).accept(self)
-                    parameters.append(parameter)
+                    else:
+                        parameters.append(ASTParameterNode(**child.accept(self)))
             i += 1
 
-        return parameters
+        return build_right_associative_sequence(parameters, ASTParametersNode) if parameters else self.defaultResult()
 
     def visitTfpdef(self, ctx: Python3Parser.TfpdefContext):
         name = ctx.NAME().getText()
         return_type = ctx.test()
 
         if return_type:
-            return ASTParameterNode(name, return_type.accept(self))
+            return {"name": name, "_type": return_type.accept(self)}
 
-        return ASTParameterNode(name)
+        return {"name": name}
 
     def visitVarargslist(self, ctx: Python3Parser.VarargslistContext):
         parameters = []
 
+        children = ctx.getChildren()
         child_count = ctx.getChildCount()
+
         i = 0
         while i < child_count:
-            child = ctx.getChild(i)
-            if child.getText() == "*" or child.getText() == "**":
-                i += 1
-                name = ctx.getChild(i).accept(self)
-                if child.getText() == "*":
-                    parameters.append(ASTPositionalArgumentsParameter(name))
-                else:
-                    parameters.append(ASTKeywordArgumentsParameter(name))
+            child = children[i]
+            if isinstance(child, TerminalNodeImpl):
+                if child.symbol.type == Python3Parser.STAR:
+                    if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.VfpdefContext):
+                        parameters.append(ASTPositionalArgumentsParameter(**children[i + 1].accept(self)))
+                        i += 1
+                    else:
+                        parameters.append("*")
+                elif child.symbol.type == Python3Parser.POWER:
+                    parameters.append(ASTKeywordArgumentsParameter(**children[i + 1].accept(self)))
+                    i += 1
             else:
-                name = ctx.getChild(i).accept(self)
-                if name:
-                    parameter = ASTParameterNode(name)
-                    if i + 1 < child_count and i < ctx.getChild(i + 1).getText == "=":
+                if isinstance(child, Python3Parser.VfpdefContext):
+                    if i + 2 < child_count and isinstance(children[i + 2], Python3Parser.TestContext):
+                        parameters.append(ASTParameterNode(**child.accept(self), default=children[i + 2].accept(self)))
                         i += 2
-                        parameter.default = ctx.getChild(i).accept(self)
-
-                    parameters.append(parameter)
+                    else:
+                        parameters.append(ASTParameterNode(**child.accept(self)))
             i += 1
 
-        return parameters
+        return build_right_associative_sequence(parameters, ASTParametersNode) if parameters else self.defaultResult()
 
     def visitVfpdef(self, ctx: Python3Parser.VfpdefContext):
-        return ctx.NAME().getText()
+        return {"name": ctx.NAME().getText()}
 
     def visitStmt(self, ctx: Python3Parser.StmtContext):
-        return super().visitStmt(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitSimple_stmt(self, ctx: Python3Parser.Simple_stmtContext):
-        statements = ctx.small_stmt()
-
-        if statements:
-            return build_right_associative_sequence([statement.accept(self) for statement in statements],
-                                                    ASTStatementsNode)
-
-        return self.defaultResult()
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitSmall_stmt(self, ctx: Python3Parser.Small_stmtContext):
-        return super().visitSmall_stmt(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitExpr_stmt(self, ctx: Python3Parser.Expr_stmtContext):
-        # Assignment, Annotation Assignment or Augmented Assignment
+        variables = ctx.testlist_star_expr(0).accept(self)
+
         annotation_assignment = ctx.annassign()
         if annotation_assignment:
             return ASTAnnotationAssignmentNode(**annotation_assignment.accept(self),
-                                               variables=ctx.testlist_star_expr(0).accept(self))
-        else:
-            augmented_assignment = ctx.augassign()
-            if augmented_assignment:
-                return ASTAugmentedAssignmentNode(augmented_assignment.accept(self),
-                                                  ctx.testlist_star_expr(0).accept(self),
-                                                  ctx.yield_expr(0).accept(self)
-                                                  if ctx.yield_expr(0)
-                                                  else ctx.testlist().accept(self))
-            else:
-                children = ctx.getChildren(lambda child: filter_child(child, Python3Parser.Testlist_star_exprContext,
-                                                                      Python3Parser.Yield_exprContext))
+                                               variables=variables)
 
-                return build_right_associative_sequence([child.accept(self) for child in children], ASTAssignmentNode)
+        augmented_assignment = ctx.augassign()
+        if augmented_assignment:
+            return ASTAugmentedAssignmentNode(augmented_assignment.accept(self), variables,
+                                              ctx.getChild(2).accept(self))
+
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTAssignmentNode)
 
     def visitAnnassign(self, ctx: Python3Parser.AnnassignContext):
         return {
@@ -199,9 +188,7 @@ class Python3ASTVisitor(Python3Visitor):
         }
 
     def visitTestlist_star_expr(self, ctx: Python3Parser.Testlist_star_exprContext):
-        children = ctx.getChildren(
-            lambda child: filter_child(child, Python3Parser.TestContext, Python3Parser.Star_exprContext))
-        return build_right_associative_sequence([child.accept(self) for child in children], ASTExpressionsNode)
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitAugassign(self, ctx: Python3Parser.AugassignContext):
         return {
@@ -227,7 +214,7 @@ class Python3ASTVisitor(Python3Visitor):
         return ASTPassStatementNode()
 
     def visitFlow_stmt(self, ctx: Python3Parser.Flow_stmtContext):
-        return super().visitFlow_stmt(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitBreak_stmt(self, ctx: Python3Parser.Break_stmtContext):
         return ASTBreakStatementNode()
@@ -243,7 +230,7 @@ class Python3ASTVisitor(Python3Visitor):
         return ASTReturnStatementNode()
 
     def visitYield_stmt(self, ctx: Python3Parser.Yield_stmtContext):
-        return super().visitYield_stmt(ctx)
+        return ctx.yield_expr().accept(self)
 
     def visitRaise_stmt(self, ctx: Python3Parser.Raise_stmtContext):
         exception = ctx.test(0)
@@ -251,20 +238,21 @@ class Python3ASTVisitor(Python3Visitor):
 
         if _from:
             return ASTThrowStatementNode(ASTFromNode(exception.accept(self), _from.accept(self)))
-        elif exception:
+
+        if exception:
             return ASTThrowStatementNode(exception.accept(self))
 
         return ASTThrowStatementNode()
 
     def visitImport_stmt(self, ctx: Python3Parser.Import_stmtContext):
-        return super().visitImport_stmt(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitImport_name(self, ctx: Python3Parser.Import_nameContext):
         return ASTImportStatementNode(ctx.dotted_as_names().accept(self))
 
     def visitImport_from(self, ctx: Python3Parser.Import_fromContext):
         _from = "".join(
-            [child.accept(self) if isinstance(child, Python3Parser.Dotted_nameContext) else child.getText() for child in
+            [child.getText() if isinstance(child, TerminalNodeImpl) else child.accept(self) for child in
              ctx.getChildren(lambda child: filter_child(child, Python3Parser.DOT, Python3Parser.ELLIPSIS,
                                                         Python3Parser.Dotted_nameContext))])
         _import = ctx.import_as_names()
@@ -274,22 +262,22 @@ class Python3ASTVisitor(Python3Visitor):
         return ASTImportStatementNode(ASTFromNode(_from, _import))
 
     def visitImport_as_name(self, ctx: Python3Parser.Import_as_nameContext):
-        name = ctx.NAME(0)
+        name = ctx.NAME(0).getText()
         alias = ctx.NAME(1)
 
         if alias:
-            return ASTAsNode(name.getText(), alias.getText())
+            return ASTAsNode(name, alias.getText())
 
-        return name.getText()
+        return name
 
     def visitDotted_as_name(self, ctx: Python3Parser.Dotted_as_nameContext):
-        dotted_name = ctx.dotted_name()
+        dotted_name = ctx.dotted_name().accept(self)
         alias = ctx.NAME()
 
         if alias:
-            return ASTAsNode(dotted_name.accept(self), alias.getText())
+            return ASTAsNode(dotted_name, alias.getText())
 
-        return dotted_name.accept(self)
+        return dotted_name
 
     def visitImport_as_names(self, ctx: Python3Parser.Import_as_namesContext):
         return build_right_associative_sequence(self.visitChildren(ctx), ASTExpressionsNode)
@@ -309,67 +297,69 @@ class Python3ASTVisitor(Python3Visitor):
             build_right_associative_sequence([child.getText() for child in ctx.NAME()], ASTExpressionsNode))
 
     def visitAssert_stmt(self, ctx: Python3Parser.Assert_stmtContext):
-        condition = ctx.test(0)
+        condition = ctx.test(0).accept(self)
         message = ctx.test(1)
 
         if message:
-            return ASTAssertStatementNode(condition.accept(self), message.accept(self))
+            return ASTAssertStatementNode(condition, message.accept(self))
 
-        return ASTAssertStatementNode(condition.accept(self))
+        return ASTAssertStatementNode(condition)
 
     def visitCompound_stmt(self, ctx: Python3Parser.Compound_stmtContext):
-        return super().visitCompound_stmt(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitAsync_stmt(self, ctx: Python3Parser.Async_stmtContext):
         return ASTAsyncNode(ctx.getChild(1).accept(self))
 
     def visitIf_stmt(self, ctx: Python3Parser.If_stmtContext):
-        return build_if_else(ctx.getChildren(), self)
+        return build_if_else(ctx.getChildren(
+            lambda child: filter_child(child, Python3Parser.IF, Python3Parser.ELIF, Python3Parser.ELSE,
+                                       Python3Parser.TestContext, Python3Parser.SuiteContext)), self)
 
     def visitWhile_stmt(self, ctx: Python3Parser.While_stmtContext):
-        condition = ctx.test()
-        body = ctx.suite(0)
+        condition = ctx.test().accept(self)
+        body = ctx.suite(0).accept(self)
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(condition.accept(self), body.accept(self), else_body.accept(self))
+            return ASTLoopElseStatementNode(condition, body, else_body.accept(self))
 
-        return ASTLoopStatementNode(condition.accept(self), body.accept(self))
+        return ASTLoopStatementNode(condition, body)
 
     def visitFor_stmt(self, ctx: Python3Parser.For_stmtContext):
-        exprlist = ctx.exprlist()
-        testlist = ctx.testlist()
-        body = ctx.suite(0)
+        exprlist = ctx.exprlist().accept(self)
+        testlist = ctx.testlist().accept(self)
+        body = ctx.suite(0).accept(self)
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(
-                ASTBinOpNode(AST.IN, exprlist.accept(self), testlist.accept(self)),
-                body.accept(self), else_body.accept(self))
+            return ASTLoopElseStatementNode(ASTBinOpNode(AST.IN, exprlist, testlist), body, else_body.accept(self))
 
-        return ASTLoopStatementNode(
-            ASTBinOpNode(AST.IN, exprlist.accept(self), testlist.accept(self)), body.accept(self))
+        return ASTLoopStatementNode(ASTBinOpNode(AST.IN, exprlist, testlist), body)
 
     def visitTry_stmt(self, ctx: Python3Parser.Try_stmtContext):
-        bodies = ctx.suite()
-        except_clauses = ctx.except_clause()
-
-        i = 1
+        body = None
         catches = []
-        if except_clauses:
-            for except_clause in except_clauses:
-                catches.append(ASTCatchStatementNode(except_clause.accept(self), bodies[i].accept(self)))
-                i += 1
+        else_body = None
+        finally_body = None
 
-        if ctx.ELSE():
-            _else = bodies[i].accept(self)
-            i += 1
-        else:
-            _else = None
+        children = ctx.getChildren(
+            lambda child: filter_child(child, Python3Parser.TRY, Python3Parser.Except_clauseContext,
+                                       Python3Parser.SuiteContext, Python3Parser.ELSE, Python3Parser.FINALLY))
+        i = 0
+        while i < len(children):
+            if isinstance(children[i], TerminalNodeImpl):
+                if children[i].symbol.type == Python3Parser.TRY:
+                    body = children[i + 1].accept(self)
+                elif children[i].symbol.type == Python3Parser.ELSE:
+                    else_body = children[i + 1].accept(self)
+                else:
+                    finally_body = children[i + 1].accept(self)
+            else:
+                catches.append(ASTCatchStatementNode(children[i].accept(self), children[i + 1].accept(self)))
 
-        _finally = bodies[i].accept(self) if ctx.FINALLY() else None
-
-        return ASTTryStatementNode(bodies[0].accept(self), catches, _else, _finally)
+        return ASTTryStatementNode(body, build_right_associative_sequence(catches, ASTCatchStatementsNode), else_body,
+                                   finally_body)
 
     def visitWith_stmt(self, ctx: Python3Parser.With_stmtContext):
         return ASTWithStatementNode(
@@ -377,13 +367,13 @@ class Python3ASTVisitor(Python3Visitor):
             ctx.suite().accept(self))
 
     def visitWith_item(self, ctx: Python3Parser.With_itemContext):
-        expression = ctx.test()
+        expression = ctx.test().accept(self)
         alias = ctx.expr()
 
         if alias:
-            return ASTAsNode(expression.accept(self), alias.accept(self))
+            return ASTAsNode(expression, alias.accept(self))
 
-        return expression.accept(self)
+        return expression
 
     def visitExcept_clause(self, ctx: Python3Parser.Except_clauseContext):
         expression = ctx.test()
@@ -418,21 +408,21 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitLambdef(self, ctx: Python3Parser.LambdefContext):
         parameters = ctx.varargslist()
-        body = ctx.test()
+        body = ctx.test().accept(self)
 
         if parameters:
-            return ASTAnonymousFunctionDefinitionNode(body.accept(self), parameters.accept(self))
+            return ASTAnonymousFunctionDefinitionNode(body, parameters.accept(self))
 
-        return ASTAnonymousFunctionDefinitionNode(body.accept(self))
+        return ASTAnonymousFunctionDefinitionNode(body)
 
     def visitLambdef_nocond(self, ctx: Python3Parser.Lambdef_nocondContext):
         parameters = ctx.varargslist()
-        body = ctx.test_nocond()
+        body = ctx.test_nocond().accept(self)
 
         if parameters:
-            return ASTAnonymousFunctionDefinitionNode(body.accept(self), parameters.accept(self))
+            return ASTAnonymousFunctionDefinitionNode(body, parameters.accept(self))
 
-        return ASTAnonymousFunctionDefinitionNode(body.accept(self))
+        return ASTAnonymousFunctionDefinitionNode(body)
 
     def visitOr_test(self, ctx: Python3Parser.Or_testContext):
         build_bin_op(AST.LOGICAL_OR, self.visitChildren(ctx))
@@ -509,15 +499,15 @@ class Python3ASTVisitor(Python3Visitor):
              child in ctx.getChildren()])
 
     def visitFactor(self, ctx: Python3Parser.FactorContext):
+        power = ctx.power()
+        if power:
+            return power.accept(self)
+
         operators = {
             "+": AST.POSITIVE,
             "-": AST.ARITH_NEGATION,
             "~": AST.BITWISE_INVERSION
         }
-
-        power = ctx.power()
-        if power:
-            return power.accept(self)
 
         return ASTUnOpNode(operators[ctx.getChild(0).getText()], ctx.factor().accept(self))
 
@@ -535,9 +525,12 @@ class Python3ASTVisitor(Python3Visitor):
     def visitAtom(self, ctx: Python3Parser.AtomContext):
         testlist_comp = ctx.testlist_comp()
         if testlist_comp:
+            testlist_comp = testlist_comp.accept(self)
             if ctx.OPEN_PAREN():
-                return ASTGeneratorExpressionNode(testlist_comp.accept(self))
-            return ASTListNode(testlist_comp.accept(self))
+                if isinstance(testlist_comp, ASTComprehensionNode):
+                    return ASTGeneratorExpressionNode(testlist_comp)
+                return ASTTupleNode(testlist_comp)
+            return ASTListNode(testlist_comp)
 
         yield_expr = ctx.yield_expr()
         if yield_expr:
@@ -559,11 +552,11 @@ class Python3ASTVisitor(Python3Visitor):
     def visitTrailer(self, ctx: Python3Parser.TrailerContext):
         arguments = ctx.arglist()
         if arguments:
-            return arguments.accept(self)
+            return arguments
 
         subscripts = ctx.subscriptlist()
         if subscripts:
-            return subscripts.accept(self)
+            return subscripts
 
         return ctx.NAME()
 
@@ -572,16 +565,15 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitSubscript(self, ctx: Python3Parser.SubscriptContext):
         if not ctx.COLON():
-            return ASTIndexNode(ctx.test(0).accept(self))
+            return ctx.test(0).accept(self)
 
         children = ctx.getChildren()
 
         start = children[0].accept(self) if isinstance(children[0], Python3Parser.TestContext) else None
 
-        if start:
-            stop = ctx.test(1)
-        else:
-            stop = ctx.test(0)
+        stop = ctx.test(1) if start else ctx.test(0)
+        if stop:
+            stop = stop.accept(self)
 
         step = ctx.sliceop().accept(self) if ctx.sliceop() else None
 
@@ -592,10 +584,10 @@ class Python3ASTVisitor(Python3Visitor):
         return test.accept(self) if test else None
 
     def visitExprlist(self, ctx: Python3Parser.ExprlistContext):
-        return build_expressions(self.visitChildren(ctx))
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitTestlist(self, ctx: Python3Parser.TestlistContext):
-        return build_expressions(self.visitChildren(ctx))
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitDictorsetmaker(self, ctx: Python3Parser.DictorsetmakerContext):
         comp_for = ctx.comp_for()
@@ -642,12 +634,14 @@ class Python3ASTVisitor(Python3Visitor):
         return build_right_associative_sequence(items, ASTItemsNode)
 
     def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
+        name = ctx.NAME().getText()
         arguments = ctx.arglist()
+        body = ctx.suite().accept(self)
 
         if arguments:
-            return ASTClassDefinitionNode(ctx.NAME().getText(), ctx.suite().accept(self), arguments.accept(self))
+            return ASTClassDefinitionNode(name, body, arguments.accept(self))
 
-        return ASTClassDefinitionNode(ctx.NAME().getText(), ctx.suite().accept(self))
+        return ASTClassDefinitionNode(name, body)
 
     def visitArglist(self, ctx: Python3Parser.ArglistContext):
         return build_right_associative_sequence(self.visitChildren(ctx), ASTArgumentsNode)
@@ -668,7 +662,7 @@ class Python3ASTVisitor(Python3Visitor):
         return test
 
     def visitComp_iter(self, ctx: Python3Parser.Comp_iterContext):
-        return super().visitComp_iter(ctx)
+        return ctx.getChild(0)
 
     def visitComp_for(self, ctx: Python3Parser.Comp_forContext):
         exprlist = ctx.exprlist().accept(self)
@@ -709,14 +703,14 @@ def build_expressions(expressions):
 
 
 def build_if_else(children, visitor):
-    if children[0].getText() == "if" or children[0].getText() == "elif":
-        if len(children) == 4:
-            return ASTIfStatementNode(children[1].accept(visitor), children[3].accept(visitor))
-        else:
-            return ASTIfElseStatementNode(children[1].accept(visitor), children[3].accept(visitor),
-                                          build_if_else(children[4:], visitor))
-    else:
-        return children[-1].accept(visitor)
+    if isinstance(children[0], TerminalNodeImpl) and (
+            children[0].symbol.type == Python3Parser.IF or children[0].symbol.type == Python3Parser.ELIF):
+        if len(children) == 3:
+            return ASTIfStatementNode(children[1].accept(visitor), children[2].accept(visitor))
+        return ASTIfElseStatementNode(children[1].accept(visitor), children[2].accept(visitor),
+                                      build_if_else(children[3:], visitor))
+
+    return children[-1].accept(visitor)
 
 
 def build_bin_op(operation, expressions):
@@ -762,14 +756,18 @@ def build_atom_expr(children, visitor):
 
     if isinstance(children[-1], Python3Parser.SubscriptlistContext):
         return ASTAccessNode(build_atom_expr(children[:-1], visitor), children[-1].accept(visitor))
-    elif isinstance(children[-1], Python3Parser.ArglistContext):
-        return ASTArgumentsNode(build_atom_expr(children[:-1], visitor), children[-1].accept(visitor))
 
-    return ASTMemberNode(build_atom_expr(children[:-1], visitor), children[-1])
+    if isinstance(children[-1], Python3Parser.ArglistContext):
+        return ASTCallNode(build_atom_expr(children[:-1], visitor), children[-1].accept(visitor))
+
+    return ASTMemberNode(build_atom_expr(children[:-1], visitor), children[-1].getText())
 
 
 def filter_child(child, *contexts):
     for context in contexts:
-        if isinstance(child, context):
+        if isinstance(context, int) and isinstance(child, TerminalNodeImpl) and child.symbol.type == context:
             return True
+        elif isinstance(context, ParserRuleContext) and isinstance(child, context):
+            return True
+
     return False

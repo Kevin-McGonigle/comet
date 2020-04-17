@@ -13,26 +13,27 @@ class Tree(object):
 
 
 class Node(object):
-    def __init__(self, name):
+    def __init__(self, name, *children):
         """
         Initialise a generic tree node.
         :param name: The name of the node.
         :type name: str
         """
         self.name = name
+        self.children = children
         super().__init__()
 
-    def __str__(self, *args):
+    def __str__(self):
         s = self.name
-        if len(args) > 0:
-            for arg in args[:-1]:
+        if len(self.children) > 0:
+            for arg in self.children[:-1]:
                 arg_s = str(arg).splitlines()
                 s += f"\n|- {arg_s[0]}"
                 if len(arg_s) > 1:
                     for line in arg_s[1:]:
                         s += f"\n|  {line}"
-            if args[-1] is not None:
-                arg_s = str(args[-1]).splitlines()
+            if self.children[-1] is not None:
+                arg_s = str(self.children[-1]).splitlines()
                 s += f"\n`- {arg_s[0]}"
                 if len(arg_s) > 1:
                     for line in arg_s[1:]:

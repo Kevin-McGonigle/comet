@@ -57,43 +57,457 @@ class ASTNode(Node):
     pass
 
 
-class ASTStatementsNode(ASTNode):
-    def __init__(self, first_statement, next_statements=None):
+# Multiples
+
+class ASTMultiNode(ASTNode):
+    def __init__(self, _type, first, remaining):
         """
-        Initialise a statements node.
-        :param first_statement: The first statement in the series of statements.
-        :type first_statement: ASTNode
-        :param next_statements: The next statements node in the series.
-        :type next_statements: ASTStatementsNode
+        Base class for representing multiples of certain components.
+        :param _type: The type of each member of the series.
+        :type _type: str
+        :param first: The first member in the series.
+        :type first: ASTNode or str
+        :param remaining: The remaining members in the series.
+        :type remaining: ASTNode or str
         """
-        self.first_statement = first_statement
-        self.next_statements = next_statements
-        super().__init__("Statements", self.first_statement, self.next_statements)
+        self.name = _type
+        self.first = first
+        self.remaining = remaining
+        super().__init__(_type)
 
 
-class ASTDelStatementNode(ASTNode):
+class ASTStatementsNode(ASTMultiNode):
+    def __init__(self, first, remaining=None):
+        """
+        Representation of multiple, consecutive statements.
+        :param first: The first statement in the series of statements.
+        :type first: ASTStatementNode
+        :param remaining: The remaining statement(s) in the series of statements.
+        :type remaining: ASTStatementsNode or ASTStatementNode
+        """
+        super().__init__("Statements", first, remaining)
+
+
+class ASTExpressionsNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive expressions.
+        :param first: The first expression in the series of expressions.
+        :type first: ASTNode or str
+        :param remaining: The remaining expression(s) in the series of expressions.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Expressions", first, remaining)
+
+
+class ASTElementsNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive list, map or set elements.
+        :param first: The first element in the series of elements.
+        :type first: ASTNode or str
+        :param remaining: The remaining element(s) in the series of elements.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Items", first, remaining)
+
+
+class ASTParametersNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive parameters.
+        :param first: The first parameter in the series of parameters.
+        :type first: ASTNode or str
+        :param remaining: The remaining parameter(s) in the series of parameters.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Parameters", first, remaining)
+
+
+class ASTArgumentsNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive arguments.
+        :param first: The first argument in the series of arguments.
+        :type first: ASTNode or str
+        :param remaining: The remaining argument(s) in the series of arguments.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Arguments", first, remaining)
+
+
+class ASTSubscriptsNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive subscripts.
+        :param first: The first subscript in the series of subscripts.
+        :type first: ASTNode or str
+        :param remaining: The remaining subscript(s) in the series of subscripts.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Subscripts", first, remaining)
+
+
+class ASTCatchStatementsNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive catch statements.
+        :param first: The first catch statement in the series of catch statements.
+        :type first: ASTNode or str
+        :param remaining: The remaining catch statement(s) in the series of catch statements.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Catch Statements", first, remaining)
+
+
+class ASTDecoratorsNode(ASTMultiNode):
+    def __init__(self, first, remaining):
+        """
+        Representation of multiple, consecutive decorators.
+        :param first: The first decorator in the series of decorators.
+        :type first: ASTNode or str
+        :param remaining: The remaining decorator(s) in the series of decorators.
+        :type remaining: ASTNode or str
+        """
+        super().__init__("Decorators", first, remaining)
+
+
+# Statements
+class ASTStatementNode(ASTNode):
+    pass
+
+
+class ASTDelStatementNode(ASTStatementNode):
     def __init__(self, expressions):
         """
-        Initialise a delete statement node.
-        :param expressions: The expressions to delete.
-        :type expressions: ASTExpressionsNode
+        Delete statement.
+        :param expressions: The expressions to be deleted.
+        :type expressions: ASTNode or str
         """
         self.expressions = expressions
         super().__init__("Del", self.expressions)
 
 
-class ASTExpressionsNode(ASTNode):
-    def __init__(self, first_expression=None, next_expressions=None):
+class ASTAssignmentStatementNode(ASTStatementNode):
+    def __init__(self, variables=None, values=None):
         """
-        Initialise an expressions node.
-        :param first_expression:
-        :type first_expression:
-        :param next_expressions:
-        :type next_expressions:
+        Standard variable assignment statement.
+        :param variables: The variable(s) to be assigned to.
+        :type variables: ASTNode or str
+        :param values: The value(s) to assign.
+        :type values: ASTNode or str
         """
-        self.first_expression = first_expression
-        self.next_expressions = next_expressions
-        super().__init__("Expressions", self.first_expression, self.next_expressions)
+        self.variables = variables
+        self.values = values
+        super().__init__("Assignment", self.variables, self.values)
+
+
+class ASTAugmentedAssignmentStatementNode(ASTStatementNode):
+    def __init__(self, operation, variables, values):
+        """
+        Augmented (in-place) assignment statement.
+        :param operation: The in-place operation being performed.
+        :type operation: str
+        :param variables: The variable(s) being assigned to.
+        :type variables: ASTNode or str
+        :param values: The value(s) being assigned.
+        :type values: ASTNode or str
+        """
+        self.operation = operation
+        self.variables = variables
+        self.values = values
+        super().__init__(self.operation, self.variables, self.values)
+
+
+class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
+    def __init__(self, annotation, variables=None, values=None):
+        """
+        Annotated assignment statement.
+        :param annotation: The annotation for the variable(s).
+        :type annotation: ASTNode or str
+        :param variables: The variable(s) being assigned to.
+        :type variables: ASTNode or str
+        :param values: The value(s) being assigned
+        :type values:
+        """
+        self.annotation = annotation
+        self.variables = variables
+        self.values = values
+        super().__init__("Annotation Assignment", self.variables, self.annotation, self.values)
+
+
+class ASTYieldStatementNode(ASTStatementNode):
+    def __init__(self, values=None):
+        """
+        Yield statement.
+        :param values: The value(s) being yielded.
+        :type values: ASTNode or str
+        """
+        self.value = values
+        super().__init__("Yield", self.value)
+
+
+class ASTPassStatementNode(ASTStatementNode):
+    def __init__(self):
+        """
+        Pass statement.
+        """
+        super().__init__("Pass")
+
+
+class ASTBreakStatementNode(ASTStatementNode):
+    def __init__(self):
+        """
+        Break statement.
+        """
+        super().__init__("Break")
+
+
+class ASTContinueStatementNode(ASTStatementNode):
+    def __init__(self):
+        """
+        Continue statement.
+        """
+        super().__init__("Continue")
+
+
+class ASTReturnStatementNode(ASTStatementNode):
+    def __init__(self, values=None):
+        """
+        Return statement.
+        :param values: The value(s) being returned.
+        :type values: ASTNode or str
+        """
+        self.expression = values
+        super().__init__("Return", self.expression)
+
+
+class ASTThrowStatementNode(ASTStatementNode):
+    def __init__(self, exception=None):
+        """
+        Throw statement.
+        :param exception: The exception to be thrown.
+        :type exception: ASTNode or str
+        """
+        self.exception = exception
+        super().__init__("Throw", self.exception)
+
+
+class ASTImportStatementNode(ASTStatementNode):
+    def __init__(self, libraries):
+        """
+        Import statement.
+        :param libraries: The library to be imported.
+        :type libraries: ASTNode or str
+        """
+        self.libraries = libraries
+        super().__init__("Import", self.libraries)
+
+
+class ASTGlobalStatementNode(ASTStatementNode):
+    def __init__(self, variables):
+        """
+        Global variable(s) declaration.
+        :param variables: The global variable(s) being declared.
+        :type variables: ASTNode or str
+        """
+        self.variables = variables
+        super().__init__("Global", self.variables)
+
+
+class ASTNonLocalStatementNode(ASTStatementNode):
+    def __init__(self, variables):
+        """
+        Non-local variable declaration.
+        :param variables: The nonlocal variable(s) being declared.
+        :type variables: ASTNode or str
+        """
+        self.variables = variables
+        super().__init__("Non-Local", self.variables)
+
+
+class ASTAssertStatementNode(ASTStatementNode):
+    def __init__(self, condition, message=None):
+        """
+        Assert statement.
+        :param condition: The condition to assert.
+        :type condition: ASTNode or str
+        :param message: The message for the error raised should the assertion fail.
+        :type message: ASTNode or str
+        """
+        self.condition = condition
+        self.message = message
+        super().__init__("Assert", self.condition, self.message)
+
+
+class ASTIfStatementNode(ASTStatementNode):
+    def __init__(self, condition, body):
+        """
+        If statement.
+        :param condition: The condition to check.
+        :type condition: ASTNode or str
+        :param body: The code to execute if the condition is met.
+        :type body: ASTNode or str
+        """
+        self.condition = condition
+        self.body = body
+        super().__init__("If", self.condition, self.body)
+
+
+class ASTIfElseStatementNode(ASTStatementNode):
+    def __init__(self, condition, body, else_body):
+        """
+        If-else statement.
+        :param condition: The condition to check.
+        :type condition: ASTNode or str
+        :param body: The code to execute if the condition is met.
+        :type body: ASTNode or str
+        :param else_body: The code to execute if the condition is not met.
+        :type else_body: ASTNode or str
+        """
+        self.condition = condition
+        self.body = body
+        self.else_body = else_body
+        super().__init__("If-Else", self.condition, self.body, self.else_body)
+
+
+class ASTLoopStatementNode(ASTStatementNode):
+    def __init__(self, condition, body):
+        """
+        Loop statement.
+        :param condition: The condition to check.
+        :type condition: ASTNode or str
+        :param body: The code to execute while the condition is met.
+        :type body: ASTNode or str
+        """
+        self.condition = condition
+        self.body = body
+        super().__init__("While", self.condition, self.body)
+
+
+class ASTLoopElseStatementNode(ASTStatementNode):
+    def __init__(self, condition, body, else_body):
+        """
+        Loop-else statement.
+        :param condition: The condition to check.
+        :type condition: ASTNode or str
+        :param body: The code to execute while the condition is met.
+        :type body: ASTNode or str
+        :param else_body: The code to execute when the condition is not met.
+        :type else_body: ASTNode or str
+        """
+        self.condition = condition
+        self.body = body
+        self.else_body = else_body
+        super().__init__("While-Else", self.condition, self.body, self.else_body)
+
+
+class ASTTryStatementNode(ASTStatementNode):
+    def __init__(self, body, catches=None, else_body=None, _finally=None):
+        """
+        Try statement.
+        :param body: The code to try.
+        :type body: ASTNode or str
+        :param catches: The catch clause(s).
+        :type catches: ASTNode or str
+        :param else_body: The code to execute if the control flow leaves the try block, no exception was raised, and no
+        return, continue, or break statement was executed.
+        :type else_body: ASTNode or str
+        :param _finally: The finally clause.
+        :type _finally: ASTNode or str
+        """
+        self.body = body
+        self.catches = catches
+        self._else = else_body
+        self._finally = _finally
+        super().__init__("Try", self.body, *self.catches, self._else, self._finally)
+
+
+class ASTWithStatementNode(ASTStatementNode):
+    def __init__(self, expressions, body):
+        """
+        With statement.
+        :param expressions: The expression(s) to evaluate to create a context manager.
+        :type expressions: ASTNode or str
+        :param body: The code to execute within the established runtime context.
+        :type body: ASTNode or str
+        """
+        self.expressions = expressions
+        self.body = body
+        super().__init__("With", self.expressions, self.body)
+
+
+class ASTFunctionDefinitionNode(ASTStatementNode):
+    def __init__(self, name, body, parameters=None, return_type=None):
+        """
+        Function definition.
+        :param name: The name of the function.
+        :type name: ASTNode or str
+        :param body: The body of the function.
+        :type body: ASTNode or str
+        :param parameters: The parameter(s) of the function.
+        :type parameters: ASTNode or str
+        :param return_type: The return type of the function.
+        :type return_type: ASTNode or str
+        """
+        self.name = name
+        self.body = body
+        self.parameters = parameters
+        self.return_type = return_type
+        super().__init__("Function Definition", self.name, self.parameters, self.return_type, self.body)
+
+
+class ASTClassDefinitionNode(ASTStatementNode):
+    def __init__(self, name, body, arguments=None):
+        """
+        Class definition.
+        :param name: The name of the class.
+        :type name: ASTNode or str
+        :param body: The body of the class.
+        :type body: ASTNode or str
+        :param arguments: The argument(s) of the class.
+        :type arguments: ASTNode or str
+        """
+        self.name = name
+        self.body = body
+        self.arguments = arguments
+        super().__init__("Class Definition", self.name, self.arguments, self.body)
+
+
+class ASTYieldExpressionNode(ASTNode):
+    def __init__(self, value=None):
+        """
+        Initialise a yield expression node.
+        :param value: The expression(s) to yield.
+        :type value: ASTNode
+        """
+        self.value = value
+        super().__init__("Yield", self.value)
+
+
+class ASTCatchNode(ASTNode):
+    def __init__(self, exceptions=None, body=None):
+        """
+        Catch statement.
+        :param exceptions: The exception(s) to catch.
+        :type exceptions: ASTNode or str
+        :param body: The code to execute if the specified exception(s) are thrown in the corresponding try block.
+        :type body: ASTNode or str
+        """
+        self.exception = exceptions
+        self.body = body
+        super().__init__("Catch", self.exception, self.body)
+
+
+class ASTFinallyStatementNode(ASTNode):
+    def __init__(self, body):
+        """
+        Finally statement.
+        :param body:
+        :type body:
+        """
+        self.body = body
+        super().__init__("Finally", self.body)
 
 
 class ASTBinOpNode(ASTNode):
@@ -126,169 +540,6 @@ class ASTUnOpNode(ASTNode):
         super().__init__(self.operation, self.operand)
 
 
-class ASTAssignmentNode(ASTNode):
-    def __init__(self, variables=None, values=None):
-        """
-        Initialise an assignment node.
-        :param variables: The variable(s) being assigned to.
-        :type variables: ASTNode
-        :param values: The values being assigned.
-        :type values: ASTNode
-        """
-        self.variables = variables
-        self.values = values
-        super().__init__("Assignment", self.variables, self.values)
-
-
-class ASTAugmentedAssignmentNode(ASTNode):
-    def __init__(self, operation, variables=None, values=None):
-        """
-        Initialise an augmented assignment node.
-        :param operation: The operation being performed.
-        :type operation: str
-        :param variables: The variable(s) being assigned to.
-        :type variables: ASTNode
-        :param values: The value(s) being assigned.
-        :type values: ASTNode
-        """
-        self.operation = operation
-        self.variables = variables
-        self.values = values
-        super().__init__(self.operation, self.variables, self.values)
-
-
-class ASTAnnotationAssignmentNode(ASTNode):
-    def __init__(self, annotation, variables=None, values=None):
-        """
-        Initialise an annotation assignment node.
-        :param variables: The variable(s) being assigned to.
-        :type variables: ASTNode
-        :param annotation: The annotation being applied.
-        :type annotation: ASTNode
-        :param values: The value(s) being assigned.
-        :type values: ASTNode
-        """
-        self.annotation = annotation
-        self.variables = variables
-        self.values = values
-        super().__init__("Annotation Assignment", self.variables, self.annotation, self.values)
-
-
-class ASTYieldNode(ASTNode):
-    def __init__(self, value=None):
-        """
-        Initialise a yield statement node.
-        :param value: The expression(s) to yield.
-        :type value: ASTNode
-        """
-        self.value = value
-        super().__init__("Yield", self.value)
-
-
-class ASTPassStatementNode(ASTNode):
-    def __init__(self):
-        super().__init__("Pass")
-
-
-class ASTBreakStatementNode(ASTNode):
-    def __init__(self):
-        super().__init__("Break")
-
-
-class ASTContinueStatementNode(ASTNode):
-    def __init__(self):
-        super().__init__("Continue")
-
-
-class ASTReturnStatementNode(ASTNode):
-    def __init__(self, expressions=None):
-        self.expression = expressions
-        super().__init__("Return", self.expression)
-
-
-class ASTThrowStatementNode(ASTNode):
-    def __init__(self, exception=None):
-        self.exception = exception
-        super().__init__("Throw", self.exception)
-
-
-class ASTImportStatementNode(ASTNode):
-    def __init__(self, libraries):
-        self.libraries = libraries
-        super().__init__("Import", self.libraries)
-
-
-class ASTGlobalStatementNode(ASTNode):
-    def __init__(self, variables):
-        self.variables = variables
-        super().__init__("Global", self.variables)
-
-
-class ASTNonLocalStatementNode(ASTNode):
-    def __init__(self, variables):
-        self.variables = variables
-        super().__init__("Non-Local", self.variables)
-
-
-class ASTAssertStatementNode(ASTNode):
-    def __init__(self, condition, message=None):
-        self.condition = condition
-        self.message = message
-        super().__init__("Assert", self.condition, self.message)
-
-
-class ASTIfStatementNode(ASTNode):
-    def __init__(self, condition, body):
-        self.condition = condition
-        self.body = body
-        super().__init__("If", self.condition, self.body)
-
-
-class ASTIfElseStatementNode(ASTNode):
-    def __init__(self, condition, body, else_body):
-        self.condition = condition
-        self.body = body
-        self.else_body = else_body
-        super().__init__("If-Else", self.condition, self.body, self.else_body)
-
-
-class ASTLoopStatementNode(ASTNode):
-    def __init__(self, condition, body):
-        self.condition = condition
-        self.body = body
-        super().__init__("While", self.condition, self.body)
-
-
-class ASTLoopElseStatementNode(ASTNode):
-    def __init__(self, condition, body, else_body):
-        self.condition = condition
-        self.body = body
-        self.else_body = else_body
-        super().__init__("While-Else", self.condition, self.body, self.else_body)
-
-
-class ASTTryStatementNode(ASTNode):
-    def __init__(self, body, catches=None, _else=None, _finally=None):
-        self.body = body
-        self.catches = catches
-        self._else = _else
-        self._finally = _finally
-        super().__init__("Try", self.body, *self.catches, self._else, self._finally)
-
-
-class ASTCatchStatementNode(ASTNode):
-    def __init__(self, exception=None, body=None):
-        self.exception = exception
-        self.body = body
-        super().__init__("Catch", self.exception, self.body)
-
-
-class ASTFinallyStatementNode(ASTNode):
-    def __init__(self, body):
-        self.body = body
-        super().__init__("Finally", self.body)
-
-
 class ASTAsNode(ASTNode):
     def __init__(self, expression, alias):
         self.expression = expression
@@ -296,41 +547,10 @@ class ASTAsNode(ASTNode):
         super().__init__("As", self.expression, self.alias)
 
 
-class ASTWithStatementNode(ASTNode):
-    def __init__(self, expressions, body):
-        self.expressions = expressions
-        self.body = body
-        super().__init__("With", self.expressions, self.body)
-
-
-class ASTFunctionDefinitionNode(ASTNode):
-    def __init__(self, name, body, parameters=None, return_type=None):
-        self.name = name
-        self.body = body
-        self.parameters = parameters
-        self.return_type = return_type
-        super().__init__("Function Definition", self.name, self.parameters, self.return_type, self.body)
-
-
-class ASTClassDefinitionNode(ASTNode):
-    def __init__(self, name, body, arguments=None):
-        self.name = name
-        self.body = body
-        self.arguments = arguments
-        super().__init__("Class Definition", self.name, self.arguments, self.body)
-
-
 class ASTAsyncNode(ASTNode):
     def __init__(self, child):
         self.child = child
         super().__init__("Async", self.child)
-
-
-class ASTParametersNode(ASTNode):
-    def __init__(self, first_parameter, next_parameters=None):
-        self.first_parameter = first_parameter
-        self.next_parameters = next_parameters
-        super().__init__("Parameters", self.first_parameter, self.next_parameters)
 
 
 class ASTParameterNode(ASTNode):
@@ -388,13 +608,6 @@ class ASTAccessNode(ASTNode):
         super().__init__("Access", self.name, self.subscript)
 
 
-class ASTSubscriptsNode(ASTNode):
-    def __init__(self, first_subscript, next_subscripts):
-        self.first_subscript = first_subscript
-        self.next_subscripts = next_subscripts
-        super().__init__("Subscripts", self.first_subscript, self.next_subscripts)
-
-
 class ASTIndexNode(ASTNode):
     def __init__(self, index):
         self.index = index
@@ -416,28 +629,11 @@ class ASTCallNode(ASTNode):
         super().__init__("Call", self.name, self.arguments)
 
 
-class ASTArgumentsNode(ASTNode):
-    def __init__(self, first_argument, next_arguments):
-        self.first_argument = first_argument
-        self.next_arguments = next_arguments
-        super().__init__("Arguments", self.first_argument, self.next_arguments)
-
-    def __str__(self):
-        return super().__str__()
-
-
 class ASTMemberNode(ASTNode):
     def __init__(self, parent, child):
         self.parent = parent
         self.child = child
         super().__init__("Member", self.parent, self.child)
-
-
-class ASTItemsNode(ASTNode):
-    def __init__(self, first_item, next_items):
-        self.first_item = first_item
-        self.next_items = next_items
-        super().__init__("Items", self.first_item, self.next_items)
 
 
 class ASTListNode(ASTNode):
@@ -491,22 +687,8 @@ class ASTDecoratedNode(ASTNode):
         super().__init__("Decorated", self.decorators, self.target)
 
 
-class ASTDecoratorsNode(ASTNode):
-    def __init__(self, first_decorator, next_decorators):
-        self.first_decorator = first_decorator
-        self.next_decorators = next_decorators
-        super(ASTDecoratorsNode, self).__init__("Decorators", self.first_decorator, self.next_decorators)
-
-
 class ASTDecoratorNode(ASTNode):
     def __init__(self, name, arguments=None):
         self.name = name
         self.arguments = arguments
         super().__init__("Decorator", self.name, self.arguments)
-
-
-class ASTCatchStatementsNode(ASTNode):
-    def __init__(self, first_catch, next_catches):
-        self.first_catch = first_catch
-        self.next_catches = next_catches
-        super().__init__("Catch Statements", self.first_catch, self.next_catches)

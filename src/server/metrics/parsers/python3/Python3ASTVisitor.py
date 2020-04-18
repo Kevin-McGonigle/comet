@@ -171,15 +171,15 @@ class Python3ASTVisitor(Python3Visitor):
 
         annotation_assignment = ctx.annassign()
         if annotation_assignment:
-            return ASTAnnotationAssignmentNode(**annotation_assignment.accept(self),
-                                               variables=variables)
+            return ASTAnnotatedAssignmentStatementNode(**annotation_assignment.accept(self),
+                                                       variables=variables)
 
         augmented_assignment = ctx.augassign()
         if augmented_assignment:
-            return ASTAugmentedAssignmentNode(augmented_assignment.accept(self), variables,
-                                              ctx.getChild(2).accept(self))
+            return ASTAugmentedAssignmentStatementNode(augmented_assignment.accept(self), variables,
+                                                       ctx.getChild(2).accept(self))
 
-        return build_right_associative_sequence(self.visitChildren(ctx), ASTAssignmentNode)
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTAssignmentStatementNode)
 
     def visitAnnassign(self, ctx: Python3Parser.AnnassignContext):
         return {
@@ -230,7 +230,8 @@ class Python3ASTVisitor(Python3Visitor):
         return ASTReturnStatementNode()
 
     def visitYield_stmt(self, ctx: Python3Parser.Yield_stmtContext):
-        return ctx.yield_expr().accept(self)
+        yield_expression = ctx.yield_expr().accept(self)
+        return ASTYieldStatementNode(yield_expression.value)
 
     def visitRaise_stmt(self, ctx: Python3Parser.Raise_stmtContext):
         exception = ctx.test(0)
@@ -356,7 +357,7 @@ class Python3ASTVisitor(Python3Visitor):
                 else:
                     finally_body = children[i + 1].accept(self)
             else:
-                catches.append(ASTCatchStatementNode(children[i].accept(self), children[i + 1].accept(self)))
+                catches.append(ASTCatchNode(children[i].accept(self), children[i + 1].accept(self)))
 
         return ASTTryStatementNode(body, build_right_associative_sequence(catches, ASTCatchStatementsNode), else_body,
                                    finally_body)
@@ -547,7 +548,7 @@ class Python3ASTVisitor(Python3Visitor):
         if comp_for:
             return ASTComprehensionNode(ctx.getChild(0).accept(self), comp_for.accept(self))
 
-        return build_right_associative_sequence(self.visitChildren(ctx), ASTItemsNode)
+        return build_right_associative_sequence(self.visitChildren(ctx), ASTElementsNode)
 
     def visitTrailer(self, ctx: Python3Parser.TrailerContext):
         arguments = ctx.arglist()
@@ -565,7 +566,7 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitSubscript(self, ctx: Python3Parser.SubscriptContext):
         if not ctx.COLON():
-            return ctx.test(0).accept(self)
+            return ASTIndexNode(ctx.test(0).accept(self))
 
         children = ctx.getChildren()
 
@@ -615,7 +616,7 @@ class Python3ASTVisitor(Python3Visitor):
                 else:
                     items.append(ASTKeyValuePairNode(children[i].accept(self), children[i + 1].accept(self)))
                     i += 2
-            return build_right_associative_sequence(items, ASTItemsNode)
+            return build_right_associative_sequence(items, ASTElementsNode)
 
         # Set
         if comp_for:
@@ -631,7 +632,7 @@ class Python3ASTVisitor(Python3Visitor):
                  for child in ctx.getChildren(lambda child:
                                               filter_child(child, Python3Parser.Star_exprContext,
                                                            Python3Parser.TestContext))]
-        return build_right_associative_sequence(items, ASTItemsNode)
+        return build_right_associative_sequence(items, ASTElementsNode)
 
     def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
         name = ctx.NAME().getText()
@@ -653,7 +654,7 @@ class Python3ASTVisitor(Python3Visitor):
             return ASTUnpackExpressionNode(test)
 
         if ctx.ASSIGN():
-            return ASTAssignmentNode(test, ctx.test(1).accept(self))
+            return ASTAssignmentStatementNode(test, ctx.test(1).accept(self))
 
         comp_for = ctx.comp_for()
         if comp_for:
@@ -690,7 +691,7 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitYield_expr(self, ctx: Python3Parser.Yield_exprContext):
         argument = ctx.yield_arg()
-        return ASTYieldNode(argument) if argument else ASTYieldNode()
+        return ASTYieldExpressionNode(argument.accept(self)) if argument else ASTYieldExpressionNode()
 
     def visitYield_arg(self, ctx: Python3Parser.Yield_argContext):
         if ctx.FROM():

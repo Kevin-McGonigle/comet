@@ -109,7 +109,7 @@ class ASTElementsNode(ASTMultiNode):
         :param remaining: The remaining element(s) in the series of elements.
         :type remaining: ASTNode or str
         """
-        super().__init__("Items", first, remaining)
+        super().__init__("Elements", first, remaining)
 
 
 class ASTParametersNode(ASTMultiNode):
@@ -477,7 +477,7 @@ class ASTClassDefinitionNode(ASTStatementNode):
 class ASTYieldExpressionNode(ASTNode):
     def __init__(self, value=None):
         """
-        Initialise a yield expression node.
+        Yield expression.
         :param value: The expression(s) to yield.
         :type value: ASTNode
         """
@@ -488,7 +488,7 @@ class ASTYieldExpressionNode(ASTNode):
 class ASTCatchNode(ASTNode):
     def __init__(self, exceptions=None, body=None):
         """
-        Catch statement.
+        Catch clause.
         :param exceptions: The exception(s) to catch.
         :type exceptions: ASTNode or str
         :param body: The code to execute if the specified exception(s) are thrown in the corresponding try block.
@@ -499,10 +499,10 @@ class ASTCatchNode(ASTNode):
         super().__init__("Catch", self.exception, self.body)
 
 
-class ASTFinallyStatementNode(ASTNode):
+class ASTFinallyNode(ASTNode):
     def __init__(self, body):
         """
-        Finally statement.
+        Finally clause.
         :param body:
         :type body:
         """
@@ -513,13 +513,13 @@ class ASTFinallyStatementNode(ASTNode):
 class ASTBinOpNode(ASTNode):
     def __init__(self, operation, left_operand, right_operand):
         """
-        Initialise a binary operation node.
+        Binary operation.
         :param operation: The operation being performed.
         :type operation: str
         :param left_operand: The left-hand operand of the operation.
-        :type left_operand: ASTNode
+        :type left_operand: ASTNode or str
         :param right_operand: The right-hand operand of the operation.
-        :type right_operand: ASTNode
+        :type right_operand: ASTNode or str
         """
         self.left_operand = left_operand
         self.right_operand = right_operand
@@ -533,7 +533,7 @@ class ASTUnOpNode(ASTNode):
         :param operation: The operation being performed.
         :type operation: str
         :param operand: The operand of the operation.
-        :type operand: ASTNode
+        :type operand: ASTNode or str
         """
         self.operation = operation
         self.operand = operand
@@ -542,19 +542,40 @@ class ASTUnOpNode(ASTNode):
 
 class ASTAsNode(ASTNode):
     def __init__(self, expression, alias):
+        """
+        "As" expression.
+        :param expression: The expression to assign the alias to.
+        :type expression: ASTNode or str
+        :param alias: The alias to be assigned
+        :type alias: ASTNode or str
+        """
         self.expression = expression
         self.alias = alias
         super().__init__("As", self.expression, self.alias)
 
 
 class ASTAsyncNode(ASTNode):
-    def __init__(self, child):
-        self.child = child
+    def __init__(self, target):
+        """
+        Async declaration.
+        :param target: The code to be declared as asynchronous.
+        :type target: ASTNode or str
+        """
+        self.child = target
         super().__init__("Async", self.child)
 
 
 class ASTParameterNode(ASTNode):
     def __init__(self, name, _type=None, default=None):
+        """
+        Function parameter.
+        :param name: The name of the parameter.
+        :type name: str
+        :param _type: The parameter's type.
+        :type _type: ASTNode or str
+        :param default: The default value of the parameter.
+        :type default: ASTNode or str
+        """
         self.name = name
         self.type = _type
         self.default = default
@@ -563,6 +584,13 @@ class ASTParameterNode(ASTNode):
 
 class ASTPositionalArgumentsParameter(ASTNode):
     def __init__(self, name, _type=None):
+        """
+        Positional arguments parameter.
+        :param name: The name of the parameter.
+        :type name: str
+        :param _type: The type of all positional arguments supplied using the parameter.
+        :type _type: ASTNode or str
+        """
         self.name = name
         self.type = _type
         super().__init__("Positional Arguments Parameter", self.name, self.type)
@@ -570,6 +598,13 @@ class ASTPositionalArgumentsParameter(ASTNode):
 
 class ASTKeywordArgumentsParameter(ASTNode):
     def __init__(self, name, _type=None):
+        """
+        Keyword arguments parameter.
+        :param name: The name of the parameter.
+        :type name: str
+        :param _type: The type of all keyword arguments supplied using the parameter.
+        :type _type: ASTNode or str
+        """
         self.name = name
         self.type = _type
         super().__init__("Keyword Arguments Parameter", self.name, self.type)
@@ -577,6 +612,13 @@ class ASTKeywordArgumentsParameter(ASTNode):
 
 class ASTFromNode(ASTNode):
     def __init__(self, source, expressions):
+        """
+        "From" expression.
+        :param source: The source to take the expression(s) from.
+        :type source: ASTNode or str
+        :param expressions: The expressions to take.
+        :type expressions: ASTNode or str
+        """
         self.source = source
         self.expressions = expressions
         super().__init__("From", self.source, self.expressions)
@@ -584,6 +626,13 @@ class ASTFromNode(ASTNode):
 
 class ASTAnonymousFunctionDefinitionNode(ASTNode):
     def __init__(self, body, parameters=None):
+        """
+        Anonymous function definition.
+        :param body: The body of the anonymous function.
+        :type body: ASTNode or str
+        :param parameters: The parameter(s) of the function.
+        :type parameters: ASTNode or str
+        """
         self.body = body
         self.parameters = parameters
         super().__init__("Anonymous Function Definition", self.parameters, self.body)
@@ -591,31 +640,62 @@ class ASTAnonymousFunctionDefinitionNode(ASTNode):
 
 class ASTUnpackExpressionNode(ASTNode):
     def __init__(self, expression):
+        """
+        Unpack expression.
+        :param expression: The expression to unpack.
+        :type expression: ASTNode or str
+        """
         self.expression = expression
         super().__init__("Unpack", self.expression)
 
 
 class ASTAwaitNode(ASTNode):
     def __init__(self, expression):
+        """
+        Await expression.
+        :param expression: The expression to await.
+        :type expression: ASTNode or str
+        """
         self.expression = expression
         super().__init__("Await", self.expression)
 
 
 class ASTAccessNode(ASTNode):
-    def __init__(self, name, subscript):
-        self.name = name
-        self.subscript = subscript
+    def __init__(self, sequence, subscripts):
+        """
+        Sequence element(s) access.
+        :param sequence: The sequence to access.
+        :type sequence: ASTNode or str
+        :param subscripts: The subscript(s) defining which elements to access.
+        :type subscripts: ASTNode or str
+        """
+        self.name = sequence
+        self.subscript = subscripts
         super().__init__("Access", self.name, self.subscript)
 
 
 class ASTIndexNode(ASTNode):
     def __init__(self, index):
+        """
+        Sequence single element access.
+        :param index: The index of the element to access.
+        :type index: ASTNode or str
+        """
         self.index = index
         super().__init__("Index", self.index)
 
 
 class ASTSliceNode(ASTNode):
     def __init__(self, start, stop, step):
+        """
+        Sequence slice access.
+        :param start: The index of the first element in the slice.
+        :type start: ASTNode or str
+        :param stop: The index to slice up to.
+        :type stop: ASTNode or str
+        :param step: The step of the slice.
+        :type step: ASTNode or str
+        """
         self.start = start
         self.stop = stop
         self.step = step
@@ -623,58 +703,111 @@ class ASTSliceNode(ASTNode):
 
 
 class ASTCallNode(ASTNode):
-    def __init__(self, name, arguments=None):
-        self.name = name
+    def __init__(self, function, arguments=None):
+        """
+        Function call.
+        :param function: The function being called.
+        :type function: ASTNode or str
+        :param arguments: The arguments being supplied to the function.
+        :type arguments: ASTNode or str
+        """
+        self.name = function
         self.arguments = arguments
         super().__init__("Call", self.name, self.arguments)
 
 
 class ASTMemberNode(ASTNode):
-    def __init__(self, parent, child):
+    def __init__(self, parent, member):
+        """
+        Member access.
+        :param parent: The member's parent.
+        :type parent: ASTNode or str
+        :param member: The member to access.
+        :type member: ASTNode or  str
+        """
         self.parent = parent
-        self.child = child
+        self.child = member
         super().__init__("Member", self.parent, self.child)
 
 
 class ASTListNode(ASTNode):
-    def __init__(self, items):
-        self.items = items
+    def __init__(self, elements):
+        """
+        List declaration.
+        :param elements: The elements of the list.
+        :type elements: ASTNode or str
+        """
+        self.items = elements
         super().__init__("List", self.items)
 
 
 class ASTTupleNode(ASTNode):
-    def __init__(self, items):
-        self.items = items
+    def __init__(self, elements):
+        """
+        Tuple declaration.
+        :param elements: The elements of the tuple.
+        :type elements: ASTNode or str
+        """
+        self.items = elements
         super().__init__("Tuple", self.items)
 
 
 class ASTGeneratorExpressionNode(ASTNode):
     def __init__(self, expression):
+        """
+        Generator expression.
+        :param expression: The expression defining the generator.
+        :type expression: ASTNode or str
+        """
         self.expression = expression
         super().__init__("Generator Expression", self.expression)
 
 
 class ASTComprehensionNode(ASTNode):
     def __init__(self, value, loop):
+        """
+        Comprehension expression.
+        :param value: The value to return from the loop.
+        :type value: ASTNode or str
+        :param loop: The loop represented in the comprehension.
+        :type loop: ASTNode or str
+        """
         self.value = value
         self.loop = loop
         super().__init__("Comprehension", self.value, self.loop)
 
 
 class ASTMapNode(ASTNode):
-    def __init__(self, items):
-        self.items = items
+    def __init__(self, elements):
+        """
+        Map declaration.
+        :param elements: The elements of the map.
+        :type elements: ASTNode or str
+        """
+        self.items = elements
         super().__init__("Map", self.items)
 
 
 class ASTSetNode(ASTNode):
     def __init__(self, items):
+        """
+        Set declaration.
+        :param items: The elements of the set.
+        :type items: ASTNode or str
+        """
         self.items = items
         super().__init__("Set", self.items)
 
 
 class ASTKeyValuePairNode(ASTNode):
     def __init__(self, key, value):
+        """
+        Key-value pair.
+        :param key: The key.
+        :type key: ASTNode or str
+        :param value: The value.
+        :type value: ASTNode or str
+        """
         self.key = key
         self.value = value
         super().__init__("Key-Value Pair", self.key, self.value)
@@ -682,6 +815,13 @@ class ASTKeyValuePairNode(ASTNode):
 
 class ASTDecoratedNode(ASTNode):
     def __init__(self, decorators, target):
+        """
+        Decorated statement.
+        :param decorators: The decorators applied to the target.
+        :type decorators: ASTNode or str
+        :param target: The target that is decorated.
+        :type target: ASTNode or str
+        """
         self.decorators = decorators
         self.target = target
         super().__init__("Decorated", self.decorators, self.target)
@@ -689,6 +829,13 @@ class ASTDecoratedNode(ASTNode):
 
 class ASTDecoratorNode(ASTNode):
     def __init__(self, name, arguments=None):
+        """
+        Decorator.
+        :param name: The name of the decorator.
+        :type name: ASTNode or str
+        :param arguments: The arguments supplied to the decorator.
+        :type arguments: ASTNode or str
+        """
         self.name = name
         self.arguments = arguments
         super().__init__("Decorator", self.name, self.arguments)

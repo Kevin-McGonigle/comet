@@ -26,33 +26,32 @@ class Graph(object):
 
 
 class Node(object):
-    def __init__(self, children=None):
+    def __init__(self, *children):
         """
-        Initialise a generic graph node.
-        :param children: List of child nodes.
-        :type children: List[Node]
+        Generic graph node.
+        :param children: Child nodes.
+        :type children: Node
         """
         if children is None:
             self.children = []
         else:
-            self.children = children
+            self.children = list(children)
 
         super().__init__()
 
     def node_count(self):
         """
-        Get the number of reachable nodes for this node (inclusive).
-        :return: The number of reachable nodes for this node (inclusive).
+        Calculate the number of reachable nodes from this node (inclusive).
+        :return: The number of reachable nodes from this node (inclusive).
         :rtype: int
         """
-        visited = [self]
-        return 1 + sum([child.r_node_count(visited) for child in self.children])
+        return 1 + sum([child.r_node_count([self]) for child in self.children])
 
     def r_node_count(self, visited):
         """
         Recursive helper for calculating node count.
         :param visited: Nodes already visited during this count.
-        :type visited: List[Node]
+        :type visited: list[Node]
         :return: 1 + the sum of the node counts of all child nodes. 0 if already visited.
         :rtype: int
         """
@@ -64,18 +63,17 @@ class Node(object):
 
     def edge_count(self):
         """
-        Get the number of reachable edges for this node (inclusive).
-        :return: The number of reachable edges for this node (inclusive).
+        Calculate the number of reachable edges from this node (inclusive).
+        :return: The number of reachable edges from this node (inclusive).
         :rtype: int
         """
-        visited = [self]
-        return len(self.children) + sum([child.r_edge_count(visited) for child in self.children])
+        return len(self.children) + sum([child.r_edge_count([self]) for child in self.children])
 
     def r_edge_count(self, visited):
         """
         Recursive helper for calculating edge count.
         :param visited: Nodes already visited during this count.
-        :type visited: List[Node]
+        :type visited: list[Node]
         :return: The number of child nodes + the sum of the edge counts for all child nodes. 0 if already visited.
         :rtype: int
         """
@@ -87,11 +85,11 @@ class Node(object):
 
     def add_child(self, child):
         """
-        Add a child to this node.
+        Add a child node to this node.
         :param child: The child to add.
         :type child: Node
         """
         if isinstance(child, Node) and child not in self.children:
             self.children.append(child)
-        else:
-            raise ValueError
+
+        raise ValueError

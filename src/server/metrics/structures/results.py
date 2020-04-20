@@ -1,5 +1,6 @@
 # TODO: Ditch these, not necessary since switching to AST-centered metric and model derivation
 
+
 class CometResult(object):
     def __init__(self, ast, cfg, inheritance_tree):
         self.ast = ast

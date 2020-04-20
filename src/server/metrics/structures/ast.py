@@ -73,7 +73,7 @@ class ASTMultiNode(ASTNode):
         self.name = _type
         self.first = first
         self.remaining = remaining
-        super().__init__(_type)
+        super().__init__(_type, self.first, self.remaining)
 
 
 class ASTStatementsNode(ASTMultiNode):
@@ -738,8 +738,8 @@ class ASTListNode(ASTNode):
         :param elements: The elements of the list.
         :type elements: ASTNode or str
         """
-        self.items = elements
-        super().__init__("List", self.items)
+        self.elements = elements
+        super().__init__("List", self.elements)
 
 
 class ASTTupleNode(ASTNode):
@@ -749,8 +749,8 @@ class ASTTupleNode(ASTNode):
         :param elements: The elements of the tuple.
         :type elements: ASTNode or str
         """
-        self.items = elements
-        super().__init__("Tuple", self.items)
+        self.elements = elements
+        super().__init__("Tuple", self.elements)
 
 
 class ASTGeneratorExpressionNode(ASTNode):
@@ -785,19 +785,19 @@ class ASTMapNode(ASTNode):
         :param elements: The elements of the map.
         :type elements: ASTNode or str
         """
-        self.items = elements
-        super().__init__("Map", self.items)
+        self.elements = elements
+        super().__init__("Map", self.elements)
 
 
 class ASTSetNode(ASTNode):
-    def __init__(self, items):
+    def __init__(self, elements):
         """
         Set declaration.
-        :param items: The elements of the set.
-        :type items: ASTNode or str
+        :param elements: The elements of the set.
+        :type elements: ASTNode or str
         """
-        self.items = items
-        super().__init__("Set", self.items)
+        self.elements = elements
+        super().__init__("Set", self.elements)
 
 
 class ASTKeyValuePairNode(ASTNode):

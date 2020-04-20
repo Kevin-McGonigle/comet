@@ -4,7 +4,7 @@ from metrics.parsers.python3.base.Python3Visitor import Python3Visitor
 from metrics.structures.ast import *
 
 
-class Python3ASTVisitor(Python3Visitor):
+class ASTGenerationVisitor(Python3Visitor):
     # Behaviour
     def visit(self, tree):
         return AST(super().visit(tree))
@@ -359,7 +359,7 @@ class Python3ASTVisitor(Python3Visitor):
             else:
                 catches.append(ASTCatchNode(children[i].accept(self), children[i + 1].accept(self)))
 
-        return ASTTryStatementNode(body, build_right_associative_sequence(catches, ASTCatchStatementsNode), else_body,
+        return ASTTryStatementNode(body, build_right_associative_sequence(catches, ASTCatchesNode), else_body,
                                    finally_body)
 
     def visitWith_stmt(self, ctx: Python3Parser.With_stmtContext):
@@ -672,9 +672,9 @@ class Python3ASTVisitor(Python3Visitor):
 
         if comprehension:
             output = ASTLoopStatementNode(
-                ASTBinOpNode(AST.IN, exprlist, ASTComprehensionNode(or_test, comprehension.accept(self))), None)
+                ASTBinOpNode(AST.IN, exprlist, ASTComprehensionNode(or_test, comprehension.accept(self))))
         else:
-            output = ASTLoopStatementNode(ASTBinOpNode(AST.IN, exprlist, or_test), None)
+            output = ASTLoopStatementNode(ASTBinOpNode(AST.IN, exprlist, or_test))
 
         return ASTAsyncNode(output) if ctx.ASYNC() else output
 
@@ -683,8 +683,8 @@ class Python3ASTVisitor(Python3Visitor):
         comprehension = ctx.comp_iter()
 
         if comprehension:
-            return ASTIfStatementNode(ASTComprehensionNode(test_nocond, comprehension.accept(self)), None)
-        return ASTIfStatementNode(test_nocond, None)
+            return ASTIfStatementNode(ASTComprehensionNode(test_nocond, comprehension.accept(self)))
+        return ASTIfStatementNode(test_nocond)
 
     def visitEncoding_decl(self, ctx: Python3Parser.Encoding_declContext):
         return ctx.getText()
@@ -695,7 +695,7 @@ class Python3ASTVisitor(Python3Visitor):
 
     def visitYield_arg(self, ctx: Python3Parser.Yield_argContext):
         if ctx.FROM():
-            return ASTFromNode(ctx.test().accept(self), None)
+            return ASTFromNode(ctx.test().accept(self))
         return ctx.testlist().accept(self)
 
 

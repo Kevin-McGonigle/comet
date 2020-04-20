@@ -2,7 +2,7 @@ from sys import stdin
 
 from antlr4 import InputStream, CommonTokenStream
 
-from metrics.parsers.python3.Python3ASTVisitor import Python3ASTVisitor
+from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
 from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 
@@ -14,7 +14,7 @@ def main():
     tokens = CommonTokenStream(lexer)
     parser = Python3Parser(tokens)
     parse_tree = parser.file_input()
-    visitor = Python3ASTVisitor()
+    visitor = ASTGenerationVisitor()
     output = visitor.visit(parse_tree)
     print(output)
 

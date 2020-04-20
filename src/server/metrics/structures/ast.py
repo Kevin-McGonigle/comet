@@ -148,7 +148,7 @@ class ASTSubscriptsNode(ASTMultiNode):
         super().__init__("Subscripts", first, remaining)
 
 
-class ASTCatchStatementsNode(ASTMultiNode):
+class ASTCatchesNode(ASTMultiNode):
     def __init__(self, first, remaining):
         """
         Representation of multiple, consecutive catch statements.
@@ -341,13 +341,13 @@ class ASTAssertStatementNode(ASTStatementNode):
 
 
 class ASTIfStatementNode(ASTStatementNode):
-    def __init__(self, condition, body):
+    def __init__(self, condition, body=None):
         """
         If statement.
         :param condition: The condition to check.
         :type condition: ASTNode or str
         :param body: The code to execute if the condition is met.
-        :type body: ASTNode or str
+        :type body: ASTNode or str or None
         """
         self.condition = condition
         self.body = body
@@ -372,13 +372,13 @@ class ASTIfElseStatementNode(ASTStatementNode):
 
 
 class ASTLoopStatementNode(ASTStatementNode):
-    def __init__(self, condition, body):
+    def __init__(self, condition, body=None):
         """
         Loop statement.
         :param condition: The condition to check.
         :type condition: ASTNode or str
         :param body: The code to execute while the condition is met.
-        :type body: ASTNode or str
+        :type body: ASTNode or str or None
         """
         self.condition = condition
         self.body = body
@@ -503,7 +503,8 @@ class ASTFinallyNode(ASTNode):
     def __init__(self, body):
         """
         Finally clause.
-        :param body:
+        :param body: The code to execute after all corresponding try, catch and else blocks,
+        regardless of exceptions thrown.
         :type body:
         """
         self.body = body
@@ -611,13 +612,13 @@ class ASTKeywordArgumentsParameter(ASTNode):
 
 
 class ASTFromNode(ASTNode):
-    def __init__(self, source, expressions):
+    def __init__(self, source, expressions=None):
         """
         "From" expression.
         :param source: The source to take the expression(s) from.
         :type source: ASTNode or str
         :param expressions: The expressions to take.
-        :type expressions: ASTNode or str
+        :type expressions: ASTNode or str or None
         """
         self.source = source
         self.expressions = expressions

@@ -68,7 +68,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return ASTAsyncNode(*self.visitChildren(ctx))
 
     def visitFuncdef(self, ctx: Python3Parser.FuncdefContext):
-        name = ctx.NAME().getText()
+        name = ASTTerminalNode(ctx.NAME().getText())
         body = ctx.suite().accept(self)
         parameters = ctx.parameters().accept(self)
         return_type = ctx.test()
@@ -116,7 +116,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return build_right_associative_sequence(parameters, ASTParametersNode) if parameters else self.defaultResult()
 
     def visitTfpdef(self, ctx: Python3Parser.TfpdefContext):
-        name = ctx.NAME().getText()
+        name = ASTTerminalNode(ctx.NAME().getText())
         return_type = ctx.test()
 
         if return_type:
@@ -155,7 +155,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return build_right_associative_sequence(parameters, ASTParametersNode) if parameters else self.defaultResult()
 
     def visitVfpdef(self, ctx: Python3Parser.VfpdefContext):
-        return {"name": ctx.NAME().getText()}
+        return {"name": ASTTerminalNode(ctx.NAME().getText())}
 
     def visitStmt(self, ctx: Python3Parser.StmtContext):
         return ctx.getChild(0).accept(self)
@@ -253,7 +253,8 @@ class ASTGenerationVisitor(Python3Visitor):
 
     def visitImport_from(self, ctx: Python3Parser.Import_fromContext):
         _from = "".join(
-            [child.getText() if isinstance(child, TerminalNodeImpl) else child.accept(self) for child in
+            [ASTTerminalNode(child.getText()) if isinstance(child, TerminalNodeImpl) else child.accept(self) for child
+             in
              ctx.getChildren(lambda child: filter_child(child, Python3Parser.DOT, Python3Parser.ELLIPSIS,
                                                         Python3Parser.Dotted_nameContext))])
         _import = ctx.import_as_names()
@@ -263,22 +264,22 @@ class ASTGenerationVisitor(Python3Visitor):
         return ASTImportStatementNode(ASTFromNode(_from, _import))
 
     def visitImport_as_name(self, ctx: Python3Parser.Import_as_nameContext):
-        name = ctx.NAME(0).getText()
+        name = ASTTerminalNode(ctx.NAME(0).getText())
         alias = ctx.NAME(1)
 
         if alias:
-            return ASTAsNode(name, alias.getText())
+            return ASTAsNode(name, ASTTerminalNode(alias.getText()))
 
         return name
 
     def visitDotted_as_name(self, ctx: Python3Parser.Dotted_as_nameContext):
-        dotted_name = ctx.dotted_name().accept(self)
+        name = ctx.dotted_name().accept(self)
         alias = ctx.NAME()
 
         if alias:
-            return ASTAsNode(dotted_name, alias.getText())
+            return ASTAsNode(name, ASTTerminalNode(alias.getText()))
 
-        return dotted_name
+        return name
 
     def visitImport_as_names(self, ctx: Python3Parser.Import_as_namesContext):
         return build_right_associative_sequence(self.visitChildren(ctx), ASTExpressionsNode)
@@ -287,15 +288,17 @@ class ASTGenerationVisitor(Python3Visitor):
         return build_right_associative_sequence(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitDotted_name(self, ctx: Python3Parser.Dotted_nameContext):
-        return ctx.getText()
+        return ASTTerminalNode(ctx.getText())
 
     def visitGlobal_stmt(self, ctx: Python3Parser.Global_stmtContext):
         return ASTGlobalStatementNode(
-            build_right_associative_sequence([child.getText() for child in ctx.NAME()], ASTExpressionsNode))
+            build_right_associative_sequence([ASTTerminalNode(child.getText()) for child in ctx.NAME()],
+                                             ASTExpressionsNode))
 
     def visitNonlocal_stmt(self, ctx: Python3Parser.Nonlocal_stmtContext):
         return ASTNonLocalStatementNode(
-            build_right_associative_sequence([child.getText() for child in ctx.NAME()], ASTExpressionsNode))
+            build_right_associative_sequence([ASTTerminalNode(child.getText()) for child in ctx.NAME()],
+                                             ASTExpressionsNode))
 
     def visitAssert_stmt(self, ctx: Python3Parser.Assert_stmtContext):
         condition = ctx.test(0).accept(self)
@@ -381,7 +384,7 @@ class ASTGenerationVisitor(Python3Visitor):
         alias = ctx.NAME()
 
         if alias:
-            return ASTAsNode(expression.accept(self), alias.getText())
+            return ASTAsNode(expression.accept(self), ASTTerminalNode(alias.getText()))
 
         if expression:
             return expression.accept(self)
@@ -541,7 +544,7 @@ class ASTGenerationVisitor(Python3Visitor):
         if dictorsetmaker:
             return dictorsetmaker.accept(self)
 
-        return ctx.getText()
+        return ASTTerminalNode(ctx.getText())
 
     def visitTestlist_comp(self, ctx: Python3Parser.Testlist_compContext):
         comp_for = ctx.comp_for()
@@ -635,7 +638,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return build_right_associative_sequence(items, ASTElementsNode)
 
     def visitClassdef(self, ctx: Python3Parser.ClassdefContext):
-        name = ctx.NAME().getText()
+        name = ASTTerminalNode(ctx.NAME().getText())
         arguments = ctx.arglist()
         body = ctx.suite().accept(self)
 
@@ -687,7 +690,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return ASTIfStatementNode(test_nocond)
 
     def visitEncoding_decl(self, ctx: Python3Parser.Encoding_declContext):
-        return ctx.getText()
+        return ASTTerminalNode(ctx.getText())
 
     def visitYield_expr(self, ctx: Python3Parser.Yield_exprContext):
         argument = ctx.yield_arg()
@@ -761,7 +764,7 @@ def build_atom_expr(children, visitor):
     if isinstance(children[-1], Python3Parser.ArglistContext):
         return ASTCallNode(build_atom_expr(children[:-1], visitor), children[-1].accept(visitor))
 
-    return ASTMemberNode(build_atom_expr(children[:-1], visitor), children[-1].getText())
+    return ASTMemberNode(build_atom_expr(children[:-1], visitor), ASTTerminalNode(children[-1].getText()))
 
 
 def filter_child(child, *contexts):

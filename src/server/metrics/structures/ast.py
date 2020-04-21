@@ -57,6 +57,22 @@ class ASTNode(Node):
     pass
 
 
+# Terminal
+
+class ASTTerminalNode(ASTNode):
+    def __init__(self, text):
+        """
+        Terminal.
+        :param text: The terminal's text.
+        :type text: str
+        """
+        self.text = text
+        super().__init__(self.text)
+
+    def accept(self, visitor):
+        return self.text
+
+
 # Multiples
 
 class ASTMultiNode(ASTNode):

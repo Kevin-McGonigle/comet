@@ -1,3 +1,6 @@
+from metrics.visitors.base.Visitor import Visitor
+
+
 class Tree(object):
     def __init__(self, root=None):
         """
@@ -10,6 +13,9 @@ class Tree(object):
 
     def __str__(self):
         return str(self.root)
+
+    def accept(self, visitor):
+        return self.root.accept(visitor)
 
 
 class Node(object):
@@ -42,3 +48,13 @@ class Node(object):
                     for line in final_child_branches[1:]:
                         s += f"\n   {line}"
         return s
+
+    def accept(self, visitor):
+        """
+        Accept the visitor and visit this node's children.
+        :param visitor: The visitor to accept.
+        :type visitor: Visitor
+        :return: The aggregate result of the child visits.
+        :rtype: Any
+        """
+        return visitor.visit_children(self)

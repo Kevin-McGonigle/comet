@@ -3,12 +3,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styles from './Metrics.css';
 import classnames from 'classnames';
-import { TreeGraphContainer } from '../general/TreeGraph/TreeGraphContainer';
+import MetricsPanel from './MetricsPanel';
+import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 
 const cx = args => classnames(styles, args)
 
 const Metrics = props => {
-    return (<TreeGraphContainer />)
+    return (
+        <div className={cx("metricContainer")}>
+            <FileDirectoryContainer />
+        </div>
+    )
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);

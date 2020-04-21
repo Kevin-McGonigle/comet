@@ -4,7 +4,7 @@ import FileDirectory from './FileDirectory';
 import { actions as fileActions } from '../../../store/fileData/fileData';
 
 const mapStateToProps = state => ({
-    files: state.files.files,
+    fileNames: state.fileData.files.map(file => file.name),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(fileActions, dispatch);

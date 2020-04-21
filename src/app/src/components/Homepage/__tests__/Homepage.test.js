@@ -5,6 +5,12 @@ import Homepage from '../Homepage';
 import { shallow, mount } from 'enzyme';
 import "../../../setupTests"
 
+jest.mock('react-router-dom', () => ({
+    useHistory: () => ({
+      push: jest.fn(),
+    }),
+}));
+
 const initialState = {
     alert: {
         id: 'something',
@@ -12,7 +18,7 @@ const initialState = {
         show: 'something',
         intent: 'something',
     },
-    userFiles: { initialState: {} },
+    fileData: { selected: null, files: []},
 };
 const mockStore = configureStore(initialState);
 

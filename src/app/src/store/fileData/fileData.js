@@ -18,8 +18,8 @@ const fileDataReducer = (state = initialState, action) => {
         case SET_SELECTED_FILE:
             const selectedFile = action.payload;
             return {
-                selected: selectedFile,
                 ...state,
+                selected: selectedFile,
             }
         default:
             return state;

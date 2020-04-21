@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
 import {Alert, Dialog, FilePicker} from 'evergreen-ui';
-import { useHistory } from "react-router-dom";
 import UploadedItem from './UploadedItem';
 import upload_files from '../../api/API';
 
@@ -48,6 +47,7 @@ export const shapeFileData = (fileData) => {
 
 const UploadModal = props => {
     const {
+        history,
         fileData,
         alertInfo,
         uploadModal,
@@ -58,7 +58,6 @@ const UploadModal = props => {
         setFileData,
         setInheritanceTree,
     } = props;
-    const history = useHistory();
 
     const fileItemDeleteOnClickHandler = (name) => {
         const updatedUploadedFiles = removeFileFromUploadedFiles(fileData, name);
@@ -66,7 +65,6 @@ const UploadModal = props => {
     }
 
     const createFileItem = (file) => {
-        console.log(file);
         return (
             <UploadedItem
                 name={file.name}

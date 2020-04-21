@@ -8,7 +8,7 @@ const createRootReducer = () => {
     return combineReducers({
         tree: treeReducer,
         alert: alertReducer,
-        files: userFilesReducer,
+        fileData: userFilesReducer,
         metrics: metricsReducer,
     })
 };

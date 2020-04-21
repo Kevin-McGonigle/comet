@@ -6,7 +6,7 @@ import { actions as fileDataActions } from '../../store/fileData/fileData';
 
 const mapStateToProps = state => ({
     alertInfo: state.alert,
-    fileData: state.files.files,        // fix this later
+    fileData: state.fileData.files,
 })
 
 const mapDispatchToProps = (dispatch) => {

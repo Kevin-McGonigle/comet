@@ -17,3 +17,9 @@ __pycache__/
 
 # Ignore auto-generated static files.
 /src/server/static/
+
+# Ignore JetBrains project files.
+/.idea/
+
+# Ignore virtual environment.
+/venv/

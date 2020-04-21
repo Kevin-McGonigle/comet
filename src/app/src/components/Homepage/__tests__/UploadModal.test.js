@@ -5,6 +5,12 @@ import configureStore from 'redux-mock-store'
 import { mount } from 'enzyme';
 import "../../../setupTests"
 
+const historyMock = jest.mock('react-router-dom', () => {
+    useHistory: () => ({
+        push: jest.fn(),
+    })
+});
+
 const initialState = {
     alert: {
         id: '',
@@ -12,7 +18,7 @@ const initialState = {
         show: false,
         intent: 'none',
     },
-    userFiles: { initialData: {} },
+    fileData: { selected: null, files: []},
 }
 const mockStore = configureStore(initialState);
 
@@ -20,6 +26,7 @@ test('Should render UploadModal succesfully', () => {
     const component = mount(
         <Provider store={mockStore()}>
             <UploadModal 
+                history={historyMock}
                 alertInfo={initialState.alert}
                 uploadModal={{ isOpen: true, isLoading: false }}
                 uploadModalOnConfirmHandler={jest.fn()}

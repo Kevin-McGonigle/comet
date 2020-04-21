@@ -1,4 +1,6 @@
 from django.db import models
+
+import uuid
 import hashlib
 import json
 
@@ -16,7 +18,7 @@ def generate_hash(filename):
     :param filename: The original filename of the file that was uploaded.
     :return: A string representing the hash of the file.
     """
-    return hashlib.sha224(filename.encode('utf-8')).hexdigest()
+    return hashlib.sha224(f'{filename}{uuid.uuid4()}'.encode('utf-8')).hexdigest()
 
 class File(models.Model):
     hash = models.CharField(max_length=64, primary_key=True, editable=False)
@@ -29,12 +31,7 @@ class File(models.Model):
     def save(self, *args, **kwargs):
         self.hash = generate_hash(self.name)
         super(File, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return json.dumps({
-            "hash": self.hash,
-            "name": self.name,
-        })
+        
 
 class Method(models.Model):
     method_hash = models.CharField(max_length=64, primary_key=True, editable=False)

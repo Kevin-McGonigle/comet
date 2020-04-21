@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from "react-router-dom";
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styles from './Homepage.css';
@@ -9,12 +10,14 @@ import { UploadModalContainer } from './UploadModalContainer';
 import { CreateModalContainer } from './CreateModalContainer';
 import { actions as alertActions } from '../../store/alert/alert';
 
+
 const cx = args => classnames(styles, args)
 
 const Homepage = props => {
     const {
         setAlertNone,
     } = props;
+    const history = useHistory();
     const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
     const [textArea, setTextArea] = useState({value: ''})
     const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
@@ -31,13 +34,16 @@ const Homepage = props => {
         setCreateModal({ isOpen: true, isLoading: true })
     }
 
-    const uploadButtonOnClickHandler = () => setUploadModal({ isOpen: true, isLoading: false });
+    const uploadButtonOnClickHandler = () => {
+        setUploadModal({ isOpen: true, isLoading: false });
+    }
+    
     const uploadModalOnCloseHandler = () => {
         setAlertNone();
         setUploadModal({ isOpen: false, isLoading: false });
     }
+    
     const uploadModalOnConfirmHandler = () => {
-        // #TODO: hit API with file data
         setAlertNone();
         setUploadModal({ isOpen: true, isLoading: true })
     }
@@ -63,6 +69,7 @@ const Homepage = props => {
                         />
     
                         <UploadModalContainer
+                            history={history}
                             uploadModal={uploadModal}
                             uploadModalOnConfirmHandler={uploadModalOnConfirmHandler}
                             uploadModalOnCloseHandler={uploadModalOnCloseHandler}

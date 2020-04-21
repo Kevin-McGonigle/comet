@@ -5,34 +5,46 @@ import Tree from 'react-tree-graph';
 
 const cx = args => classnames(styles, args);
 
+const shapeTreeGraphData = (fileName, data) => {
+    let treeGraph = {
+        name: fileName,
+        children: [],
+    };
+}
+
+// { A: ['B', 'C'], B: [], C: ['D']}
+
+const initialState = {
+    name: '/src',
+    children: [{
+        name: 'A',
+        children: [{
+            name: 'B'
+        }, {
+            name: 'C',
+            children: [{
+                name: 'D',
+            }]
+        }]
+    }]
+};
+
 const TreeGraph = props => {
     const {
         tree,
-        hideAllChildNodes,
     } = props;
 
+    console.log(shapeTreeGraphData(tree));
     const onClickHandler = (event) => {
         const nodeId = event.target.parentNode.id;
-        hideAllChildNodes(nodeId); // need to recursively hide all childNodes
+        // Set ClassDiagram 
+        console.log(nodeId);
     };
 
-    const treeWithOnClickHandler = {
-        ...tree,
-        children: tree.children.reduce((acc, child) => {
-            acc.push({
-                ...child,
-                gProps: {
-                    onClick: onClickHandler,
-                    ...child.gProps,
-                }
-            });
-            return acc;
-        }, [])
-    };
-
+    
     return (
         <Tree
-            data={treeWithOnClickHandler}
+            data={initialState}
             height={600}
             width={600}
             gProps={{

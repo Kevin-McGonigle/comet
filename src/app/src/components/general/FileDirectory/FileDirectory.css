@@ -1,0 +1,31 @@
+.fileDirectory {
+    background: #333;
+    color: #fff;
+    height: 100%;
+    padding: 20px;
+    width: 250px;
+    left:0;
+    top: 0;
+    position: absolute;
+}
+
+.title {
+    margin-bottom: 10px;
+}
+
+.fileDirLogo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.fileDirTable {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+.fileItem {
+    width: 250px;
+    margin: 1;
+}

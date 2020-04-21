@@ -1,14 +1,25 @@
 export const initialState = {
-    initialData: {},
+    selected: null,
+    files: [],
 }
 
 export const SET_FILE_DATA = 'SET_FILE_DATA';
+export const SET_SELECTED_FILE = 'SET_SELECTED_FILE';
+
 
 const fileDataReducer = (state = initialState, action) => {
     switch(action.type) {
         case SET_FILE_DATA:
+            const files = action.payload;
             return {
-                initialData: action.payload,
+                ...state,
+                files
+            }
+        case SET_SELECTED_FILE:
+            const selectedFile = action.payload;
+            return {
+                ...state,
+                selected: selectedFile,
             }
         default:
             return state;
@@ -16,12 +27,18 @@ const fileDataReducer = (state = initialState, action) => {
 }
 
 export const actions = {
-    setFileData: (data) => {
+    setFileData: (files) => {
         return {
             type: SET_FILE_DATA,
-            payload: data,
+            payload: files,
         }
     },
+    setSelectedFile: (fileName) => {
+        return {
+            type: SET_SELECTED_FILE,
+            payload: fileName,
+        }
+    }
 }
 
 export default fileDataReducer;

@@ -20,3 +20,9 @@ __pycache__/
 
 # Ignore uploads.
 /src/server/uploads/
+
+# Ignore JetBrains project files.
+/.idea/
+
+# Ignore virtual environment.
+/venv/

@@ -1,9 +1,9 @@
 class Graph(object):
-    def __init__(self, entry):
+    def __init__(self, entry=None):
         """
         Initialise a generic graph.
         :param entry: The entry node of the graph.
-        :type entry: Node
+        :type entry: Node or None
         """
         super().__init__()
         self.entry = entry
@@ -14,7 +14,7 @@ class Graph(object):
         :return: Number of nodes in graph.
         :rtype: int
         """
-        return self.entry.node_count()
+        return self.entry.node_count() if self.entry else 0
 
     def edge_count(self):
         """
@@ -22,7 +22,7 @@ class Graph(object):
         :return: Number of nodes in graph.
         :rtype: int
         """
-        return self.entry.edge_count()
+        return self.entry.edge_count() if self.entry  else 0
 
 
 class Node(object):

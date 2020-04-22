@@ -23,3 +23,5 @@ class Visitor(object):
         results = {}
         for child in node.children:
             results[child] = child.accept(self)
+
+        return results

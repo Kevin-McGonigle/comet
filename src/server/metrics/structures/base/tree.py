@@ -12,7 +12,7 @@ class Tree(object):
         super().__init__()
 
     def __str__(self):
-        return str(self.root)
+        return f"Root: {self.root}"
 
     def accept(self, visitor):
         return self.root.accept(visitor)
@@ -32,22 +32,7 @@ class Node(object):
         super().__init__()
 
     def __str__(self):
-        s = self.name
-        if len(self.children) > 0:
-            for child in self.children[:-1]:
-                if child:
-                    child_branches = str(child).splitlines()
-                    s += f"\n|- {child_branches[0]}"
-                    if len(child_branches) > 1:
-                        for line in child_branches[1:]:
-                            s += f"\n|  {line}"
-            if self.children[-1]:
-                final_child_branches = str(self.children[-1]).splitlines()
-                s += f"\n`- {final_child_branches[0]}"
-                if len(final_child_branches) > 1:
-                    for line in final_child_branches[1:]:
-                        s += f"\n   {line}"
-        return s
+        return f"Node: {self.name}, Children: {self.children}"
 
     def accept(self, visitor):
         """

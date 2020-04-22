@@ -1,5 +1,3 @@
-from typing import List
-
 from metrics.structures.base.graph import *
 
 
@@ -41,7 +39,7 @@ class CFGIfNode(CFGNode):
 
 
 class CFGIfElseNode(CFGNode):
-    def __init__(self, success_block=None, fail_block=None, exit_block=None):
+    def __init__(self, success_block, fail_block, exit_block=None):
         """
         If-else statement control flow graph structure.
         :param success_block: The node to visit if the condition is true.
@@ -49,14 +47,9 @@ class CFGIfElseNode(CFGNode):
         :param fail_block: The node to visit if the condition is false.
         :type fail_block: CFGNode
         :param exit_block: The node following the if-else statement.
-        :type exit_block: CFGNode
+        :type exit_block: CFGNode or None
         """
-        if success_block is None:
-            success_block = CFGNode()
         self.success_block = success_block
-
-        if fail_block is None:
-            fail_block = CFGNode()
         self.fail_block = fail_block
 
         if exit_block is None:
@@ -77,16 +70,14 @@ class CFGIfElseNode(CFGNode):
 
 
 class CFGLoopNode(CFGNode):
-    def __init__(self, success_block=None, exit_block=None):
+    def __init__(self, success_block, exit_block=None):
         """
         Loop control flow graph structure.
         :param success_block: The node to visit if the condition is true.
         :type success_block: CFGNode
         :param exit_block: The node to following the while statement.
-        :type exit_block: CFGNode
+        :type exit_block: CFGNode or None
         """
-        if success_block is None:
-            success_block = CFGNode()
         self.success_block = success_block
 
         if exit_block is None:
@@ -106,7 +97,7 @@ class CFGLoopNode(CFGNode):
 
 
 class CFGLoopElseNode(CFGNode):
-    def __init__(self, success_block=None, fail_block=None, exit_block=None):
+    def __init__(self, success_block, fail_block, exit_block=None):
         """
         Loop-else control flow graph structure.
         :param success_block: The node to visit if the condition is true.
@@ -114,14 +105,9 @@ class CFGLoopElseNode(CFGNode):
         :param fail_block: The node to visit if the condition is false.
         :type fail_block: CFGNode
         :param exit_block: The node following the while-else statement.
-        :type exit_block: CFGNode
+        :type exit_block: CFGNode or None
         """
-        if success_block is None:
-            success_block = CFGNode()
         self.success_block = success_block
-
-        if fail_block is None:
-            fail_block = CFGNode()
         self.fail_block = fail_block
 
         if exit_block is None:
@@ -143,16 +129,14 @@ class CFGLoopElseNode(CFGNode):
 
 
 class CFGSwitchNode(CFGNode):
-    def __init__(self, case_blocks=None, exit_block=None):
+    def __init__(self, case_blocks, exit_block=None):
         """
         Switch statement control flow graph structure.
         :param case_blocks: The nodes representing each respective case.
-        :type case_blocks: List[CFGNode]
+        :type case_blocks: list[CFGNode]
         :param exit_block: The node following the switch statement.
-        :type exit_block: CFGNode
+        :type exit_block: CFGNode or None
         """
-        if case_blocks is None:
-            case_blocks = []
         self.case_blocks = case_blocks
 
         if exit_block is None:
@@ -196,12 +180,13 @@ class CFGBreakNode(CFGNode):
 
 
 class CFGContinueNode(CFGNode):
-    def __init__(self, loop):
+    def __init__(self, loop=None):
         """
         Continue statement control flow graph structure.
         :param loop: The root node of the encapsulating loop of the continue statement.
-        :type loop: CFGNode
+        :type loop: CFGNode or None
         """
+
         self.loop = loop
         super().__init__(loop)
 

@@ -337,9 +337,9 @@ class ASTGenerationVisitor(Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(ASTBinOpNode(AST.IN, exprlist, testlist), body, else_body.accept(self))
+            return ASTLoopElseStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body, else_body.accept(self))
 
-        return ASTLoopStatementNode(ASTBinOpNode(AST.IN, exprlist, testlist), body)
+        return ASTLoopStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body)
 
     def visitTry_stmt(self, ctx: Python3Parser.Try_stmtContext):
         body = None
@@ -435,7 +435,7 @@ class ASTGenerationVisitor(Python3Visitor):
         build_bin_op(AST.LOGICAL_AND, self.visitChildren(ctx))
 
     def visitNot_test(self, ctx: Python3Parser.Not_testContext):
-        return ASTUnOpNode(AST.LOGICAL_NEGATION, ctx.getChild(1).accept(self))
+        return ASTUnaryOperationNode(AST.LOGICAL_NEGATION, ctx.getChild(1).accept(self))
 
     def visitComparison(self, ctx: Python3Parser.ComparisonContext):
         build_bin_op_choice(self.visitChildren(ctx))
@@ -513,7 +513,7 @@ class ASTGenerationVisitor(Python3Visitor):
             "~": AST.BITWISE_INVERSION
         }
 
-        return ASTUnOpNode(operators[ctx.getChild(0).getText()], ctx.factor().accept(self))
+        return ASTUnaryOperationNode(operators[ctx.getChild(0).getText()], ctx.factor().accept(self))
 
     def visitPower(self, ctx: Python3Parser.PowerContext):
         return build_bin_op_rassoc(AST.POWER, self.visitChildren(ctx))
@@ -675,9 +675,9 @@ class ASTGenerationVisitor(Python3Visitor):
 
         if comprehension:
             output = ASTLoopStatementNode(
-                ASTBinOpNode(AST.IN, exprlist, ASTComprehensionNode(or_test, comprehension.accept(self))))
+                ASTBinaryOperationNode(AST.IN, exprlist, ASTComprehensionNode(or_test, comprehension.accept(self))))
         else:
-            output = ASTLoopStatementNode(ASTBinOpNode(AST.IN, exprlist, or_test))
+            output = ASTLoopStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, or_test))
 
         return ASTAsyncNode(output) if ctx.ASYNC() else output
 
@@ -720,7 +720,7 @@ def build_if_else(children, visitor):
 def build_bin_op(operation, expressions):
     if len(expressions) == 1:
         return expressions[0]
-    return ASTBinOpNode(operation, build_bin_op(operation, expressions[:-1]), expressions[-1])
+    return ASTBinaryOperationNode(operation, build_bin_op(operation, expressions[:-1]), expressions[-1])
 
 
 def build_bin_op_choice(children):
@@ -729,15 +729,15 @@ def build_bin_op_choice(children):
 
     operator = children[-2]
     if isinstance(operator, list):
-        return ASTUnOpNode(operator[0], ASTBinOpNode(operator[1], build_bin_op_choice(children[:-2]), children[-1]))
+        return ASTUnaryOperationNode(operator[0], ASTBinaryOperationNode(operator[1], build_bin_op_choice(children[:-2]), children[-1]))
 
-    return ASTBinOpNode(operator, build_bin_op_choice(children[:-2]), children[-1])
+    return ASTBinaryOperationNode(operator, build_bin_op_choice(children[:-2]), children[-1])
 
 
 def build_bin_op_rassoc(operation, expressions):
     if len(expressions) == 1:
         return expressions[0]
-    return ASTBinOpNode(operation, expressions[0], build_bin_op_rassoc(operation, expressions[1:]))
+    return ASTBinaryOperationNode(operation, expressions[0], build_bin_op_rassoc(operation, expressions[1:]))
 
 
 def build_right_associative_sequence(sequence, node_type):

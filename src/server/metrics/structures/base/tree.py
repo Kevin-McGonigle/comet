@@ -1,4 +1,4 @@
-from metrics.visitors.base.Visitor import Visitor
+from metrics.visitors.base.visitor import Visitor
 
 
 class Tree(object):
@@ -54,7 +54,7 @@ class Node(object):
         Accept the visitor and visit this node's children.
         :param visitor: The visitor to accept.
         :type visitor: Visitor
-        :return: The aggregate result of the child visits.
+        :return: The result of the accept.
         :rtype: Any
         """
         return visitor.visit_children(self)

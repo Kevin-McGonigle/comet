@@ -1,4 +1,5 @@
 from metrics.structures.base.tree import *
+from metrics.visitors.base.ast_visitor import ASTVisitor
 
 
 class AST(Tree):
@@ -54,7 +55,15 @@ class AST(Tree):
 
 
 class ASTNode(Node):
-    pass
+    def accept(self, visitor):
+        """
+        Accept AST visitor.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return super().accept(visitor)
 
 
 # Terminal
@@ -103,6 +112,16 @@ class ASTStatementsNode(ASTMultiNode):
         """
         super().__init__("Statements", first, remaining)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_statements method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_statements(self)
+
 
 class ASTExpressionsNode(ASTMultiNode):
     def __init__(self, first, remaining):
@@ -114,6 +133,16 @@ class ASTExpressionsNode(ASTMultiNode):
         :type remaining: ASTNode or str
         """
         super().__init__("Expressions", first, remaining)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_expressions method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_expressions(self)
 
 
 class ASTElementsNode(ASTMultiNode):
@@ -127,6 +156,16 @@ class ASTElementsNode(ASTMultiNode):
         """
         super().__init__("Elements", first, remaining)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_elements method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_elements(self)
+
 
 class ASTParametersNode(ASTMultiNode):
     def __init__(self, first, remaining):
@@ -138,6 +177,16 @@ class ASTParametersNode(ASTMultiNode):
         :type remaining: ASTNode or str
         """
         super().__init__("Parameters", first, remaining)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_parameters method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_parameters(self)
 
 
 class ASTArgumentsNode(ASTMultiNode):
@@ -151,6 +200,16 @@ class ASTArgumentsNode(ASTMultiNode):
         """
         super().__init__("Arguments", first, remaining)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_arguments method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_arguments(self)
+
 
 class ASTSubscriptsNode(ASTMultiNode):
     def __init__(self, first, remaining):
@@ -162,6 +221,16 @@ class ASTSubscriptsNode(ASTMultiNode):
         :type remaining: ASTNode or str
         """
         super().__init__("Subscripts", first, remaining)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_subscripts method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_subscripts(self)
 
 
 class ASTCatchesNode(ASTMultiNode):
@@ -175,6 +244,16 @@ class ASTCatchesNode(ASTMultiNode):
         """
         super().__init__("Catch Statements", first, remaining)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_catches method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_catches(self)
+
 
 class ASTDecoratorsNode(ASTMultiNode):
     def __init__(self, first, remaining):
@@ -186,6 +265,16 @@ class ASTDecoratorsNode(ASTMultiNode):
         :type remaining: ASTNode or str
         """
         super().__init__("Decorators", first, remaining)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_decorators method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_decorators(self)
 
 
 # Statements
@@ -203,6 +292,16 @@ class ASTDelStatementNode(ASTStatementNode):
         self.expressions = expressions
         super().__init__("Del", self.expressions)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_del_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_del_statement(self)
+
 
 class ASTAssignmentStatementNode(ASTStatementNode):
     def __init__(self, variables=None, values=None):
@@ -216,6 +315,16 @@ class ASTAssignmentStatementNode(ASTStatementNode):
         self.variables = variables
         self.values = values
         super().__init__("Assignment", self.variables, self.values)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_assignment_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_assignment_statement(self)
 
 
 class ASTAugmentedAssignmentStatementNode(ASTStatementNode):
@@ -234,6 +343,16 @@ class ASTAugmentedAssignmentStatementNode(ASTStatementNode):
         self.values = values
         super().__init__(self.operation, self.variables, self.values)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_augmented_assignment_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_augmented_assignment_statement(self)
+
 
 class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
     def __init__(self, annotation, variables=None, values=None):
@@ -251,6 +370,16 @@ class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
         self.values = values
         super().__init__("Annotation Assignment", self.variables, self.annotation, self.values)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_annotated_assignment_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_annotated_assignment_statement(self)
+
 
 class ASTYieldStatementNode(ASTStatementNode):
     def __init__(self, values=None):
@@ -262,6 +391,16 @@ class ASTYieldStatementNode(ASTStatementNode):
         self.value = values
         super().__init__("Yield", self.value)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_yield_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_yield_statement(self)
+
 
 class ASTPassStatementNode(ASTStatementNode):
     def __init__(self):
@@ -269,6 +408,16 @@ class ASTPassStatementNode(ASTStatementNode):
         Pass statement.
         """
         super().__init__("Pass")
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_pass_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_pass_statement(self)
 
 
 class ASTBreakStatementNode(ASTStatementNode):
@@ -278,6 +427,16 @@ class ASTBreakStatementNode(ASTStatementNode):
         """
         super().__init__("Break")
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_break_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_break_statement(self)
+
 
 class ASTContinueStatementNode(ASTStatementNode):
     def __init__(self):
@@ -285,6 +444,16 @@ class ASTContinueStatementNode(ASTStatementNode):
         Continue statement.
         """
         super().__init__("Continue")
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_continue_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_continue_statement(self)
 
 
 class ASTReturnStatementNode(ASTStatementNode):
@@ -297,6 +466,16 @@ class ASTReturnStatementNode(ASTStatementNode):
         self.expression = values
         super().__init__("Return", self.expression)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_return_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_return_statement(self)
+
 
 class ASTThrowStatementNode(ASTStatementNode):
     def __init__(self, exception=None):
@@ -307,6 +486,16 @@ class ASTThrowStatementNode(ASTStatementNode):
         """
         self.exception = exception
         super().__init__("Throw", self.exception)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_throw_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_throw_statement(self)
 
 
 class ASTImportStatementNode(ASTStatementNode):
@@ -319,6 +508,16 @@ class ASTImportStatementNode(ASTStatementNode):
         self.libraries = libraries
         super().__init__("Import", self.libraries)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_import_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_import_statement(self)
+
 
 class ASTGlobalStatementNode(ASTStatementNode):
     def __init__(self, variables):
@@ -330,6 +529,16 @@ class ASTGlobalStatementNode(ASTStatementNode):
         self.variables = variables
         super().__init__("Global", self.variables)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_global_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_global_statement(self)
+
 
 class ASTNonLocalStatementNode(ASTStatementNode):
     def __init__(self, variables):
@@ -340,6 +549,16 @@ class ASTNonLocalStatementNode(ASTStatementNode):
         """
         self.variables = variables
         super().__init__("Non-Local", self.variables)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_non_local_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_non_local_statement(self)
 
 
 class ASTAssertStatementNode(ASTStatementNode):
@@ -355,6 +574,16 @@ class ASTAssertStatementNode(ASTStatementNode):
         self.message = message
         super().__init__("Assert", self.condition, self.message)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_assert_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_assert_statement(self)
+
 
 class ASTIfStatementNode(ASTStatementNode):
     def __init__(self, condition, body=None):
@@ -368,6 +597,16 @@ class ASTIfStatementNode(ASTStatementNode):
         self.condition = condition
         self.body = body
         super().__init__("If", self.condition, self.body)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_if_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_if_statement(self)
 
 
 class ASTIfElseStatementNode(ASTStatementNode):
@@ -386,6 +625,16 @@ class ASTIfElseStatementNode(ASTStatementNode):
         self.else_body = else_body
         super().__init__("If-Else", self.condition, self.body, self.else_body)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_if_else_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_if_else_statement(self)
+
 
 class ASTLoopStatementNode(ASTStatementNode):
     def __init__(self, condition, body=None):
@@ -399,6 +648,16 @@ class ASTLoopStatementNode(ASTStatementNode):
         self.condition = condition
         self.body = body
         super().__init__("While", self.condition, self.body)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_loop_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_loop_statement(self)
 
 
 class ASTLoopElseStatementNode(ASTStatementNode):
@@ -416,6 +675,16 @@ class ASTLoopElseStatementNode(ASTStatementNode):
         self.body = body
         self.else_body = else_body
         super().__init__("While-Else", self.condition, self.body, self.else_body)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_loop_else_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_loop_else_statement(self)
 
 
 class ASTTryStatementNode(ASTStatementNode):
@@ -438,6 +707,16 @@ class ASTTryStatementNode(ASTStatementNode):
         self._finally = _finally
         super().__init__("Try", self.body, *self.catches, self._else, self._finally)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_try_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_try_statement(self)
+
 
 class ASTWithStatementNode(ASTStatementNode):
     def __init__(self, expressions, body):
@@ -451,6 +730,16 @@ class ASTWithStatementNode(ASTStatementNode):
         self.expressions = expressions
         self.body = body
         super().__init__("With", self.expressions, self.body)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_with_statement method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_with_statement(self)
 
 
 class ASTFunctionDefinitionNode(ASTStatementNode):
@@ -472,6 +761,16 @@ class ASTFunctionDefinitionNode(ASTStatementNode):
         self.return_type = return_type
         super().__init__("Function Definition", self.name, self.parameters, self.return_type, self.body)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_function_definition method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_function_definition(self)
+
 
 class ASTClassDefinitionNode(ASTStatementNode):
     def __init__(self, name, body, arguments=None):
@@ -489,6 +788,16 @@ class ASTClassDefinitionNode(ASTStatementNode):
         self.arguments = arguments
         super().__init__("Class Definition", self.name, self.arguments, self.body)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_class_definition method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_class_definition(self)
+
 
 class ASTYieldExpressionNode(ASTNode):
     def __init__(self, value=None):
@@ -499,6 +808,16 @@ class ASTYieldExpressionNode(ASTNode):
         """
         self.value = value
         super().__init__("Yield", self.value)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_yield_expression method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_yield_expression(self)
 
 
 class ASTCatchNode(ASTNode):
@@ -514,6 +833,16 @@ class ASTCatchNode(ASTNode):
         self.body = body
         super().__init__("Catch", self.exception, self.body)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_catch method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_catch(self)
+
 
 class ASTFinallyNode(ASTNode):
     def __init__(self, body):
@@ -526,8 +855,18 @@ class ASTFinallyNode(ASTNode):
         self.body = body
         super().__init__("Finally", self.body)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_finally method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_finally(self)
 
-class ASTBinOpNode(ASTNode):
+
+class ASTBinaryOperationNode(ASTNode):
     def __init__(self, operation, left_operand, right_operand):
         """
         Binary operation.
@@ -542,8 +881,18 @@ class ASTBinOpNode(ASTNode):
         self.right_operand = right_operand
         super().__init__(operation, self.left_operand, self.right_operand)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_binary_operation method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_binary_operation(self)
 
-class ASTUnOpNode(ASTNode):
+
+class ASTUnaryOperationNode(ASTNode):
     def __init__(self, operation, operand):
         """
         Initialise a unary operation node.
@@ -555,6 +904,16 @@ class ASTUnOpNode(ASTNode):
         self.operation = operation
         self.operand = operand
         super().__init__(self.operation, self.operand)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_unary_operation method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_unary_operation(self)
 
 
 class ASTAsNode(ASTNode):
@@ -570,6 +929,16 @@ class ASTAsNode(ASTNode):
         self.alias = alias
         super().__init__("As", self.expression, self.alias)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_as method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_as(self)
+
 
 class ASTAsyncNode(ASTNode):
     def __init__(self, target):
@@ -580,6 +949,16 @@ class ASTAsyncNode(ASTNode):
         """
         self.child = target
         super().__init__("Async", self.child)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_async method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_async(self)
 
 
 class ASTParameterNode(ASTNode):
@@ -598,6 +977,16 @@ class ASTParameterNode(ASTNode):
         self.default = default
         super().__init__("Parameter", self.name, self.type, self.default)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_parameter method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_parameter(self)
+
 
 class ASTPositionalArgumentsParameter(ASTNode):
     def __init__(self, name, _type=None):
@@ -611,6 +1000,16 @@ class ASTPositionalArgumentsParameter(ASTNode):
         self.name = name
         self.type = _type
         super().__init__("Positional Arguments Parameter", self.name, self.type)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_positional_arguments_parameter method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_positional_arguments_parameter(self)
 
 
 class ASTKeywordArgumentsParameter(ASTNode):
@@ -626,6 +1025,16 @@ class ASTKeywordArgumentsParameter(ASTNode):
         self.type = _type
         super().__init__("Keyword Arguments Parameter", self.name, self.type)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_keyword_arguments_parameter method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_keyword_arguments_parameter(self)
+
 
 class ASTFromNode(ASTNode):
     def __init__(self, source, expressions=None):
@@ -639,6 +1048,16 @@ class ASTFromNode(ASTNode):
         self.source = source
         self.expressions = expressions
         super().__init__("From", self.source, self.expressions)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_from method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_from(self)
 
 
 class ASTAnonymousFunctionDefinitionNode(ASTNode):
@@ -654,6 +1073,16 @@ class ASTAnonymousFunctionDefinitionNode(ASTNode):
         self.parameters = parameters
         super().__init__("Anonymous Function Definition", self.parameters, self.body)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_anonymous_function_definition method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_anonymous_function_definition(self)
+
 
 class ASTUnpackExpressionNode(ASTNode):
     def __init__(self, expression):
@@ -665,6 +1094,16 @@ class ASTUnpackExpressionNode(ASTNode):
         self.expression = expression
         super().__init__("Unpack", self.expression)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_unpack_expression method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_unpack_expression(self)
+
 
 class ASTAwaitNode(ASTNode):
     def __init__(self, expression):
@@ -675,6 +1114,16 @@ class ASTAwaitNode(ASTNode):
         """
         self.expression = expression
         super().__init__("Await", self.expression)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_await method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_await(self)
 
 
 class ASTAccessNode(ASTNode):
@@ -690,6 +1139,16 @@ class ASTAccessNode(ASTNode):
         self.subscript = subscripts
         super().__init__("Access", self.name, self.subscript)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_access method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_access(self)
+
 
 class ASTIndexNode(ASTNode):
     def __init__(self, index):
@@ -700,6 +1159,16 @@ class ASTIndexNode(ASTNode):
         """
         self.index = index
         super().__init__("Index", self.index)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_index method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_index(self)
 
 
 class ASTSliceNode(ASTNode):
@@ -718,6 +1187,16 @@ class ASTSliceNode(ASTNode):
         self.step = step
         super().__init__("Slice", self.start, self.stop, self.step)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_slice method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_slice(self)
+
 
 class ASTCallNode(ASTNode):
     def __init__(self, function, arguments=None):
@@ -731,6 +1210,16 @@ class ASTCallNode(ASTNode):
         self.name = function
         self.arguments = arguments
         super().__init__("Call", self.name, self.arguments)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_call method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_call(self)
 
 
 class ASTMemberNode(ASTNode):
@@ -746,6 +1235,16 @@ class ASTMemberNode(ASTNode):
         self.child = member
         super().__init__("Member", self.parent, self.child)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_member method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_member(self)
+
 
 class ASTListNode(ASTNode):
     def __init__(self, elements):
@@ -756,6 +1255,16 @@ class ASTListNode(ASTNode):
         """
         self.elements = elements
         super().__init__("List", self.elements)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_list method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_list(self)
 
 
 class ASTTupleNode(ASTNode):
@@ -768,6 +1277,16 @@ class ASTTupleNode(ASTNode):
         self.elements = elements
         super().__init__("Tuple", self.elements)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_tuple method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_tuple(self)
+
 
 class ASTGeneratorExpressionNode(ASTNode):
     def __init__(self, expression):
@@ -778,6 +1297,16 @@ class ASTGeneratorExpressionNode(ASTNode):
         """
         self.expression = expression
         super().__init__("Generator Expression", self.expression)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_generator_expression method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_generator_expression(self)
 
 
 class ASTComprehensionNode(ASTNode):
@@ -793,6 +1322,16 @@ class ASTComprehensionNode(ASTNode):
         self.loop = loop
         super().__init__("Comprehension", self.value, self.loop)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_comprehension method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_comprehension(self)
+
 
 class ASTMapNode(ASTNode):
     def __init__(self, elements):
@@ -804,6 +1343,16 @@ class ASTMapNode(ASTNode):
         self.elements = elements
         super().__init__("Map", self.elements)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_map method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_map(self)
+
 
 class ASTSetNode(ASTNode):
     def __init__(self, elements):
@@ -814,6 +1363,16 @@ class ASTSetNode(ASTNode):
         """
         self.elements = elements
         super().__init__("Set", self.elements)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_set method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_set(self)
 
 
 class ASTKeyValuePairNode(ASTNode):
@@ -829,6 +1388,16 @@ class ASTKeyValuePairNode(ASTNode):
         self.value = value
         super().__init__("Key-Value Pair", self.key, self.value)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_key_value_pair method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_key_value_pair(self)
+
 
 class ASTDecoratedNode(ASTNode):
     def __init__(self, decorators, target):
@@ -843,6 +1412,16 @@ class ASTDecoratedNode(ASTNode):
         self.target = target
         super().__init__("Decorated", self.decorators, self.target)
 
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_decorated method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_decorated(self)
+
 
 class ASTDecoratorNode(ASTNode):
     def __init__(self, name, arguments=None):
@@ -856,3 +1435,13 @@ class ASTDecoratorNode(ASTNode):
         self.name = name
         self.arguments = arguments
         super().__init__("Decorator", self.name, self.arguments)
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_decorator method.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return visitor.visit_decorator(self)

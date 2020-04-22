@@ -1,8 +1,15 @@
-from metrics.structures.base.tree import Node
+from metrics.structures.base.tree import Node, Tree
 
 
 class Visitor(object):
     def visit(self, tree):
+        """
+        Visit a tree structure in a top-down manner, starting from the root.
+        :param tree: The tree to visit.
+        :type tree: Tree
+        :return: The output of the visiting process.
+        :rtype: Any
+        """
         return tree.accept(self)
 
     def visit_children(self, node):

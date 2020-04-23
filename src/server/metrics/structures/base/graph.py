@@ -22,7 +22,7 @@ class Graph(object):
         :return: Number of nodes in graph.
         :rtype: int
         """
-        return self.entry.edge_count() if self.entry  else 0
+        return self.entry.edge_count() if self.entry else 0
 
 
 class Node(object):
@@ -35,7 +35,7 @@ class Node(object):
         if children is None:
             self.children = []
         else:
-            self.children = list(children)
+            self.children = [child for child in children if child is not None]
 
         super().__init__()
 
@@ -91,5 +91,16 @@ class Node(object):
         """
         if isinstance(child, Node) and child not in self.children:
             self.children.append(child)
+        else:
+            raise ValueError
 
-        raise ValueError
+    def remove_child(self, child):
+        """
+        Remove a child node from this node.
+        :param child: The child to remove.
+        :type child: Node
+        """
+        if isinstance(child, Node) and child in self.children:
+            self.children.remove(child)
+        else:
+            raise ValueError

@@ -1,0 +1,12 @@
+.tabMenu {
+    color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.menu {
+    margin-right: 12px;
+}

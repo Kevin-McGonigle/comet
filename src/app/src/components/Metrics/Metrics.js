@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styles from './Metrics.css';
 import classnames from 'classnames';
-import MetricsPanel from './MetricsPanel';
+import Toolbar from '../general/Toolbar/Toolbar';
 import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 
 const cx = args => classnames(styles, args)
@@ -12,6 +12,7 @@ const Metrics = props => {
     return (
         <div className={cx("metricContainer")}>
             <FileDirectoryContainer />
+            <Toolbar />
         </div>
     )
 };

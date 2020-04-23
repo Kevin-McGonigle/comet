@@ -249,7 +249,7 @@ class TestCFGBreakNode(TestCase):
         self.assertEqual(self.break_node.node_count(), 2)
         self.assertEqual(self.break_node.edge_count(), 1)
 
-        self.assertEqual(self.break_node.break_to_block, break_to_node)
+        self.assertEqual(self.break_node.exit_block, break_to_node)
 
         self.assertIn(break_to_node, self.break_node.children)
 
@@ -263,4 +263,4 @@ class TestCFGBreakNode(TestCase):
         self.assertEqual(self.break_node.node_count(), 3)
         self.assertEqual(self.break_node.edge_count(), 2)
 
-        self.assertIn(child_node, self.break_node.break_to_block.children)
+        self.assertIn(child_node, self.break_node.exit_block.children)

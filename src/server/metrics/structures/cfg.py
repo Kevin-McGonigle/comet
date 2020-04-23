@@ -6,7 +6,40 @@ class CFG(Graph):
 
 
 class CFGNode(Node):
-    pass
+    _exit_block = None
+
+    @property
+    def exit_block(self):
+        """
+        Getter for exit_node property.
+        :return: Value of exit_node.
+        :rtype: CFGNode or None
+        """
+        return self._exit_block
+
+    @exit_block.setter
+    def exit_block(self, new_exit_block):
+        """
+        Setter for exit_node property.
+        :param new_exit_block: Value to assign to exit_node.
+        :type new_exit_block: CFGNode or None.
+        """
+        if self.exit_block in self.children:
+            self.children.remove(self.exit_block)
+
+        self._exit_block = new_exit_block
+
+        self.children.append(self.exit_block)
+
+    @exit_block.deleter
+    def exit_block(self):
+        """
+        Deleter for exit_node property.
+        """
+        if self.exit_block in self.children:
+            self.children.remove(self.exit_block)
+
+        del self._exit_block
 
 
 class CFGIfNode(CFGNode):
@@ -66,12 +99,7 @@ class CFGIfNode(CFGNode):
 
     @property
     def exit_block(self):
-        """
-        Getter for exit_block property.
-        :return: Value of exit_block property.
-        :rtype: CFGNode
-        """
-        return self._exit_block
+        return super().exit_block
 
     @exit_block.setter
     def exit_block(self, new_exit_block):
@@ -110,7 +138,7 @@ class CFGIfNode(CFGNode):
         :type child: CFGNode
         """
         self.exit_block.add_child(child)
-        
+
     def remove_child(self, child):
         """
         Remove a child from the if structure's exit block.
@@ -134,7 +162,7 @@ class CFGIfElseNode(CFGNode):
         if success_block is None:
             success_block = CFGNode()
         self._success_block = success_block
-        
+
         if fail_block is None:
             fail_block = CFGNode()
         self._fail_block = fail_block
@@ -146,7 +174,7 @@ class CFGIfElseNode(CFGNode):
         self.success_block.add_child(self.exit_block)
         self.fail_block.add_child(self.exit_block)
         super().__init__(self.success_block, self.fail_block)
-        
+
     @property
     def success_block(self):
         """
@@ -155,7 +183,7 @@ class CFGIfElseNode(CFGNode):
         :rtype: CFGNode
         """
         return self._success_block
-    
+
     @success_block.setter
     def success_block(self, new_success_block):
         """
@@ -169,7 +197,7 @@ class CFGIfElseNode(CFGNode):
         self._success_block = new_success_block
 
         self.children.append(self.success_block)
-    
+
     @success_block.deleter
     def success_block(self):
         """
@@ -215,12 +243,7 @@ class CFGIfElseNode(CFGNode):
 
     @property
     def exit_block(self):
-        """
-        Getter for exit_block property.
-        :return: Value of exit_block.
-        :rtype: CFGNode
-        """
-        return self._exit_block
+        return super().exit_block
 
     @exit_block.setter
     def exit_block(self, new_exit_block):
@@ -246,7 +269,7 @@ class CFGIfElseNode(CFGNode):
         self.fail_block.remove_child(self.exit_block)
 
         del self._exit_block
-        
+
     def add_child(self, child):
         """
         Add child to the if-else structure's exit block.
@@ -318,39 +341,6 @@ class CFGLoopNode(CFGNode):
             self.children.remove(self.success_block)
 
         del self._success_block
-
-    @property
-    def exit_block(self):
-        """
-        Getter for exit_block property.
-        :return: Value of exit_block
-        :rtype: CFGNode
-        """
-        return self._exit_block
-
-    @exit_block.setter
-    def exit_block(self, new_exit_block):
-        """
-        Setter for exit_block property.
-        :param new_exit_block: Value to assign to exit_block.
-        :type new_exit_block: CFGNode
-        """
-        if self.exit_block in self.children:
-            self.children.remove(self.exit_block)
-
-        self._exit_block = new_exit_block
-
-        self.children.append(self.exit_block)
-
-    @exit_block.deleter
-    def exit_block(self):
-        """
-        Deleter for exit_block property.
-        """
-        if self.exit_block in self.children:
-            self.children.remove(self.exit_block)
-
-        del self._exit_block
 
     def add_child(self, child):
         """
@@ -469,12 +459,7 @@ class CFGLoopElseNode(CFGNode):
 
     @property
     def exit_block(self):
-        """
-        Getter for exit_block property.
-        :return: Value of exit_block
-        :rtype: CFGNode
-        """
-        return self._exit_block
+        return super().exit_block
 
     @exit_block.setter
     def exit_block(self, new_exit_block):
@@ -579,12 +564,7 @@ class CFGSwitchNode(CFGNode):
 
     @property
     def exit_block(self):
-        """
-        Getter for exit_block property.
-        :return: Value of exit_block property.
-        :rtype: CFGNode or None
-        """
-        return self._exit_block
+        return super().exit_block
 
     @exit_block.setter
     def exit_block(self, new_exit_block):
@@ -634,116 +614,51 @@ class CFGSwitchNode(CFGNode):
 
 
 class CFGBreakNode(CFGNode):
-    def __init__(self, break_to_block=None):
+    def __init__(self, exit_block=None):
         """
         Break statement control flow graph structure.
-        :param break_to_block: The node to break to.
-        :type break_to_block: CFGNode or None
+        :param exit_block: The block to break to.
+        :type exit_block: CFGNode or None
         """
-        self._break_to_block = break_to_block
-        super().__init__(self.break_to_block)
-        
-    @property
-    def break_to_block(self):
-        """
-        Getter for break_to_block property.
-        :return: Value of break_to_block.
-        :rtype: CFGNode or None
-        """
-        return self._break_to_block
+        self._exit_block = exit_block
+        super().__init__(self.exit_block)
 
-    @break_to_block.setter
-    def break_to_block(self, new_break_to_block):
-        """
-        Setter for break_to_block property.
-        :param new_break_to_block: Value to assign to break_to_block.
-        :type new_break_to_block: CFGNode or None
-        """
-        if self.break_to_block in self.children:
-            self.children.remove(self.break_to_block)
-                                 
-        self._break_to_block = new_break_to_block
-        
-        self.children.append(self.break_to_block)
-        
-    @break_to_block.deleter
-    def break_to_block(self):
-        """
-        Deleter for break_to_block property.
-        """
-        if self.break_to_block in self.children:
-            self.children.remove(self.break_to_block)
-
-        del self._break_to_block
-    
     # TODO: Evaluate whether "add/remove child" is a valid operation for break blocks.
     def add_child(self, child):
         """
-        Add a child to the break structure's break-to block.
+        Add a child to the break structure's exit block.
         :param child: The child to add.
         :type child: CFGNode
         """
-        self.break_to_block.add_child(child)
-        
+        self.exit_block.add_child(child)
+
     def remove_child(self, child):
         """
-        Remove a child from the break structure's break-to block.
+        Remove a child from the break structure's exit block.
         :param child: The child to remove.
         :type child: CFGNode
         """
-        self.break_to_block.remove_child(child)
+        self.exit_block.remove_child(child)
 
 
 class CFGContinueNode(CFGNode):
-    def __init__(self, loop=None):
+    def __init__(self, exit_block=None):
         """
         Continue statement control flow graph structure.
-        :param loop: The encapsulating loop of the continue statement.
-        :type loop: CFGNode or None
+        :param exit_block: The encapsulating loop of the continue statement.
+        :type exit_block: CFGNode or None
         """
-        self._loop = loop
-        super().__init__(loop)
-     
-    @property
-    def loop(self):
-        """
-        Getter for loop property.
-        :return: Value of loop.
-        :rtype: CFGNode or None
-        """
-        return self._loop
-    
-    @loop.setter
-    def loop(self, new_loop):
-        """
-        Setter for loop property.
-        :param new_loop: Value to assign to loop.
-        :type new_loop: CFGNode or None
-        """
-        if self.loop in self.children:
-            self.children.remove(self.loop)
-            
-        self._loop = new_loop
-        
-        self.children.append(self.loop)
+        self._exit_block = exit_block
+        super().__init__(self.exit_block)
 
-    @loop.deleter
-    def loop(self):
-        """
-        Deleter for loop property.
-        """
-        if self.loop in self.children:
-            self.children.remove(self.loop)
-
-        del self._loop
-
+    # TODO: Evaluate whether "add/remove child" is a valid operation for continue blocks.
     def add_child(self, child):
         """
         Add a child to the continue structure's encapsulating loop.
-        :param child: The child to add
+        :param child: The child to add.
         :type child: CFGNode
         """
-        self.loop.add_child(child)
+        self.exit_block.add_child(child)
 
     def remove_child(self, child):
         """
@@ -751,7 +666,7 @@ class CFGContinueNode(CFGNode):
         :param child: The child to remove.
         :type child: CFGNode
         """
-        self.loop.remove_child(child)
+        self.exit_block.remove_child(child)
 
 
 if __name__ == '__main__':

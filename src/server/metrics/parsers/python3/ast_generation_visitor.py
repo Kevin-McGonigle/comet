@@ -1,4 +1,5 @@
 from antlr4.tree.Tree import TerminalNodeImpl, ParserRuleContext
+
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 from metrics.parsers.python3.base.Python3Visitor import Python3Visitor
 from metrics.structures.ast import *
@@ -252,11 +253,11 @@ class ASTGenerationVisitor(Python3Visitor):
         return ASTImportStatementNode(ctx.dotted_as_names().accept(self))
 
     def visitImport_from(self, ctx: Python3Parser.Import_fromContext):
-        _from = "".join(
-            [ASTTerminalNode(child.getText()) if isinstance(child, TerminalNodeImpl) else child.accept(self) for child
+        _from = ASTTerminalNode("".join(
+            [child.getText() if isinstance(child, TerminalNodeImpl) else child.accept(self) for child
              in
              ctx.getChildren(lambda child: filter_child(child, Python3Parser.DOT, Python3Parser.ELLIPSIS,
-                                                        Python3Parser.Dotted_nameContext))])
+                                                        Python3Parser.Dotted_nameContext))]))
         _import = ctx.import_as_names()
         if not _import:
             _import = "*"
@@ -337,7 +338,8 @@ class ASTGenerationVisitor(Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body, else_body.accept(self))
+            return ASTLoopElseStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body,
+                                            else_body.accept(self))
 
         return ASTLoopStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body)
 
@@ -729,7 +731,9 @@ def build_bin_op_choice(children):
 
     operator = children[-2]
     if isinstance(operator, list):
-        return ASTUnaryOperationNode(operator[0], ASTBinaryOperationNode(operator[1], build_bin_op_choice(children[:-2]), children[-1]))
+        return ASTUnaryOperationNode(operator[0],
+                                     ASTBinaryOperationNode(operator[1], build_bin_op_choice(children[:-2]),
+                                                            children[-1]))
 
     return ASTBinaryOperationNode(operator, build_bin_op_choice(children[:-2]), children[-1])
 

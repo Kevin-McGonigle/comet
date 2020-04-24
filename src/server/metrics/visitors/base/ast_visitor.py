@@ -2,6 +2,16 @@ from metrics.structures.ast import *
 
 
 class ASTVisitor(TreeVisitor):
+    def visit(self, ast):
+        """
+        Visit an AST structure.
+        :param ast: The AST to visit.
+        :type ast: AST
+        :return: The output of the visiting process.
+        :rtype: Any
+        """
+        return super().visit(ast)
+
     @staticmethod
     def visit_terminal(node):
         """

@@ -12,13 +12,3 @@ class TreeVisitor(GraphVisitor):
         :rtype: Any
         """
         return super().visit(tree)
-
-    def visit_children(self, node):
-        """
-        Visit each of a node's children.
-        :param node: The node whose children to visit.
-        :type node: Node
-        :return: A dictionary mapping each child to their visit result.
-        :rtype: dict[Node, Any]
-        """
-        return super().visit_children(node)

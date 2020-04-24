@@ -1,3 +1,7 @@
+# TODO: Refactor node-count and edge-count into a graph visitor.
+
+
+
 class Graph(object):
     def __init__(self, entry=None):
         """
@@ -45,7 +49,7 @@ class Node(object):
         :return: The number of reachable nodes from this node (inclusive).
         :rtype: int
         """
-        return 1 + sum([child.r_node_count([self]) for child in self.children])
+        return self.r_node_count([])
 
     def r_node_count(self, visited):
         """
@@ -67,7 +71,7 @@ class Node(object):
         :return: The number of reachable edges from this node (inclusive).
         :rtype: int
         """
-        return len(self.children) + sum([child.r_edge_count([self]) for child in self.children])
+        return self.r_edge_count([])
 
     def r_edge_count(self, visited):
         """

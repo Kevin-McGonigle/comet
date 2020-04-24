@@ -1,6 +1,3 @@
-from metrics.visitors.base.visitor import Visitor
-
-
 class Tree(object):
     def __init__(self, root=None):
         """
@@ -38,7 +35,7 @@ class Node(object):
         """
         Accept the visitor and visit this node's children.
         :param visitor: The visitor to accept.
-        :type visitor: Visitor
+        :type visitor: TreeVisitor
         :return: The result of the accept.
         :rtype: Any
         """

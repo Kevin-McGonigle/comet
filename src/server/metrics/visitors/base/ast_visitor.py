@@ -1,8 +1,7 @@
-from metrics.structures.ast import *
-from metrics.visitors.base.visitor import Visitor
+from metrics.visitors.base.tree_visitor import TreeVisitor
 
 
-class ASTVisitor(Visitor):
+class ASTVisitor(TreeVisitor):
     def visit_statements(self, node):
         """
         Visit AST statements node.

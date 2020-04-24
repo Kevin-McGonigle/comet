@@ -1,5 +1,4 @@
 from metrics.structures.base.tree import *
-from metrics.visitors.base.ast_visitor import ASTVisitor
 
 
 class AST(Tree):

@@ -2,7 +2,9 @@ from metrics.structures.base.graph import *
 
 
 class CFG(Graph):
-    pass
+    def cyclomatic_complexity(self):
+        connected_components_count = 1
+        return self.edge_count() - self.node_count() + 2 * connected_components_count
 
 
 class CFGNode(Node):
@@ -69,7 +71,7 @@ class CFGIfNode(CFGNode):
         :return: Value of success_block property.
         :rtype: CFGNode
         """
-        return self._exit_block
+        return self._success_block
 
     @success_block.setter
     def success_block(self, new_success_block):

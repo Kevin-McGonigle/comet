@@ -1,7 +1,4 @@
-from metrics.structures.base.tree import Node, Tree
-
-
-class Visitor(object):
+class TreeVisitor(object):
     def visit(self, tree):
         """
         Visit a tree structure in a top-down manner, starting from the root.

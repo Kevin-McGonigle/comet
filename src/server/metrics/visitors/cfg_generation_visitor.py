@@ -1,5 +1,5 @@
 from metrics.structures.cfg import *
-from metrics.visitors.base.ast_visitor import ASTVisitor, ASTNode
+from metrics.visitors.base.ast_visitor import ASTVisitor
 
 
 class CFGGenerationVisitor(ASTVisitor):

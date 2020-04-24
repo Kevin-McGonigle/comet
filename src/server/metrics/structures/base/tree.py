@@ -1,42 +1,41 @@
-class Tree(object):
+from metrics.structures.base.graph import Graph, Node as GraphNode
+from metrics.visitors.base.tree_visitor import TreeVisitor
+
+
+class Tree(Graph):
     def __init__(self, root=None):
         """
-        Initialise a generic tree.
+        Generic tree.
         :param root: The root node of the tree.
         :type root: Node
         """
-        self.root = root
-        super().__init__()
+        super().__init__(root)
 
     def __str__(self):
-        return f"Root: {self.root}"
-
-    def accept(self, visitor):
-        return self.root.accept(visitor)
-
-
-class Node(object):
-    def __init__(self, name, *children):
-        """
-        Initialise a generic tree node.
-        :param name: The name of the node.
-        :type name: str
-        :param children: The child nodes of the node.
-        :type children: Node or str
-        """
-        self.name = name
-        self.children = children
-        super().__init__()
-
-    def __str__(self):
-        return f"Node: {self.name}, Children: {self.children}"
+        return f"Root: {self.entry}"
 
     def accept(self, visitor):
         """
-        Accept the visitor and visit this node's children.
+        Accept a visitor.
         :param visitor: The visitor to accept.
         :type visitor: TreeVisitor
         :return: The result of the accept.
         :rtype: Any
         """
-        return visitor.visit_children(self)
+        return super().accept(visitor)
+
+
+class Node(GraphNode):
+    def __init__(self, name, *children):
+        """
+        Generic tree node.
+        :param name: The name of the node.
+        :type name: str
+        :param children: The child nodes of the node.
+        :type children: Node
+        """
+        self.name = name
+        super().__init__(*children)
+
+    def __str__(self):
+        return f"Name: {self.name}, Children: {self.children}"

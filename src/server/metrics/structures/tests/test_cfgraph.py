@@ -11,7 +11,7 @@ class TestCFG(TestCase):
             # noinspection PyArgumentList
             self.cfg = CFG()
 
-        self.entry_node = CFGLoopElseNode()
+        self.entry_node = CFGLoopElseBlock()
         self.cfg = CFG(self.entry_node)
 
     def tearDown(self):
@@ -27,7 +27,7 @@ class TestCFG(TestCase):
 class TestCFGNode(TestCase):
     def setUp(self):
         super().setUp()
-        self.cfg_node = CFGNode()
+        self.cfg_node = CFGBlock()
 
     def tearDown(self):
         super().tearDown()
@@ -35,7 +35,7 @@ class TestCFGNode(TestCase):
     def test_add_child(self):
         self.assertEqual(len(self.cfg_node.children), 0)
 
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.cfg_node.add_child(child_node)
 
         self.assertEqual(len(self.cfg_node.children), 1)
@@ -49,7 +49,7 @@ class TestCFGNode(TestCase):
     def test_node_count(self):
         self.assertEqual(self.cfg_node.node_count(), 1)
 
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.cfg_node.add_child(child_node)
 
         self.assertEqual(self.cfg_node.node_count(), 2)
@@ -61,8 +61,8 @@ class TestCFGNode(TestCase):
     def test_edge_count(self):
         self.assertEqual(self.cfg_node.edge_count(), 0)
 
-        child_node1 = CFGNode()
-        child_node2 = CFGNode()
+        child_node1 = CFGBlock()
+        child_node2 = CFGBlock()
 
         self.cfg_node.add_child(child_node1)
         self.cfg_node.add_child(child_node2)
@@ -78,10 +78,10 @@ class TestCFGIfNode(TestCase):
     def setUp(self):
         super().setUp()
 
-        success_block = CFGNode()
-        exit_block = CFGNode()
+        success_block = CFGBlock()
+        exit_block = CFGBlock()
 
-        self.if_node = CFGIfNode(success_block, exit_block)
+        self.if_node = CFGIfBlock(success_block, exit_block)
 
         self.assertEqual(self.if_node.edge_count(), 3)
         self.assertEqual(self.if_node.node_count(), 3)
@@ -97,7 +97,7 @@ class TestCFGIfNode(TestCase):
         super().tearDown()
 
     def test_add_child(self):
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.if_node.add_child(child_node)
 
         self.assertEqual(self.if_node.node_count(), 4)
@@ -110,11 +110,11 @@ class TestCFGIfElseNode(TestCase):
     def setUp(self):
         super().setUp()
 
-        success_block = CFGNode()
-        fail_block = CFGNode()
-        exit_block = CFGNode()
+        success_block = CFGBlock()
+        fail_block = CFGBlock()
+        exit_block = CFGBlock()
 
-        self.if_else_node = CFGIfElseNode(success_block, fail_block, exit_block)
+        self.if_else_node = CFGIfElseBlock(success_block, fail_block, exit_block)
 
         self.assertEqual(self.if_else_node.node_count(), 4)
         self.assertEqual(self.if_else_node.edge_count(), 4)
@@ -132,7 +132,7 @@ class TestCFGIfElseNode(TestCase):
         super().tearDown()
 
     def test_add_child(self):
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.if_else_node.add_child(child_node)
 
         self.assertEqual(self.if_else_node.node_count(), 5)
@@ -145,10 +145,10 @@ class TestCFGWhileNode(TestCase):
     def setUp(self):
         super().setUp()
 
-        success_block = CFGNode()
-        exit_block = CFGNode()
+        success_block = CFGBlock()
+        exit_block = CFGBlock()
 
-        self.while_node = CFGLoopNode(success_block, exit_block)
+        self.while_node = CFGLoopBlock(success_block, exit_block)
 
         self.assertEqual(self.while_node.edge_count(), 3)
         self.assertEqual(self.while_node.node_count(), 3)
@@ -164,7 +164,7 @@ class TestCFGWhileNode(TestCase):
         super().tearDown()
 
     def test_add_child(self):
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.while_node.add_child(child_node)
 
         self.assertEqual(self.while_node.node_count(), 4)
@@ -177,11 +177,11 @@ class TestCFGWhileElseNode(TestCase):
     def setUp(self):
         super().setUp()
 
-        success_block = CFGNode()
-        fail_block = CFGNode()
-        exit_block = CFGNode()
+        success_block = CFGBlock()
+        fail_block = CFGBlock()
+        exit_block = CFGBlock()
 
-        self.while_else_node = CFGLoopElseNode(success_block, fail_block, exit_block)
+        self.while_else_node = CFGLoopElseBlock(success_block, fail_block, exit_block)
 
         self.assertEqual(self.while_else_node.node_count(), 4)
         self.assertEqual(self.while_else_node.edge_count(), 4)
@@ -199,7 +199,7 @@ class TestCFGWhileElseNode(TestCase):
         super().tearDown()
 
     def test_add_child(self):
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.while_else_node.add_child(child_node)
 
         self.assertEqual(self.while_else_node.node_count(), 5)
@@ -212,9 +212,9 @@ class TestCFGSwitchNode(TestCase):
     def setUp(self):
         super().setUp()
 
-        case_blocks = [CFGNode(), CFGNode(), CFGNode(), CFGNode()]
-        exit_block = CFGNode()
-        self.switch_node = CFGSwitchNode(case_blocks, exit_block)
+        case_blocks = [CFGBlock(), CFGBlock(), CFGBlock(), CFGBlock()]
+        exit_block = CFGBlock()
+        self.switch_node = CFGSwitchBlock(case_blocks, exit_block)
 
         self.assertEqual(self.switch_node.node_count(), 6)
         self.assertEqual(self.switch_node.edge_count(), 8)
@@ -230,7 +230,7 @@ class TestCFGSwitchNode(TestCase):
         super().tearDown()
 
     def test_add_child(self):
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.switch_node.add_child(child_node)
 
         self.assertEqual(self.switch_node.node_count(), 7)
@@ -243,8 +243,8 @@ class TestCFGBreakNode(TestCase):
     def setUp(self):
         super().setUp()
 
-        break_to_node = CFGNode()
-        self.break_node = CFGBreakNode(break_to_node)
+        break_to_node = CFGBlock()
+        self.break_node = CFGBreakBlock(break_to_node)
 
         self.assertEqual(self.break_node.node_count(), 2)
         self.assertEqual(self.break_node.edge_count(), 1)
@@ -257,7 +257,7 @@ class TestCFGBreakNode(TestCase):
         super().tearDown()
 
     def test_add_child(self):
-        child_node = CFGNode()
+        child_node = CFGBlock()
         self.break_node.add_child(child_node)
 
         self.assertEqual(self.break_node.node_count(), 3)

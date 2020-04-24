@@ -13,56 +13,56 @@ class CFGGenerationVisitor(ASTVisitor):
         :param node: The node whose children to visit.
         :type node: ASTNode
         :return: A built sequence of CFGNodes returned by visiting each child. None if no CFGNodes returned.
-        :rtype: CFGNode or None
+        :rtype: CFGBlock or None
         """
         sequence = []
         for child in node.children:
             child_result = child.accept(self)
-            if isinstance(child_result, CFGNode):
+            if isinstance(child_result, CFGBlock):
                 sequence.append(child_result)
 
         return build_sequence(sequence)
 
     def visit_break_statement(self, node):
         if self.loop_scope is not None:
-            return CFGBreakNode(self.loop_scope.exit_block)
+            return CFGBreakBlock(self.loop_scope.exit_block)
 
-        return CFGBreakNode()
+        return CFGBreakBlock()
 
     def visit_continue_statement(self, node):
         if self.loop_scope is not None:
-            return CFGContinueNode(self.loop_scope)
+            return CFGContinueBlock(self.loop_scope)
 
-        return CFGContinueNode()
+        return CFGContinueBlock()
 
     def visit_if_statement(self, node):
         condition = node.condition.accept(self)
         body = node.body.accept(self)
 
-        if isinstance(condition, CFGNode):
-            condition.exit_block = CFGIfNode(body)
+        if isinstance(condition, CFGBlock):
+            condition.exit_block = CFGIfBlock(body)
             return condition
 
-        return CFGIfNode(body)
+        return CFGIfBlock(body)
 
     def visit_if_else_statement(self, node):
         condition = node.condition.accept(self)
         body = node.body.accept(self)
         else_body = node.else_body.accept(self)
 
-        if isinstance(condition, CFGNode):
-            condition.exit_block = CFGIfElseNode(body, else_body)
+        if isinstance(condition, CFGBlock):
+            condition.exit_block = CFGIfElseBlock(body, else_body)
             return condition
 
-        return CFGIfElseNode(body, else_body)
+        return CFGIfElseBlock(body, else_body)
 
     def visit_loop_statement(self, node):
         condition = node.condition.accept(self)
 
         outer_loop_scope = self.loop_scope
-        self.loop_scope = loop = CFGLoopNode()
+        self.loop_scope = loop = CFGLoopBlock()
 
-        if isinstance(condition, CFGNode):
+        if isinstance(condition, CFGBlock):
             condition.exit_block = node.body.accept(self)
             loop.success_block = condition
         else:
@@ -74,7 +74,7 @@ class CFGGenerationVisitor(ASTVisitor):
 
     def visit_loop_else_statement(self, node):
         outer_loop_scope = self.loop_scope
-        self.loop_scope = loop_else = CFGLoopElseNode()
+        self.loop_scope = loop_else = CFGLoopElseBlock()
 
         loop_else.success_block = node.body.accept(self)
 
@@ -89,9 +89,9 @@ def build_sequence(sequence):
     """
     Build sequence of blocks.
     :param sequence: The list of blocks to build into a sequence.
-    :type sequence: list[CFGNode] or None
+    :type sequence: list[CFGBlock] or None
     :return: The first node of the sequence with built sequence as its exit block. None if no/empty sequence supplied.
-    :rtype: CFGNode or None
+    :rtype: CFGBlock or None
     """
     if not sequence:
         return None

@@ -1,91 +1,48 @@
-# TODO: Refactor node-count and edge-count into a graph visitor.
-
-
-
 class Graph(object):
     def __init__(self, entry=None):
         """
-        Initialise a generic graph.
+        Generic graph.
         :param entry: The entry node of the graph.
         :type entry: Node or None
         """
-        super().__init__()
         self.entry = entry
 
-    def node_count(self):
-        """
-        Get the number of nodes in the graph.
-        :return: Number of nodes in graph.
-        :rtype: int
-        """
-        return self.entry.node_count() if self.entry else 0
+    def __str__(self):
+        return f"Entry: {self.entry}"
 
-    def edge_count(self):
+    def accept(self, visitor):
         """
-        Get the number of edges in the graph.
-        :return: Number of nodes in graph.
-        :rtype: int
+        Accept a visitor and visit the entry node's children.
+        :param visitor: The visitor to accept.
+        :type visitor: GraphVisitor
+        :return: The result of the accept.
+        :rtype: Any
         """
-        return self.entry.edge_count() if self.entry else 0
+        if isinstance(self.entry, Node):
+            return self.entry.accept(visitor)
 
 
 class Node(object):
     def __init__(self, *children):
         """
         Generic graph node.
-        :param children: Child nodes.
+        :param children: The child nodes of the node.
         :type children: Node
         """
-        if children is None:
-            self.children = []
-        else:
-            self.children = [child for child in children if child is not None]
+        self.children = list(children)
 
-        super().__init__()
+    def __str__(self):
+        return f"Children: {self.children}"
 
-    def node_count(self):
+    def accept(self, visitor):
         """
-        Calculate the number of reachable nodes from this node (inclusive).
-        :return: The number of reachable nodes from this node (inclusive).
-        :rtype: int
+        Accept the visitor and visit this node's children.
+        :param visitor: The visitor to accept.
+        :type visitor: TreeVisitor
+        :return: The result of the accept.
+        :rtype: Any
         """
-        return self.r_node_count([])
-
-    def r_node_count(self, visited):
-        """
-        Recursive helper for calculating node count.
-        :param visited: Nodes already visited during this count.
-        :type visited: list[Node]
-        :return: 1 + the sum of the node counts of all child nodes. 0 if already visited.
-        :rtype: int
-        """
-        if self in visited:
-            return 0
-
-        visited.append(self)
-        return 1 + sum([child.r_node_count(visited) for child in self.children])
-
-    def edge_count(self):
-        """
-        Calculate the number of reachable edges from this node (inclusive).
-        :return: The number of reachable edges from this node (inclusive).
-        :rtype: int
-        """
-        return self.r_edge_count([])
-
-    def r_edge_count(self, visited):
-        """
-        Recursive helper for calculating edge count.
-        :param visited: Nodes already visited during this count.
-        :type visited: list[Node]
-        :return: The number of child nodes + the sum of the edge counts for all child nodes. 0 if already visited.
-        :rtype: int
-        """
-        if self in visited:
-            return 0
-
-        visited.append(self)
-        return len(self.children) + sum([child.r_edge_count(visited) for child in self.children])
+        return visitor.visit_children(self)
 
     def add_child(self, child):
         """

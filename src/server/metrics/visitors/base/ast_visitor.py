@@ -1,7 +1,18 @@
-from metrics.visitors.base.tree_visitor import TreeVisitor
+from metrics.structures.ast import *
 
 
 class ASTVisitor(TreeVisitor):
+    @staticmethod
+    def visit_terminal(node):
+        """
+        Visit AST terminal node.
+        :param node: The AST terminal node.
+        :type node: ASTTerminalNode
+        :return: The terminal node's text.
+        :rtype: str
+        """
+        return node.text
+
     def visit_statements(self, node):
         """
         Visit AST statements node.

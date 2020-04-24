@@ -56,7 +56,7 @@ class AST(Tree):
 class ASTNode(Node):
     def accept(self, visitor):
         """
-        Accept AST visitor.
+        Accept an AST visitor.
         :param visitor: The AST visitor to accept.
         :type visitor: ASTVisitor
         :return: The result of the accept.
@@ -78,30 +78,37 @@ class ASTTerminalNode(ASTNode):
         super().__init__(self.text)
 
     def accept(self, visitor):
-        return self.text
+        """
+        Accept an AST visitor and return the terminal node's text.
+        :param visitor:
+        :type visitor:
+        :return:
+        :rtype:
+        """
+        return visitor.visit_terminal(self)
 
 
 # Multiples
 
 class ASTMultiNode(ASTNode):
-    def __init__(self, _type, first, remaining):
+    def __init__(self, name, first, remaining):
         """
         Base class for representing multiples of certain components.
-        :param _type: The type of each member of the series.
-        :type _type: str
+        :param name: The type of each member of the series.
+        :type name: str
         :param first: The first member in the series.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining members in the series.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
-        self.name = _type
+        self.name = name
         self.first = first
         self.remaining = remaining
-        super().__init__(_type, self.first, self.remaining)
+        super().__init__(name, self.first, self.remaining)
 
 
 class ASTStatementsNode(ASTMultiNode):
-    def __init__(self, first, remaining=None):
+    def __init__(self, first, remaining):
         """
         Representation of multiple, consecutive statements.
         :param first: The first statement in the series of statements.
@@ -127,9 +134,9 @@ class ASTExpressionsNode(ASTMultiNode):
         """
         Representation of multiple, consecutive expressions.
         :param first: The first expression in the series of expressions.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining expression(s) in the series of expressions.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
         super().__init__("Expressions", first, remaining)
 
@@ -149,9 +156,9 @@ class ASTElementsNode(ASTMultiNode):
         """
         Representation of multiple, consecutive list, map or set elements.
         :param first: The first element in the series of elements.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining element(s) in the series of elements.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
         super().__init__("Elements", first, remaining)
 
@@ -171,9 +178,9 @@ class ASTParametersNode(ASTMultiNode):
         """
         Representation of multiple, consecutive parameters.
         :param first: The first parameter in the series of parameters.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining parameter(s) in the series of parameters.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
         super().__init__("Parameters", first, remaining)
 
@@ -193,9 +200,9 @@ class ASTArgumentsNode(ASTMultiNode):
         """
         Representation of multiple, consecutive arguments.
         :param first: The first argument in the series of arguments.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining argument(s) in the series of arguments.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
         super().__init__("Arguments", first, remaining)
 
@@ -215,9 +222,9 @@ class ASTSubscriptsNode(ASTMultiNode):
         """
         Representation of multiple, consecutive subscripts.
         :param first: The first subscript in the series of subscripts.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining subscript(s) in the series of subscripts.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
         super().__init__("Subscripts", first, remaining)
 
@@ -237,11 +244,11 @@ class ASTCatchesNode(ASTMultiNode):
         """
         Representation of multiple, consecutive catch statements.
         :param first: The first catch statement in the series of catch statements.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining catch statement(s) in the series of catch statements.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
-        super().__init__("Catch Statements", first, remaining)
+        super().__init__("Catches", first, remaining)
 
     def accept(self, visitor):
         """
@@ -259,9 +266,9 @@ class ASTDecoratorsNode(ASTMultiNode):
         """
         Representation of multiple, consecutive decorators.
         :param first: The first decorator in the series of decorators.
-        :type first: ASTNode or str
+        :type first: ASTNode
         :param remaining: The remaining decorator(s) in the series of decorators.
-        :type remaining: ASTNode or str
+        :type remaining: ASTNode
         """
         super().__init__("Decorators", first, remaining)
 
@@ -286,7 +293,7 @@ class ASTDelStatementNode(ASTStatementNode):
         """
         Delete statement.
         :param expressions: The expressions to be deleted.
-        :type expressions: ASTNode or str
+        :type expressions: ASTNode
         """
         self.expressions = expressions
         super().__init__("Del", self.expressions)
@@ -307,9 +314,9 @@ class ASTAssignmentStatementNode(ASTStatementNode):
         """
         Standard variable assignment statement.
         :param variables: The variable(s) to be assigned to.
-        :type variables: ASTNode or str
+        :type variables: ASTNode
         :param values: The value(s) to assign.
-        :type values: ASTNode or str
+        :type values: ASTNode
         """
         self.variables = variables
         self.values = values
@@ -333,9 +340,9 @@ class ASTAugmentedAssignmentStatementNode(ASTStatementNode):
         :param operation: The in-place operation being performed.
         :type operation: str
         :param variables: The variable(s) being assigned to.
-        :type variables: ASTNode or str
+        :type variables: ASTNode
         :param values: The value(s) being assigned.
-        :type values: ASTNode or str
+        :type values: ASTNode
         """
         self.operation = operation
         self.variables = variables
@@ -358,9 +365,9 @@ class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
         """
         Annotated assignment statement.
         :param annotation: The annotation for the variable(s).
-        :type annotation: ASTNode or str
+        :type annotation: ASTNode
         :param variables: The variable(s) being assigned to.
-        :type variables: ASTNode or str
+        :type variables: ASTNode
         :param values: The value(s) being assigned
         :type values:
         """
@@ -385,7 +392,7 @@ class ASTYieldStatementNode(ASTStatementNode):
         """
         Yield statement.
         :param values: The value(s) being yielded.
-        :type values: ASTNode or str
+        :type values: ASTNode
         """
         self.value = values
         super().__init__("Yield", self.value)
@@ -460,7 +467,7 @@ class ASTReturnStatementNode(ASTStatementNode):
         """
         Return statement.
         :param values: The value(s) being returned.
-        :type values: ASTNode or str
+        :type values: ASTNode
         """
         self.expression = values
         super().__init__("Return", self.expression)
@@ -481,7 +488,7 @@ class ASTThrowStatementNode(ASTStatementNode):
         """
         Throw statement.
         :param exception: The exception to be thrown.
-        :type exception: ASTNode or str
+        :type exception: ASTNode
         """
         self.exception = exception
         super().__init__("Throw", self.exception)
@@ -502,7 +509,7 @@ class ASTImportStatementNode(ASTStatementNode):
         """
         Import statement.
         :param libraries: The library to be imported.
-        :type libraries: ASTNode or str
+        :type libraries: ASTNode
         """
         self.libraries = libraries
         super().__init__("Import", self.libraries)
@@ -523,7 +530,7 @@ class ASTGlobalStatementNode(ASTStatementNode):
         """
         Global variable(s) declaration.
         :param variables: The global variable(s) being declared.
-        :type variables: ASTNode or str
+        :type variables: ASTNode
         """
         self.variables = variables
         super().__init__("Global", self.variables)
@@ -544,7 +551,7 @@ class ASTNonLocalStatementNode(ASTStatementNode):
         """
         Non-local variable declaration.
         :param variables: The nonlocal variable(s) being declared.
-        :type variables: ASTNode or str
+        :type variables: ASTNode
         """
         self.variables = variables
         super().__init__("Non-Local", self.variables)
@@ -565,9 +572,9 @@ class ASTAssertStatementNode(ASTStatementNode):
         """
         Assert statement.
         :param condition: The condition to assert.
-        :type condition: ASTNode or str
+        :type condition: ASTNode
         :param message: The message for the error raised should the assertion fail.
-        :type message: ASTNode or str
+        :type message: ASTNode
         """
         self.condition = condition
         self.message = message
@@ -589,9 +596,9 @@ class ASTIfStatementNode(ASTStatementNode):
         """
         If statement.
         :param condition: The condition to check.
-        :type condition: ASTNode or str
+        :type condition: ASTNode
         :param body: The code to execute if the condition is met.
-        :type body: ASTNode or str or None
+        :type body: ASTNode or None
         """
         self.condition = condition
         self.body = body
@@ -613,11 +620,11 @@ class ASTIfElseStatementNode(ASTStatementNode):
         """
         If-else statement.
         :param condition: The condition to check.
-        :type condition: ASTNode or str
+        :type condition: ASTNode
         :param body: The code to execute if the condition is met.
-        :type body: ASTNode or str
+        :type body: ASTNode
         :param else_body: The code to execute if the condition is not met.
-        :type else_body: ASTNode or str
+        :type else_body: ASTNode
         """
         self.condition = condition
         self.body = body
@@ -640,9 +647,9 @@ class ASTLoopStatementNode(ASTStatementNode):
         """
         Loop statement.
         :param condition: The condition to check.
-        :type condition: ASTNode or str
+        :type condition: ASTNode
         :param body: The code to execute while the condition is met.
-        :type body: ASTNode or str or None
+        :type body: ASTNode or None
         """
         self.condition = condition
         self.body = body
@@ -664,11 +671,11 @@ class ASTLoopElseStatementNode(ASTStatementNode):
         """
         Loop-else statement.
         :param condition: The condition to check.
-        :type condition: ASTNode or str
+        :type condition: ASTNode
         :param body: The code to execute while the condition is met.
-        :type body: ASTNode or str
+        :type body: ASTNode
         :param else_body: The code to execute when the condition is not met.
-        :type else_body: ASTNode or str
+        :type else_body: ASTNode
         """
         self.condition = condition
         self.body = body
@@ -691,20 +698,20 @@ class ASTTryStatementNode(ASTStatementNode):
         """
         Try statement.
         :param body: The code to try.
-        :type body: ASTNode or str
+        :type body: ASTNode
         :param catches: The catch clause(s).
-        :type catches: ASTNode or str
+        :type catches: ASTNode
         :param else_body: The code to execute if the control flow leaves the try block, no exception was raised, and no
         return, continue, or break statement was executed.
-        :type else_body: ASTNode or str
+        :type else_body: ASTNode
         :param _finally: The finally clause.
-        :type _finally: ASTNode or str
+        :type _finally: ASTNode
         """
         self.body = body
         self.catches = catches
         self._else = else_body
         self._finally = _finally
-        super().__init__("Try", self.body, *self.catches, self._else, self._finally)
+        super().__init__("Try", self.body, self.catches, self._else, self._finally)
 
     def accept(self, visitor):
         """
@@ -722,9 +729,9 @@ class ASTWithStatementNode(ASTStatementNode):
         """
         With statement.
         :param expressions: The expression(s) to evaluate to create a context manager.
-        :type expressions: ASTNode or str
+        :type expressions: ASTNode
         :param body: The code to execute within the established runtime context.
-        :type body: ASTNode or str
+        :type body: ASTNode
         """
         self.expressions = expressions
         self.body = body
@@ -746,13 +753,13 @@ class ASTFunctionDefinitionNode(ASTStatementNode):
         """
         Function definition.
         :param name: The name of the function.
-        :type name: ASTNode or str
+        :type name: ASTNode
         :param body: The body of the function.
-        :type body: ASTNode or str
+        :type body: ASTNode
         :param parameters: The parameter(s) of the function.
-        :type parameters: ASTNode or str
+        :type parameters: ASTNode
         :param return_type: The return type of the function.
-        :type return_type: ASTNode or str
+        :type return_type: ASTNode
         """
         self.name = name
         self.body = body
@@ -776,11 +783,11 @@ class ASTClassDefinitionNode(ASTStatementNode):
         """
         Class definition.
         :param name: The name of the class.
-        :type name: ASTNode or str
+        :type name: ASTNode
         :param body: The body of the class.
-        :type body: ASTNode or str
+        :type body: ASTNode
         :param arguments: The argument(s) of the class.
-        :type arguments: ASTNode or str
+        :type arguments: ASTNode
         """
         self.name = name
         self.body = body
@@ -824,9 +831,9 @@ class ASTCatchNode(ASTNode):
         """
         Catch clause.
         :param exceptions: The exception(s) to catch.
-        :type exceptions: ASTNode or str
+        :type exceptions: ASTNode
         :param body: The code to execute if the specified exception(s) are thrown in the corresponding try block.
-        :type body: ASTNode or str
+        :type body: ASTNode
         """
         self.exception = exceptions
         self.body = body
@@ -872,9 +879,9 @@ class ASTBinaryOperationNode(ASTNode):
         :param operation: The operation being performed.
         :type operation: str
         :param left_operand: The left-hand operand of the operation.
-        :type left_operand: ASTNode or str
+        :type left_operand: ASTNode
         :param right_operand: The right-hand operand of the operation.
-        :type right_operand: ASTNode or str
+        :type right_operand: ASTNode
         """
         self.left_operand = left_operand
         self.right_operand = right_operand
@@ -898,7 +905,7 @@ class ASTUnaryOperationNode(ASTNode):
         :param operation: The operation being performed.
         :type operation: str
         :param operand: The operand of the operation.
-        :type operand: ASTNode or str
+        :type operand: ASTNode
         """
         self.operation = operation
         self.operand = operand
@@ -920,9 +927,9 @@ class ASTAsNode(ASTNode):
         """
         "As" expression.
         :param expression: The expression to assign the alias to.
-        :type expression: ASTNode or str
+        :type expression: ASTNode
         :param alias: The alias to be assigned
-        :type alias: ASTNode or str
+        :type alias: ASTNode
         """
         self.expression = expression
         self.alias = alias
@@ -944,7 +951,7 @@ class ASTAsyncNode(ASTNode):
         """
         Async declaration.
         :param target: The code to be declared as asynchronous.
-        :type target: ASTNode or str
+        :type target: ASTNode
         """
         self.child = target
         super().__init__("Async", self.child)
@@ -965,11 +972,11 @@ class ASTParameterNode(ASTNode):
         """
         Function parameter.
         :param name: The name of the parameter.
-        :type name: str
+        :type name: ASTTerminalNode
         :param _type: The parameter's type.
-        :type _type: ASTNode or str
+        :type _type: ASTNode
         :param default: The default value of the parameter.
-        :type default: ASTNode or str
+        :type default: ASTNode
         """
         self.name = name
         self.type = _type
@@ -992,9 +999,9 @@ class ASTPositionalArgumentsParameter(ASTNode):
         """
         Positional arguments parameter.
         :param name: The name of the parameter.
-        :type name: str
+        :type name: ASTTerminalNode
         :param _type: The type of all positional arguments supplied using the parameter.
-        :type _type: ASTNode or str
+        :type _type: ASTNode
         """
         self.name = name
         self.type = _type
@@ -1016,9 +1023,9 @@ class ASTKeywordArgumentsParameter(ASTNode):
         """
         Keyword arguments parameter.
         :param name: The name of the parameter.
-        :type name: str
+        :type name: ASTTerminalNode
         :param _type: The type of all keyword arguments supplied using the parameter.
-        :type _type: ASTNode or str
+        :type _type: ASTNode
         """
         self.name = name
         self.type = _type
@@ -1040,9 +1047,9 @@ class ASTFromNode(ASTNode):
         """
         "From" expression.
         :param source: The source to take the expression(s) from.
-        :type source: ASTNode or str
+        :type source: ASTNode
         :param expressions: The expressions to take.
-        :type expressions: ASTNode or str or None
+        :type expressions: ASTNode or None
         """
         self.source = source
         self.expressions = expressions
@@ -1064,9 +1071,9 @@ class ASTAnonymousFunctionDefinitionNode(ASTNode):
         """
         Anonymous function definition.
         :param body: The body of the anonymous function.
-        :type body: ASTNode or str
+        :type body: ASTNode
         :param parameters: The parameter(s) of the function.
-        :type parameters: ASTNode or str
+        :type parameters: ASTNode
         """
         self.body = body
         self.parameters = parameters
@@ -1088,7 +1095,7 @@ class ASTUnpackExpressionNode(ASTNode):
         """
         Unpack expression.
         :param expression: The expression to unpack.
-        :type expression: ASTNode or str
+        :type expression: ASTNode
         """
         self.expression = expression
         super().__init__("Unpack", self.expression)
@@ -1109,7 +1116,7 @@ class ASTAwaitNode(ASTNode):
         """
         Await expression.
         :param expression: The expression to await.
-        :type expression: ASTNode or str
+        :type expression: ASTNode
         """
         self.expression = expression
         super().__init__("Await", self.expression)
@@ -1130,9 +1137,9 @@ class ASTAccessNode(ASTNode):
         """
         Sequence element(s) access.
         :param sequence: The sequence to access.
-        :type sequence: ASTNode or str
+        :type sequence: ASTNode
         :param subscripts: The subscript(s) defining which elements to access.
-        :type subscripts: ASTNode or str
+        :type subscripts: ASTNode
         """
         self.name = sequence
         self.subscript = subscripts
@@ -1154,7 +1161,7 @@ class ASTIndexNode(ASTNode):
         """
         Sequence single element access.
         :param index: The index of the element to access.
-        :type index: ASTNode or str
+        :type index: ASTNode
         """
         self.index = index
         super().__init__("Index", self.index)
@@ -1175,11 +1182,11 @@ class ASTSliceNode(ASTNode):
         """
         Sequence slice access.
         :param start: The index of the first element in the slice.
-        :type start: ASTNode or str
+        :type start: ASTNode
         :param stop: The index to slice up to.
-        :type stop: ASTNode or str
+        :type stop: ASTNode
         :param step: The step of the slice.
-        :type step: ASTNode or str
+        :type step: ASTNode
         """
         self.start = start
         self.stop = stop
@@ -1202,9 +1209,9 @@ class ASTCallNode(ASTNode):
         """
         Function call.
         :param function: The function being called.
-        :type function: ASTNode or str
+        :type function: ASTNode
         :param arguments: The arguments being supplied to the function.
-        :type arguments: ASTNode or str
+        :type arguments: ASTNode
         """
         self.name = function
         self.arguments = arguments
@@ -1226,9 +1233,9 @@ class ASTMemberNode(ASTNode):
         """
         Member access.
         :param parent: The member's parent.
-        :type parent: ASTNode or str
+        :type parent: ASTNode
         :param member: The member to access.
-        :type member: ASTNode or  str
+        :type member: ASTNode
         """
         self.parent = parent
         self.child = member
@@ -1250,7 +1257,7 @@ class ASTListNode(ASTNode):
         """
         List declaration.
         :param elements: The elements of the list.
-        :type elements: ASTNode or str
+        :type elements: ASTNode
         """
         self.elements = elements
         super().__init__("List", self.elements)
@@ -1271,7 +1278,7 @@ class ASTTupleNode(ASTNode):
         """
         Tuple declaration.
         :param elements: The elements of the tuple.
-        :type elements: ASTNode or str
+        :type elements: ASTNode
         """
         self.elements = elements
         super().__init__("Tuple", self.elements)
@@ -1292,7 +1299,7 @@ class ASTGeneratorExpressionNode(ASTNode):
         """
         Generator expression.
         :param expression: The expression defining the generator.
-        :type expression: ASTNode or str
+        :type expression: ASTNode
         """
         self.expression = expression
         super().__init__("Generator Expression", self.expression)
@@ -1313,9 +1320,9 @@ class ASTComprehensionNode(ASTNode):
         """
         Comprehension expression.
         :param value: The value to return from the loop.
-        :type value: ASTNode or str
+        :type value: ASTNode
         :param loop: The loop represented in the comprehension.
-        :type loop: ASTNode or str
+        :type loop: ASTNode
         """
         self.value = value
         self.loop = loop
@@ -1337,7 +1344,7 @@ class ASTMapNode(ASTNode):
         """
         Map declaration.
         :param elements: The elements of the map.
-        :type elements: ASTNode or str
+        :type elements: ASTNode
         """
         self.elements = elements
         super().__init__("Map", self.elements)
@@ -1358,7 +1365,7 @@ class ASTSetNode(ASTNode):
         """
         Set declaration.
         :param elements: The elements of the set.
-        :type elements: ASTNode or str
+        :type elements: ASTNode
         """
         self.elements = elements
         super().__init__("Set", self.elements)
@@ -1379,9 +1386,9 @@ class ASTKeyValuePairNode(ASTNode):
         """
         Key-value pair.
         :param key: The key.
-        :type key: ASTNode or str
+        :type key: ASTNode
         :param value: The value.
-        :type value: ASTNode or str
+        :type value: ASTNode
         """
         self.key = key
         self.value = value
@@ -1403,9 +1410,9 @@ class ASTDecoratedNode(ASTNode):
         """
         Decorated statement.
         :param decorators: The decorators applied to the target.
-        :type decorators: ASTNode or str
+        :type decorators: ASTNode
         :param target: The target that is decorated.
-        :type target: ASTNode or str
+        :type target: ASTNode
         """
         self.decorators = decorators
         self.target = target
@@ -1427,9 +1434,9 @@ class ASTDecoratorNode(ASTNode):
         """
         Decorator.
         :param name: The name of the decorator.
-        :type name: ASTNode or str
+        :type name: ASTNode
         :param arguments: The arguments supplied to the decorator.
-        :type arguments: ASTNode or str
+        :type arguments: ASTNode
         """
         self.name = name
         self.arguments = arguments

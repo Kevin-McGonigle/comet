@@ -39,7 +39,7 @@ export const shapeFileData = (fileData) => {
             lastModified: file.lastModified,
             size: file.size,
             type: file.type,
-            content: data,      // Returning a promise fix later
+            content: data,
         };
     });
     return shapedData;
@@ -98,10 +98,10 @@ const UploadModal = props => {
     const upload = () => {
         uploadModalOnConfirmHandler();
         upload_files(fileData).then((data) => {
-            if (data.ok) {
+            if (data) {
                 const shapedData = shapeFileData(fileData);
                 setFileData(shapedData);
-                setInheritanceTree(data.json());
+                setInheritanceTree(data);
                 setAlertSuccess("Uploaded succesfully!")
                 history.push('/metrics');
             } else {

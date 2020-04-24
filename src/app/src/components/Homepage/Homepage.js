@@ -19,7 +19,6 @@ const Homepage = props => {
     } = props;
     const history = useHistory();
     const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
-    const [textArea, setTextArea] = useState({value: ''})
     const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
 
     // Handlers stop the creation a new functions each render 
@@ -29,9 +28,12 @@ const Homepage = props => {
         setCreateModal({ isOpen: false, isLoading: false });
     }
     const createModalOnConfirmHandler = () => {
-        // #TODO: hit API with textArea
         setAlertNone();
         setCreateModal({ isOpen: true, isLoading: true })
+    }
+
+    const createModalOnFailureHandler = () => {
+        setCreateModal({ isOpen: true, isLoading: false})
     }
 
     const uploadButtonOnClickHandler = () => {
@@ -48,6 +50,7 @@ const Homepage = props => {
         setUploadModal({ isOpen: true, isLoading: true })
     }
 
+
     return (
        <div className={cx('homepageContainer')} >
             <div className={cx('topBar')} >
@@ -61,11 +64,11 @@ const Homepage = props => {
                         
                     <div>
                         <CreateModalContainer
-                            textArea={textArea}
-                            setTextArea={setTextArea}    
+                            history={history}
                             createModal={createModal}
                             createModalOnConfirmHandler={createModalOnConfirmHandler}
                             createModalOnCloseHandler={createModalOnCloseHandler}
+                            createModalOnFailureHandler={createModalOnFailureHandler}
                         />
     
                         <UploadModalContainer

@@ -2,7 +2,7 @@ const UPLOAD_URL = "http://127.0.0.1:8000/api/upload/";
 
 async function upload_files(data)  {
     let formData = new FormData();
-
+    console.log(data);
     data.forEach(file => {
         formData.append("name", file.name);
         formData.append("size", file.size);
@@ -14,7 +14,8 @@ async function upload_files(data)  {
         method: 'post',
         body: formData
     })
-    .then(r => r)
+    .then(r => r.json())
+    .then(data => data)
     .catch(e => console.log(e));
 }
 

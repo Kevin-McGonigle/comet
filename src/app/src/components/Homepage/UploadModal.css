@@ -9,20 +9,16 @@
 
 .fileItemContainer {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    background-color: #FAE2E2;
+    background-color: #D4EEE2;
     margin: 8px 0px 4px 0px;
 }
 .fileItems {
     flex-grow: 1;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    text-align: center;
     margin: 1em 3em;
-	color: #999;
-	border-left: 2px solid #999;
-	padding-left: 1em; 
+	color: #131516;
+	border-left: 2px solid #131516;
+    padding-left: 1em; 
 }
 
 .deleteIcon {

@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styles from './Metrics.css';
 import classnames from 'classnames';
-import MetricsPanel from './MetricsPanel';
 import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 
 const cx = args => classnames(styles, args)

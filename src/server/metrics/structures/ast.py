@@ -61,7 +61,7 @@ class AST(Tree):
         super().__init__(root)
 
     def __str__(self):
-        s = "Abstract Syntax Tree"
+        s = "Abstract syntax tree"
 
         if self.root:
             s += f"\nRoot: {self.root}"

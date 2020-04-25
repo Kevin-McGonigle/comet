@@ -11,7 +11,12 @@ class CFG(Graph):
         super().__init__(entry)
 
     def __str__(self):
-        return super().__str__()
+        s = "Control-flow graph"
+
+        if self.entry:
+            s += f"\nEntry: {self.entry}"
+
+        return s
 
     def accept(self, visitor):
         """
@@ -26,6 +31,17 @@ class CFG(Graph):
 
 class CFGBlock(Node):
     _exit_block = None
+
+    def __str__(self):
+        s = "Basic block"
+
+        if self.exit_block:
+            s += f"\nExit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "Basic block"
 
     @property
     def exit_block(self):
@@ -80,6 +96,20 @@ class CFGIfBlock(CFGBlock):
 
         self.success_block.add_child(self.exit_block)
         super().__init__(self.success_block, self.exit_block)
+
+    def __str__(self):
+        s = "If block"
+
+        if self.success_block:
+            s += f"Success block: {self.success_block}"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "If block"
 
     @property
     def success_block(self):
@@ -193,6 +223,23 @@ class CFGIfElseBlock(CFGBlock):
         self.success_block.add_child(self.exit_block)
         self.fail_block.add_child(self.exit_block)
         super().__init__(self.success_block, self.fail_block)
+
+    def __str__(self):
+        s = "If-else block"
+
+        if self.success_block:
+            s += f"Success block: {self.success_block}"
+
+        if self.fail_block:
+            s += f"Fail block: {self.fail_block}"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "If-else block"
 
     @property
     def success_block(self):
@@ -326,6 +373,20 @@ class CFGLoopBlock(CFGBlock):
         self.success_block.add_child(self)
         super().__init__(self.success_block, self.exit_block)
 
+    def __str__(self):
+        s = "Loop block"
+
+        if self.success_block:
+            s += f"Success block: {self.success_block}"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "Loop block"
+
     @property
     def success_block(self):
         """
@@ -405,6 +466,23 @@ class CFGLoopElseBlock(CFGBlock):
         self.fail_block.add_child(self.exit_block)
 
         super().__init__(self.success_block, self.fail_block)
+
+    def __str__(self):
+        s = "Loop-else block"
+
+        if self.success_block:
+            s += f"Success block: {self.success_block}"
+
+        if self.fail_block:
+            s += f"Fail block: {self.fail_block}"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "Loop-else block"
 
     @property
     def success_block(self):
@@ -539,6 +617,20 @@ class CFGSwitchBlock(CFGBlock):
 
         super().__init__(*self.case_blocks)
 
+    def __str__(self):
+        s = "Switch block"
+
+        if self.case_blocks:
+            s += f"Case blocks: {self.case_blocks}"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "Switch block"
+
     @property
     def case_blocks(self):
         """
@@ -642,6 +734,17 @@ class CFGBreakBlock(CFGBlock):
         self._exit_block = exit_block
         super().__init__(self.exit_block)
 
+    def __str__(self):
+        s = "Break block"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "Break block"
+
     # TODO: Evaluate whether "add/remove child" is a valid operation for break blocks.
     def add_child(self, child):
         """
@@ -669,6 +772,17 @@ class CFGContinueBlock(CFGBlock):
         """
         self._exit_block = exit_block
         super().__init__(self.exit_block)
+
+    def __str__(self):
+        s = "Continue block"
+
+        if self.exit_block:
+            s += f"Exit block: {self.exit_block}"
+
+        return s
+
+    def __repr__(self):
+        return "Continue block"
 
     # TODO: Evaluate whether "add/remove child" is a valid operation for continue blocks.
     def add_child(self, child):

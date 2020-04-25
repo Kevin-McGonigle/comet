@@ -7,10 +7,12 @@
     left:0;
     top: 0;
     position: absolute;
+    border-right: 1px solid white; 
 }
 
 .title {
     margin-bottom: 10px;
+    float: left;
 }
 
 .fileDirLogo {

@@ -7,12 +7,42 @@ class Tree(Graph):
         """
         Generic tree.
         :param root: The root node of the tree.
-        :type root: Node
+        :type root: Node or None
         """
         super().__init__(root)
 
     def __str__(self):
-        return f"Root: {self.entry}"
+        s = "Tree"
+
+        if self.root:
+            s += f"\nRoot: {self.root}"
+
+        return s
+
+    @property
+    def root(self):
+        """
+        Getter for root property.
+        :return: The root node of the tree.
+        :rtype: Node or None
+        """
+        return self.entry
+
+    @root.setter
+    def root(self, new_root):
+        """
+        Setter for root property.
+        :param new_root: The value to assign to root.
+        :type new_root: Node or None
+        """
+        self.entry = new_root
+
+    @root.deleter
+    def root(self):
+        """
+        Deleter for root property.
+        """
+        del self.entry
 
     def accept(self, visitor):
         """
@@ -38,4 +68,15 @@ class Node(GraphNode):
         super().__init__(*children)
 
     def __str__(self):
-        return f"Name: {self.name}, Children: {self.children}"
+        s = "Node"
+
+        if self.name:
+            s += f"\nName: {self.name}"
+
+        if self.children:
+            s += f"\nChildren: {self.children}"
+
+        return s
+
+    def __repr__(self):
+        return self.name

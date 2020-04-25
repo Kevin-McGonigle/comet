@@ -8,7 +8,12 @@ class Graph(object):
         self.entry = entry
 
     def __str__(self):
-        return f"Entry: {self.entry}"
+        s = "Graph"
+
+        if self.entry:
+            s += f"\nEntry: {self.entry}"
+
+        return s
 
     def accept(self, visitor):
         """
@@ -32,7 +37,12 @@ class Node(object):
         self.children = list(children)
 
     def __str__(self):
-        return f"Children: {self.children}"
+        s = "Node"
+
+        if self.children:
+            s += f"\nChildren: {self.children}"
+
+        return s
 
     def accept(self, visitor):
         """

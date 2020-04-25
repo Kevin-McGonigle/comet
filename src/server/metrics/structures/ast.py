@@ -52,8 +52,45 @@ class AST(Tree):
     INPLACE_RIGHT_SHIFT = "In_Place Right Shift"
     INPLACE_MATRIX_MULTIPLY = "In-Place Matrix Multiply"
 
+    def __init__(self, root=None):
+        """
+        Abstract syntax tree.
+        :param root: The root node of the AST.
+        :type root: ASTNode or None
+        """
+        super().__init__(root)
+
+    def __str__(self):
+        s = "Abstract Syntax Tree"
+
+        if self.root:
+            s += f"\nRoot: {self.root}"
+
+        return s
+
 
 class ASTNode(Node):
+    def __init__(self, name, *children):
+        """
+        Base AST node.
+        :param name: The name of the node.
+        :type name: str
+        :param children: The child nodes of the node.
+        :type children: ASTNode
+        """
+        super().__init__(name, *children)
+
+    def __str__(self):
+        s = self.name
+
+        if self.children:
+            s += f"\nChildren: {self.children}"
+
+        return s
+
+    def __repr__(self):
+        return self.name
+
     def accept(self, visitor):
         """
         Accept an AST visitor.
@@ -68,22 +105,54 @@ class ASTNode(Node):
 # Terminal
 
 class ASTTerminalNode(ASTNode):
-    def __init__(self, text):
+    def __init__(self, value):
         """
         Terminal.
-        :param text: The terminal's text.
-        :type text: str
+        :param value: The terminal's text.
+        :type value: str
         """
-        self.text = text
-        super().__init__(self.text)
+        super().__init__(value)
+
+    def __str__(self):
+        s = "Terminal"
+
+        if self.name:
+            s += f"\nValue: {self.value}"
+
+        return s
+
+    @property
+    def value(self):
+        """
+        Getter for value property.
+        :return: The value of the terminal.
+        :rtype: str
+        """
+        return self.name
+
+    @value.setter
+    def value(self, new_value):
+        """
+        Setter for value property.
+        :param new_value: The value to assign to value.
+        :type new_value: str
+        """
+        self.name = new_value
+
+    @value.deleter
+    def value(self):
+        """
+        Deleter for value property.
+        """
+        del self.name
 
     def accept(self, visitor):
         """
         Accept an AST visitor and return the terminal node's text.
-        :param visitor:
-        :type visitor:
-        :return:
-        :rtype:
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the accept.
+        :rtype: Any
         """
         return visitor.visit_terminal(self)
 

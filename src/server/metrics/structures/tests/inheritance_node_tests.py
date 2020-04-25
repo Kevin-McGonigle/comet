@@ -1,6 +1,6 @@
 import unittest
 
-from metrics.structures.inheritance_tree import InheritanceNode
+from metrics.structures.inheritance_tree import Class
 from metrics.structures.results import CometNodeResult
 
 
@@ -11,9 +11,9 @@ class InheritanceTreeTestCase(unittest.TestCase):
     CLASS_C_TOKENS = ['class', 'C', '(', 'A', ',', 'B', ')', ':', '\n', '    ', 'pass', '\n', '\n']
 
     def setUp(self):
-        self.a_node = InheritanceNode(self.CLASS_A_TOKENS)
-        self.b_node = InheritanceNode(self.CLASS_B_TOKENS)
-        self.c_node = InheritanceNode(self.CLASS_C_TOKENS)
+        self.a_node = Class(self.CLASS_A_TOKENS)
+        self.b_node = Class(self.CLASS_B_TOKENS)
+        self.c_node = Class(self.CLASS_C_TOKENS)
 
     def testCorrectParsingOfClassArguments(self):
         assert (self.a_node.class_name == "A" and self.a_node.parent == [])

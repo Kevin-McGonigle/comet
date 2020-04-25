@@ -1,6 +1,6 @@
 import unittest
 
-from metrics.structures.inheritance_tree import InheritanceTree, InheritanceNode
+from metrics.structures.inheritance_tree import InheritanceTree, Class
 from metrics.structures.results import CometNodeResult
 
 
@@ -13,9 +13,9 @@ class InheritanceTreeTestCase(unittest.TestCase):
 
     def setUp(self):
         self.inheritance_tree = InheritanceTree()
-        self.a_node = InheritanceNode(self.CLASS_A_TOKENS)
-        self.b_node = InheritanceNode(self.CLASS_B_TOKENS)
-        self.c_node = InheritanceNode(self.CLASS_C_TOKENS)
+        self.a_node = Class(self.CLASS_A_TOKENS)
+        self.b_node = Class(self.CLASS_B_TOKENS)
+        self.c_node = Class(self.CLASS_C_TOKENS)
 
     def testAddNode(self):
         self.assertEqual(len(self.inheritance_tree.root.values()), 0)

@@ -2,30 +2,10 @@ import React, { useState } from 'react';
 import styles from './CreateModal.css';
 import classnames from 'classnames';
 import { Textarea, Alert, Dialog, Pane, Tablist, Tab, IconButton, TextInput } from 'evergreen-ui';
+import { createFileInformation, shapeFileData } from '../../helpers/helpers';
 import upload_files from '../../api/API';
 
 const cx = args => classnames(styles, args);
-
-const createFileInformation = (fileNames, fileContent) => {
-    const fileData = fileNames.map((file, ind) => {
-        return new File([fileContent[ind]], file, { type: "text/plain", lastModified: "test" })
-    });
-    return fileData;
-}
-
-export const shapeFileData = (fileData) => {
-    const shapedData = fileData.map((file) => {
-        const data = readFile(file);
-        return {
-            name: file.name,
-            lastModified: file.lastModified,
-            size: file.size,
-            type: file.type,
-            content: data,
-        };
-    });
-    return shapedData;
-}
 
 const CreateModal = props => {
     const {

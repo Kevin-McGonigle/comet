@@ -21,17 +21,18 @@ class DependencyGraph(Graph):
     def __repr__(self):
         return "Dependency graph"
 
-    def accept(self, visitor):
-        return super().accept(visitor)
-
 
 class DependencyGraphNode(Node):
-    def __init__(self, dependencies=None):
+    def __init__(self, name, dependencies=None):
         """
         Dependency Graph Node.
-        :param dependencies: The nodes that this node directly depends on.
+        :param name: The name of the node.
+        :type name: str
+        :param dependencies: The nodes that the node directly depends on.
         :type dependencies: list[DependencyGraphNode] or None
         """
+        self.name = name
+
         if dependencies is None:
             dependencies = []
 
@@ -72,12 +73,90 @@ class DependencyGraphNode(Node):
 
 
 class Package(DependencyGraphNode):
-    pass
+    def __init__(self, name, dependencies=None, classes=None, functions=None):
+        """
+        Package.
+        :param name: The name of the package.
+        :type name: str
+        :param dependencies: The nodes that the package directly depends on.
+        :type dependencies: list[DependencyGraphNode] or None
+        :param classes: The classes contained within the package.
+        :type classes: list[Class] or None
+        :param functions: The functions contained within the package.
+        :type functions: list[Method] or None
+        """
+        if classes is None:
+            classes = []
+        self.classes = classes
+
+        if functions is None:
+            functions = []
+        self.functions = functions
+
+        super().__init__(name, dependencies)
+
+    def __str__(self):
+        s = "Package"
+
+        if self.dependencies:
+            s += f"\nDependencies: {self.dependencies}"
+
+        if self.classes:
+            s += f"\nClasses: {self.classes}"
+
+        if self.functions:
+            s += f"\nFunctions: {self.functions}"
+
+        return s
 
 
 class Class(DependencyGraphNode):
-    pass
+    def __init__(self, name, dependencies=None, methods=None):
+        """
+        Class.
+        :param name: The name of the class.
+        :type name: str
+        :param dependencies: The nodes that the class directly depends on.
+        :type dependencies: list[DependencyGraphNode] or None
+        :param methods: The class' methods.
+        :type methods: list[Method] or None
+        """
+        if methods is None:
+            methods = []
+        self.methods = methods
+
+        super().__init__(name, dependencies)
+
+    def __str__(self):
+        s = "Class"
+
+        if self.dependencies:
+            s += f"\nDependencies: {self.dependencies}"
+
+        if self.methods:
+            s += f"\nMethods: {self.methods}"
+
+        return s
 
 
 class Method(DependencyGraphNode):
-    pass
+    def __init__(self, name, dependencies=None):
+        """
+        Method/Function.
+        :param name: The name of the method/function.
+        :type name: str
+        :param dependencies: The nodes that the method/function directly depends on.
+        :type dependencies: list[DependencyGraphNode] or None
+        """
+        super().__init__(name, dependencies)
+
+    def __str__(self):
+        s = "Method/Function"
+
+        if self.name:
+            s += f"\nName: {self.name}"
+
+        if self.dependencies:
+            s += f"\nDependencies: {self.dependencies}"
+
+        return s

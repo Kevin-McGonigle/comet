@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
-import {Alert, Dialog, FilePicker} from 'evergreen-ui';
+import { Alert, Dialog, FilePicker } from 'evergreen-ui';
 import UploadedItem from './UploadedItem';
+import { shapeFileData } from '../../helpers/helpers';
 import upload_files from '../../api/API';
 
 const cx = args => classnames(styles, args)
@@ -14,35 +15,6 @@ export const removeFileFromUploadedFiles = (files, name) => {
         }
         return acc;
     }, []);
-}
-
-export async function readFile(file) {
-    const fileReader = new FileReader();
-    const promise = new Promise((resolve, reject) => {
-        fileReader.onerror = () => {
-            fileReader.abort();
-            reject('Problem parsing input files');
-        };
-        fileReader.onload = () => {
-            resolve(fileReader.result);
-        };
-        fileReader.readAsText(file);
-    });
-    return await promise;
-}
-
-export const shapeFileData = (fileData) => {
-    const shapedData = fileData.map((file) => {
-        const data = readFile(file);
-        return {
-            name: file.name,
-            lastModified: file.lastModified,
-            size: file.size,
-            type: file.type,
-            content: data,      // Returning a promise fix later
-        };
-    });
-    return shapedData;
 }
 
 const UploadModal = props => {
@@ -98,10 +70,10 @@ const UploadModal = props => {
     const upload = () => {
         uploadModalOnConfirmHandler();
         upload_files(fileData).then((data) => {
-            if (data.ok) {
+            if (data) {
                 const shapedData = shapeFileData(fileData);
                 setFileData(shapedData);
-                setInheritanceTree(data.json());
+                setInheritanceTree(data);
                 setAlertSuccess("Uploaded succesfully!")
                 history.push('/metrics');
             } else {

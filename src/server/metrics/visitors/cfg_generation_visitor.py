@@ -1,11 +1,24 @@
+from metrics.structures.ast import AST, ASTNode
 from metrics.structures.cfg import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
 
 
 class CFGGenerationVisitor(ASTVisitor):
     def __init__(self):
-        self.cfg = CFG()
+        """
+        CFG generation visitor.
+        """
         self.loop_scope = None
+
+    def visit(self, ast):
+        """
+        Visit the AST and produce a CFG.
+        :param ast: The AST to visit.
+        :type ast: AST
+        :return: The generated CFG.
+        :rtype: CFG
+        """
+        return CFG(super().visit(ast))
 
     def visit_children(self, node):
         """

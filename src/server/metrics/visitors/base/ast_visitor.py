@@ -18,10 +18,10 @@ class ASTVisitor(TreeVisitor):
         Visit AST terminal node.
         :param node: The AST terminal node.
         :type node: ASTTerminalNode
-        :return: The terminal node's text.
+        :return: The terminal node's value.
         :rtype: str
         """
-        return node.text
+        return node.value
 
     def visit_statements(self, node):
         """

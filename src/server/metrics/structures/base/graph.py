@@ -15,10 +15,13 @@ class Graph(object):
 
         return s
 
+    def __repr__(self):
+        return "Graph"
+
     def accept(self, visitor):
         """
-        Accept a visitor and visit the entry node's children.
-        :param visitor: The visitor to accept.
+        Accept a graph visitor and visit the entry node's children.
+        :param visitor: The graph visitor to accept.
         :type visitor: GraphVisitor
         :return: The result of the accept.
         :rtype: Any

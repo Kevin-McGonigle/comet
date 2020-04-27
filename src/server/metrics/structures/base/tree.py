@@ -46,8 +46,8 @@ class Tree(Graph):
 
     def accept(self, visitor):
         """
-        Accept a visitor.
-        :param visitor: The visitor to accept.
+        Accept a tree visitor.
+        :param visitor: The tree visitor to accept.
         :type visitor: TreeVisitor
         :return: The result of the accept.
         :rtype: Any

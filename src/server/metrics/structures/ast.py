@@ -68,6 +68,16 @@ class AST(Tree):
 
         return s
 
+    def accept(self, visitor):
+        """
+        Accept an AST visitor.
+        :param visitor: The AST visitor to accept.
+        :type visitor: ASTVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return super().accept(visitor)
+
 
 class ASTNode(Node):
     def __init__(self, name, *children):

@@ -5,27 +5,44 @@ class DependencyGraph(Graph):
     def __init__(self, entry=None):
         """
         Dependency Graph.
-        :param entry: The entry package/class/method in the dependency graph.
+        :param entry: The root package/class/method in the dependency graph.
         :type entry: DependencyGraphNode
         """
         super().__init__(entry)
 
     def __str__(self):
-        s = "Dependency graph"
-
-        if self.entry:
-            s += f"\nEntry: {self.entry}"
-
-        return s
+        return f"Dependency graph.\nEntry: {self.entry}"
 
     def __repr__(self):
-        return "Dependency graph"
+        return f"DependencyGraph(entry={self.entry})"
+
+    @property
+    def entry(self):
+        return self.root
+
+    @entry.setter
+    def entry(self, new_entry):
+        self.root = new_entry
+
+    @entry.deleter
+    def entry(self):
+        del self.root
+
+    def accept(self, visitor):
+        """
+        Accept a dependency graph visitor.
+        :param visitor: The dependency graph visitor to accept.
+        :type visitor: DependencyGraphVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return super().accept(visitor)
 
 
 class DependencyGraphNode(Node):
     def __init__(self, name, dependencies=None):
         """
-        Dependency Graph Node.
+        Dependency graph node.
         :param name: The name of the node.
         :type name: str
         :param dependencies: The nodes that the node directly depends on.

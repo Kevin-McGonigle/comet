@@ -1,7 +1,7 @@
-from metrics.structures.base.tree import *
+from metrics.structures.base.graph import *
 
 
-class InheritanceTree(Tree):
+class InheritanceTree(Graph):
     def __init__(self, base=None):
         """
         Inheritance tree.
@@ -108,9 +108,12 @@ class Class(Node):
         """
         Add a superclass to this class.
         :param superclass: The superclass to add.
-        :type superclass: Class
+        :type superclass: Class or UnknownClass
         """
         self.add_child(superclass)
+
+    def to_dict(self):
+        return {self.name: {"superclasses": self.superclasses, "methods": self.methods}}
 
 
 class Method:
@@ -120,7 +123,7 @@ class Method:
         :param name: The name of the method.
         :type name: str
         :param parameters: The method's parameters.
-        :type parameters: list[Parameter] or None
+        :type parameters: list[Parameter or PositionalArgumentsParameter or KeywordArgumentsParameter] or None
         :param return_type: The method's return type.
         :type return_type: str or None
         """
@@ -144,18 +147,18 @@ class Method:
 
 
 class Parameter:
-    def __init__(self, name, _type=None, default=None):
+    def __init__(self, name, type_=None, default=None):
         """
         Parameter.
         :param name: The name of the parameter
         :type name: str
-        :param _type: The parameter's type.
-        :type _type: str or None
+        :param type_: The parameter's type.
+        :type type_: str or None
         :param default: The parameter's default value.
         :type default: str or None
         """
         self.name = name
-        self.type = _type
+        self.type = type_
         self.default = default
 
     def __str__(self):
@@ -171,3 +174,90 @@ class Parameter:
 
     def __repr__(self):
         return self.name
+    
+    
+class PositionalArgumentsParameter:
+    def __init__(self, name, type_=None):
+        """
+        Positional arguments parameter.
+        :param name: The name of the positional arguments parameter
+        :type name: str
+        :param type_: The parameter's type.
+        :type type_: str or None
+        """
+        self.name = name
+        self.type = type_
+
+    def __str__(self):
+        s = "Positional Arguments Parameter"
+        
+        if self.name:
+            s += f"\nName: {self.name}"
+
+        if self.type:
+            s += f"\nType: {self.type}"
+
+        return s
+
+    def __repr__(self):
+        return "*" + self.name
+
+
+class KeywordArgumentsParameter:
+    def __init__(self, name, type_=None):
+        """
+        Keyword arguments parameter.
+        :param name: The name of the keyword arguments parameter
+        :type name: str
+        :param type_: The parameter's type.
+        :type type_: str or None
+        """
+        self.name = name
+        self.type = type_
+
+    def __str__(self):
+        s = "Keyword Arguments Parameter"
+
+        if self.name:
+            s += f"\nName: {self.name}"
+
+        if self.type:
+            s += f"\nType: {self.type}"
+
+        return s
+
+    def __repr__(self):
+        return "**" + self.name
+
+
+class UnknownClass(Node):
+    def __init__(self, name, reason=None):
+        """
+        A class that cannot be evaluated.
+        :param name: The name of the unknown class.
+        :type name: str
+        :param reason: The reason for the class being unknown.
+        :type reason: str or None
+        """
+        self.reason = reason
+
+        super().__init__(name)
+
+    def __str__(self):
+        s = "Unknown class"
+
+        if self.name:
+            s += f"\nName: {self.name}"
+
+        if self.reason:
+            s += f"\nReason: {self.reason}"
+
+        return s
+
+    def add_subclass(self, subclass):
+        """
+        Add a subclass to this unknown class.
+        :param subclass: The subclass to add.
+        :type subclass: Class
+        """
+        subclass.add_superclass(self)

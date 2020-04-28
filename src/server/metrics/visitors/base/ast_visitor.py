@@ -1,7 +1,12 @@
-from metrics.structures.ast import *
+from typing import TYPE_CHECKING
+
+from metrics.visitors.base.graph_visitor import GraphVisitor
+
+if TYPE_CHECKING:
+    from metrics.structures.ast import *
 
 
-class ASTVisitor(TreeVisitor):
+class ASTVisitor(GraphVisitor):
     def visit(self, ast):
         """
         Visit an AST structure.
@@ -21,7 +26,7 @@ class ASTVisitor(TreeVisitor):
         :return: The terminal node's value.
         :rtype: str
         """
-        return node.value
+        return node.values
 
     def visit_statements(self, node):
         """
@@ -38,7 +43,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST expressions node.
         :param node: The AST expressions node.
         :type node: ASTExpressionsNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -48,7 +53,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST elements node.
         :param node: The AST elements node.
         :type node: ASTElementsNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -58,7 +63,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST parameters node.
         :param node: The AST parameters node.
         :type node: ASTParametersNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -68,7 +73,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST arguments node.
         :param node: The AST arguments node.
         :type node: ASTArgumentsNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -78,7 +83,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST subscripts node.
         :param node: The AST subscripts node.
         :type node: ASTSubscriptsNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -88,7 +93,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST catches node.
         :param node: The AST catches node.
         :type node: ASTCatchesNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -98,7 +103,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST decorators node.
         :param node: The AST decorators node.
         :type node: ASTDecoratorsNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -108,7 +113,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST delete statement node.
         :param node: The AST delete statement node.
         :type node: ASTDelStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -118,7 +123,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST assignment statement node.
         :param node: The AST assignment statement node.
         :type node: ASTAssignmentStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -128,7 +133,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST augmented assignment statement node.
         :param node: The AST augmented assignment statement node.
         :type node: ASTAugmentedAssignmentStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -138,7 +143,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST annotated assignment statement node.
         :param node: The AST annotated assignment statement node.
         :type node: ASTAnnotatedAssignmentStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -148,7 +153,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST yield statement node.
         :param node: The AST yield statement node.
         :type node: ASTYieldStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -158,7 +163,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST pass statement node.
         :param node: The AST pass statement node.
         :type node: ASTPassStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -168,7 +173,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST break statement node.
         :param node: The AST break statement node.
         :type node: ASTBreakStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -178,7 +183,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST continue statement node.
         :param node: The AST continue statement node.
         :type node: ASTContinueStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -188,7 +193,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST return statement node.
         :param node: The AST return statement node.
         :type node: ASTReturnStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -198,7 +203,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST throw statement node.
         :param node: The AST throw statement node.
         :type node: ASTThrowStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -208,7 +213,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST import statement node.
         :param node: The AST import statement node.
         :type node: ASTImportStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -218,7 +223,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST global statement node.
         :param node: The AST global statement node.
         :type node: ASTGlobalStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -228,7 +233,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST non-local statement node.
         :param node: The AST non-local statement node.
         :type node: ASTNonLocalStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -238,7 +243,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST assert statement node.
         :param node: The AST assert statement node.
         :type node: ASTAssertStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -248,7 +253,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST if statement node.
         :param node: The AST if statement node.
         :type node: ASTIfStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -258,7 +263,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST if-else statement node.
         :param node: The AST if-else statement node.
         :type node: ASTIfElseStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -268,7 +273,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST loop statement node.
         :param node: The AST loop statement node.
         :type node: ASTLoopStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -278,7 +283,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST loop-else statement node.
         :param node: The AST loop-else statement node.
         :type node: ASTLoopElseStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -288,7 +293,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST try statement node.
         :param node: The AST try statement node.
         :type node: ASTTryStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -298,7 +303,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST with statement node.
         :param node: The AST with statement node.
         :type node: ASTWithStatementNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -308,7 +313,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST function definition node.
         :param node: The AST function definition node.
         :type node: ASTFunctionDefinitionNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -318,7 +323,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST class definition node.
         :param node: The AST class definition node.
         :type node: ASTClassDefinitionNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -328,7 +333,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST yield expression node.
         :param node: The AST yield expression node.
         :type node: ASTYieldExpressionNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -338,7 +343,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST catch node.
         :param node: The AST catch node.
         :type node: ASTCatchNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -348,7 +353,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST finally node.
         :param node: The AST finally node.
         :type node: ASTFinallyNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -358,7 +363,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST binary operation node.
         :param node: The AST binary operation node.
         :type node: ASTBinaryOperationNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -368,7 +373,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST unary operation node.
         :param node: The AST unary operation node.
         :type node: ASTUnaryOperationNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -378,7 +383,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST as node.
         :param node: The AST as node.
         :type node: ASTAsNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -388,7 +393,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST async node.
         :param node: The AST async node.
         :type node: ASTAsyncNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -398,7 +403,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST parameter node.
         :param node: The AST parameter node.
         :type node: ASTParameterNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -408,7 +413,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST positional arguments parameter node.
         :param node: The AST positional arguments parameter node.
         :type node: ASTPositionalArgumentsParameter
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -418,7 +423,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST keyword arguments parameter node.
         :param node: The AST keyword arguments parameter node.
         :type node: ASTKeywordArgumentsParameter
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -428,7 +433,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST from node.
         :param node: The AST from node.
         :type node: ASTFromNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -438,17 +443,27 @@ class ASTVisitor(TreeVisitor):
         Visit AST anonymous function definition node.
         :param node: The AST anonymous function definition node.
         :type node: ASTAnonymousFunctionDefinitionNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
 
-    def visit_unpack_expression(self, node):
+    def visit_positional_unpack_expression(self, node):
         """
-        Visit AST unpack expression node.
-        :param node: The AST unpack expression node.
-        :type node: ASTUnpackExpressionNode
-        :return: The result of the visit
+        Visit AST positional unpack expression node.
+        :param node: The AST positional unpack expression node.
+        :type node: ASTPositionalUnpackExpressionNode
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_children(node)
+
+    def visit_keyword_unpack_expression(self, node):
+        """
+        Visit AST keyword unpack expression node.
+        :param node: The AST keyword unpack expression node.
+        :type node: ASTKeywordUnpackExpressionNode
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -458,7 +473,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST await node.
         :param node: The AST await node.
         :type node: ASTAwaitNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -468,7 +483,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST access node.
         :param node: The AST access node.
         :type node: ASTAccessNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -478,7 +493,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST index node.
         :param node: The AST index node.
         :type node: ASTIndexNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -488,7 +503,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST slice node.
         :param node: The AST slice node.
         :type node: ASTSliceNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -498,7 +513,27 @@ class ASTVisitor(TreeVisitor):
         Visit AST call node.
         :param node: The AST call node.
         :type node: ASTCallNode
-        :return: The result of the visit
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_children(node)
+
+    def visit_argument(self, node):
+        """
+        Visit AST argument node.
+        :param node: The AST argument node.
+        :type node: ASTArgumentNode
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_children(node)
+
+    def visit_keyword_argument(self, node):
+        """
+        Visit AST keyword argument node.
+        :param node: The AST keyword argument node.
+        :type node: ASTKeywordArgumentNode
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -508,7 +543,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST member node.
         :param node: The AST member node.
         :type node: ASTMemberNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -518,7 +553,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST list node.
         :param node: The AST list node.
         :type node: ASTListNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -528,7 +563,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST tuple node.
         :param node: The AST tuple node.
         :type node: ASTTupleNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -538,7 +573,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST generator expression node.
         :param node: The AST generator expression node.
         :type node: ASTGeneratorExpressionNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -548,7 +583,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST comprehension node.
         :param node: The AST comprehension node.
         :type node: ASTComprehensionNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -558,7 +593,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST map node.
         :param node: The AST map node.
         :type node: ASTMapNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -568,7 +603,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST set node.
         :param node: The AST set node.
         :type node: ASTSetNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -578,7 +613,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST key-value pair node.
         :param node: The AST key-value pair node.
         :type node: ASTKeyValuePairNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -588,7 +623,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST decorated node.
         :param node: The AST decorated node.
         :type node: ASTDecoratedNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)
@@ -598,7 +633,7 @@ class ASTVisitor(TreeVisitor):
         Visit AST decorator node.
         :param node: The AST decorator node.
         :type node: ASTDecoratorNode
-        :return: The result of the visit
+        :return: The result of the visit.
         :rtype: Any
         """
         return self.visit_children(node)

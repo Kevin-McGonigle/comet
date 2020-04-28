@@ -1,33 +1,28 @@
 class Graph(object):
-    def __init__(self, entry=None):
+    def __init__(self, root=None):
         """
         Generic graph.
-        :param entry: The entry node of the graph.
-        :type entry: Node or None
+        :param root: The root node of the graph.
+        :type root: Node or None
         """
-        self.entry = entry
+        self.root = root
 
     def __str__(self):
-        s = "Graph"
-
-        if self.entry:
-            s += f"\nEntry: {self.entry}"
-
-        return s
+        return f"Generic graph.\nRoot: {self.root}"
 
     def __repr__(self):
-        return "Graph"
+        return f"Graph(root={self.root})"
 
     def accept(self, visitor):
         """
-        Accept a graph visitor and visit the entry node's children.
+        Accept a graph visitor by passing it to the root node's accept method.
         :param visitor: The graph visitor to accept.
         :type visitor: GraphVisitor
         :return: The result of the accept.
         :rtype: Any
         """
-        if isinstance(self.entry, Node):
-            return self.entry.accept(visitor)
+        if isinstance(self.root, Node):
+            return self.root.accept(visitor)
 
 
 class Node(object):
@@ -35,21 +30,19 @@ class Node(object):
         """
         Generic graph node.
         :param children: The child nodes of the node.
-        :type children: Node
+        :type children: Node or str
         """
         self.children = list(children)
 
     def __str__(self):
-        s = "Node"
+        return f"Generic graph node.\nChildren: {self.children}"
 
-        if self.children:
-            s += f"\nChildren: {self.children}"
-
-        return s
+    def __repr__(self):
+        return f"Node(children={self.children})"
 
     def accept(self, visitor):
         """
-        Accept the visitor and visit this node's children.
+        Accept the visitor and visit the node's children.
         :param visitor: The visitor to accept.
         :type visitor: TreeVisitor
         :return: The result of the accept.
@@ -59,22 +52,24 @@ class Node(object):
 
     def add_child(self, child):
         """
-        Add a child node to this node.
+        Add a child node to the node.
         :param child: The child to add.
         :type child: Node
         """
-        if isinstance(child, Node) and child not in self.children:
+        if (isinstance(child, Node) and child not in self.children) or isinstance(child, str):
             self.children.append(child)
+        elif child in self.children:
+            raise ValueError(f"Node.remove_child(child): child is a node and is already a child of the parent node.")
         else:
-            raise ValueError
+            raise TypeError(f"Node.remove_child(child): child was not Node or str (child={child}, type={type(child)}).")
 
     def remove_child(self, child):
         """
-        Remove a child node from this node.
+        Remove a child node from the node.
         :param child: The child to remove.
         :type child: Node
         """
-        if isinstance(child, Node) and child in self.children:
+        if isinstance(child, Node) or isinstance(child, str):
             self.children.remove(child)
         else:
-            raise ValueError
+            raise TypeError(f"Node.remove_child(child): child was not Node or str (child={child}, type={type(child)}).")

@@ -6,17 +6,27 @@ class CFG(Graph):
         """
         Control-flow graph.
         :param entry: The entry block of the control-flow graph.
-        :type entry: CFGBlock
+        :type entry: CFGBlock or None
         """
         super().__init__(entry)
 
     def __str__(self):
-        s = "Control-flow graph"
+        return f"Control-flow graph.\nEntry: {self.entry}"
 
-        if self.entry:
-            s += f"\nEntry: {self.entry}"
+    def __repr__(self):
+        return f"CFG(entry={self.entry})"
 
-        return s
+    @property
+    def entry(self):
+        return self.root
+
+    @entry.setter
+    def entry(self, new_entry):
+        self.root = new_entry
+
+    @entry.deleter
+    def entry(self):
+        del self.root
 
     def accept(self, visitor):
         """

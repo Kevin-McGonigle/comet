@@ -1,7 +1,14 @@
 .metricContainer {
     display: flex;
-    flex-direction: row;
-    background: #333;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: end;
+}
+
+.metricTabContainer {
+    margin-left: 300px;
+    margin-top: 20px;
+    display: flex;
 }
 
 .logo {

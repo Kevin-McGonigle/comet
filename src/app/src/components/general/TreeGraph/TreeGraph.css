@@ -1,3 +1,8 @@
+.treeGraphContainer {
+	display: flex;
+	justify-content: center;
+}
+
 div.custom-container {
 	background-color: #242424;
 }

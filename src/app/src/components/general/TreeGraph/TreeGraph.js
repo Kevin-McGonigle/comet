@@ -34,23 +34,21 @@ const TreeGraph = props => {
         tree,
     } = props;
 
-    console.log(shapeTreeGraphData(tree));
     const onClickHandler = (event) => {
         const nodeId = event.target.parentNode.id;
         // Set ClassDiagram 
         console.log(nodeId);
     };
-
     
     return (
-        <Tree
-            data={initialState}
-            height={600}
-            width={600}
-            gProps={{
-                onClick: onClickHandler
-            }}
-        />
+            <Tree
+                data={initialState}
+                height={450}
+                width={450}
+                gProps={{
+                    onClick: onClickHandler
+                }}
+            />
     );
 };
 

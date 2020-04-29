@@ -1404,7 +1404,7 @@ class ASTParameterNode(ASTNode):
         return visitor.visit_parameter(self)
 
 
-class ASTPositionalArgumentsParameter(ASTNode):
+class ASTPositionalArgumentsParameterNode(ASTNode):
     def __init__(self, name, type_=None):
         """
         Positional arguments parameter.
@@ -1421,7 +1421,7 @@ class ASTPositionalArgumentsParameter(ASTNode):
         return f"Positional arguments parameter.\nName: {self.name}\nType: {self.type}"
 
     def __repr__(self):
-        return f"ASTPositionalArgumentsParameter(name={self.name}, type={self.type})"
+        return f"ASTPositionalArgumentsParameterNode(name={self.name}, type={self.type})"
 
     def accept(self, visitor):
         """
@@ -1434,7 +1434,7 @@ class ASTPositionalArgumentsParameter(ASTNode):
         return visitor.visit_positional_arguments_parameter(self)
 
 
-class ASTKeywordArgumentsParameter(ASTNode):
+class ASTKeywordArgumentsParameterNode(ASTNode):
     def __init__(self, name, type_=None):
         """
         Keyword arguments parameter.
@@ -1451,7 +1451,7 @@ class ASTKeywordArgumentsParameter(ASTNode):
         return f"Keyword arguments parameter.\nName: {self.name}\n Type: {self.type}"
 
     def __repr__(self):
-        return f"ASTKeywordArgumentsParameter(name={self.name}, type={self.type})"
+        return f"ASTKeywordArgumentsParameterNode(name={self.name}, type={self.type})"
 
     def accept(self, visitor):
         """

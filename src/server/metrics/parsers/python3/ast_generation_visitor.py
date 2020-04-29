@@ -98,12 +98,12 @@ class ASTGenerationVisitor(Python3Visitor):
             if isinstance(child, TerminalNodeImpl):
                 if child.symbol.type == Python3Parser.STAR:
                     if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.TfpdefContext):
-                        parameters.append(ASTPositionalArgumentsParameter(**children[i + 1].accept(self)))
+                        parameters.append(ASTPositionalArgumentsParameterNode(**children[i + 1].accept(self)))
                         i += 1
                     else:
                         parameters.append("*")
                 elif child.symbol.type == Python3Parser.POWER:
-                    parameters.append(ASTKeywordArgumentsParameter(**children[i + 1].accept(self)))
+                    parameters.append(ASTKeywordArgumentsParameterNode(**children[i + 1].accept(self)))
                     i += 1
             else:
                 if isinstance(child, Python3Parser.TfpdefContext):
@@ -137,12 +137,12 @@ class ASTGenerationVisitor(Python3Visitor):
             if isinstance(child, TerminalNodeImpl):
                 if child.symbol.type == Python3Parser.STAR:
                     if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.VfpdefContext):
-                        parameters.append(ASTPositionalArgumentsParameter(**children[i + 1].accept(self)))
+                        parameters.append(ASTPositionalArgumentsParameterNode(**children[i + 1].accept(self)))
                         i += 1
                     else:
                         parameters.append("*")
                 elif child.symbol.type == Python3Parser.POWER:
-                    parameters.append(ASTKeywordArgumentsParameter(**children[i + 1].accept(self)))
+                    parameters.append(ASTKeywordArgumentsParameterNode(**children[i + 1].accept(self)))
                     i += 1
             else:
                 if isinstance(child, Python3Parser.VfpdefContext):

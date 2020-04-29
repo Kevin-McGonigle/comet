@@ -17,13 +17,42 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         self.base = base
 
         if classes is None:
-            classes = {}
-        self.classes = {class_.name: class_ for class_ in classes}
-        self.classes[self.base.name] = self.base
+            classes = []
+
+        self.classes = {}
+
+        self.add_class(self.base)
+
+        for class_ in classes:
+            self.add_class(class_)
 
         self.scope = None
 
         super().__init__()
+    
+    def add_class(self, class_):
+        """
+        Add a class to the available class list.
+        :param class_: The class to add.
+        :type class_: Class
+        """
+        if class_.name in self.classes:
+            if class_ not in self.classes[class_.name]:
+                self.classes[class_.name].append(class_)
+        else:
+            self.classes[class_.name] = [class_]
+
+    def get_class(self, name):
+        """
+        Get the most recent class binding to the specified name.
+        :param name: The name of the class to get.
+        :type name: str
+        :return: The most recent class binding to the specified name. None if no such class exists/
+        :rtype: Class or None
+        """
+        if name in self.classes:
+            return self.classes[name][-1]
+        return None
 
     def visit(self, ast):
         """
@@ -33,7 +62,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         :return: The generated inheritance tree.
         :rtype: InheritanceTree
         """
-        super().visit(ast)
+        return InheritanceTree(self.base)
 
     def visit_children(self, node):
         """
@@ -55,6 +84,11 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         return child_results
 
     def visit_class_definition(self, node):
+        """
+        Visit AST class definition node and add the class to the available class list. 
+        :param node: The AST class definition node.
+        :type node: ASTClassDefinitionNode
+        """
         # Class name
         name = node.name.accept(self)
         if self.scope:
@@ -75,9 +109,16 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         self.scope = tmp
 
         # Create class
-        self.classes[name] = Class(name, superclasses, methods)
+        self.add_class(Class(name, superclasses, methods))
 
     def visit_function_definition(self, node):
+        """
+        Visit AST function definition node and return a corresponding method object.
+        :param node: The AST function definition node.
+        :type node: ASTFunctionDefinitionNode
+        :return: The corresponding method object.
+        :rtype: Method
+        """
         # Method name
         name = node.name.accept(self)
 
@@ -96,7 +137,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
 
         # Visit method body
         tmp = self.scope
-        self.scope = f"{self.scope}.{name}.<locals>"
+        self.scope = f"{self.scope}.{name}.<locals>" if self.scope else f"{name}.<locals>"
 
         node.body.accept(self)
 
@@ -106,6 +147,13 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         return Method(name, parameters, return_type)
 
     def visit_argument(self, node):
+        """
+        Visit AST argument node and return the corresponding class object. 
+        :param node: The AST argument node.
+        :type node: ASTArgumentNode
+        :return: The corresponding class object. Unknown class/classes object if a corresponding class cannot be found.
+        :rtype: Class
+        """
         if isinstance(node.value, ASTIdentifierNode) or isinstance(node.value, ASTMemberNode):
             # Superclass name
             name = node.value.accept(self)
@@ -113,24 +161,39 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
                 return name
 
             # Check for class at same scope
-            if self.scope and f"{self.scope}.{name}" in self.classes:
-                return self.classes[f"{self.scope}.{name}"]
+            class_ = None
+            if self.scope:
+                class_ = self.get_class(f"{self.scope}.{name}")
 
             # Check for class at global scope
-            if name in self.classes:
-                return self.classes[name]
+            if class_ is None:
+                class_ = self.get_class(name)
 
-            return UnknownClass(name, f"Class with name \"{name}\" cannot be found.")
+            if class_:
+                return class_
+
+            if not self.scope:
+                return UnknownClass(self.base, name, f"Class with name \"{name}\" cannot be found globally.")
+            return UnknownClass(self.base, name,
+                                f"Class with name \"{name}\" cannot be found at scope {self.scope} or globally.")
 
         if isinstance(node.value, ASTPositionalUnpackExpressionNode):
-            return UnknownClasses("Unpacking positional arguments from iterable.")
+            return UnknownClasses(self.base, "Unpacking positional arguments from iterable.")
 
         if isinstance(node.value, ASTKeywordUnpackExpressionNode):
-            return UnknownClasses("Unpacking keyword arguments from key-value map.")
+            return UnknownClasses(self.base, "Unpacking keyword arguments from key-value map.")
 
-        return UnknownClass(reason=f"{node.value} unsupported for class identification. Type: {type(node.value)}")
+        return UnknownClass(self.base,
+                            reason=f"{node.value} unsupported for class identification. Type: {type(node.value)}")
 
     def visit_member(self, node):
+        """
+        Visit AST member node and return the dot-separated string of parent and member. 
+        :param node: The AST member node.
+        :type node: ASTMemberNode
+        :return: Dot-separated string of parent and member. Unknown class if anything other than identifiers are found.
+        :rtype: str or UnknownClass
+        """
         if isinstance(node.parent, ASTIdentifierNode) or isinstance(node.parent, ASTMemberNode):
             if isinstance(node.member, ASTIdentifierNode or isinstance(node.member, ASTMemberNode)):
                 parent = node.parent.accept(self)
@@ -141,18 +204,48 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
                 if isinstance(member, UnknownClass):
                     return member
 
-                return parent.accept(self) + "." + member.accept(self)
-            return UnknownClass(reason=f"{node.member} unsupported for class identification. Type: {type(node.member)}")
-        return UnknownClass(reason=f"{node.parent} unsupported for class identification. Type: {type(node.parent)}")
+                return parent + "." + member
+            return UnknownClass(self.base,
+                                reason=f"{node.member} unsupported for class identification. Type: {type(node.member)}")
+        return UnknownClass(self.base,
+                            reason=f"{node.parent} unsupported for class identification. Type: {type(node.parent)}")
 
     def visit_parameter(self, node):
+        """
+        Visit AST parameter node and return the corresponding parameter node.
+        :param node: The AST parameter node.
+        :type node: ASTParameterNode
+        :return: The corresponding parameter node.
+        :rtype: Parameter
+        """
         return Parameter(node.name.accept(self))
 
     def visit_positional_arguments_parameter(self, node):
+        """
+        Visit AST positional arguments parameter node and return the corresponding positional arguments parameter node.
+        :param node: The AST positional arguments parameter node.
+        :type node: ASTPositionalArgumentsParameterNode
+        :return: The corresponding positional arguments parameter node.
+        :rtype: PositionalArgumentsParameter
+        """
         return PositionalArgumentsParameter(node.name.accept(self))
 
     def visit_keyword_arguments_parameter(self, node):
+        """
+        Visit AST keyword arguments parameter node and return the corresponding keyword arguments parameter node.
+        :param node: The AST keyword arguments parameter node.
+        :type node: ASTKeywordArgumentsParameterNode
+        :return: The corresponding keyword arguments parameter node.
+        :rtype: KeywordArgumentsParameter
+        """
         return KeywordArgumentsParameter(node.name.accept(self))
 
     def visit_identifier(self, node):
+        """
+        Visit AST identifier node and return the identifier's name.
+        :param node: The AST identifier node.
+        :type node: ASTIdentifierNode
+        :return: The identifier's name.
+        :rtype: str
+        """
         return node.name

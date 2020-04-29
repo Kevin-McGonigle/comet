@@ -8,10 +8,10 @@ class InheritanceTree(Graph):
         :param base: The base class in the tree.
         :type base: Class or None
         """
-        super().__init__(base if base is not None else Class("Object"))
+        super().__init__(base if base is not None else Class("object"))
 
     def __str__(self):
-        return "Inheritance tree.\nBase: {self.base}"
+        return f"Inheritance tree.\nBase: {self.base}"
 
     def __repr__(self):
         return f"InheritanceTree(base={self.base})"
@@ -192,19 +192,20 @@ class KeywordArgumentsParameter:
         return f"KeywordArgumentsParameter(name={self.name}, type={self.type})"
 
 
-class UnknownClass(Node):
-    def __init__(self, name=None, reason=None):
+class UnknownClass(Class):
+    def __init__(self, base, name=None, reason=None):
         """
         A class that cannot be evaluated.
+        :param base: The base class.
+        :type base: Class
         :param name: The name of the unknown class.
         :type name: str or None
         :param reason: The reason for the class being unknown.
         :type reason: str or None
         """
-        self.name = name
         self.reason = reason
 
-        super().__init__()
+        super().__init__(self.name if self.name else "<UnknownClass>", [base])
 
     def __str__(self):
         return f"Unknown class.\nName: {self.name}\nReason: {self.reason}"
@@ -221,22 +222,22 @@ class UnknownClass(Node):
         subclass.add_superclass(self)
 
 
-class UnknownClasses(Node):
-    def __init__(self, reason=None):
+class UnknownClasses(UnknownClass):
+    def __init__(self, base, reason=None):
         """
         (Potentially) multiple classes that cannot be evaluated.
+        :param base: The base class.
+        :type base: Class
         :param reason: The reason for the class being unknown.
         :type reason: str or None
         """
-        self.reason = reason
-
-        super().__init__()
+        super().__init__(base, "<UnknownClasses>", reason)
 
     def __str__(self):
-        return f"Unknown classes.\nReason: {self.reason}"
+        return f"Unknown classes.\nBase: {self.base}\nReason: {self.reason}"
 
     def __repr__(self):
-        return f"UnknownClass(reason={self.reason})"
+        return f"UnknownClass(base={self.base}, reason={self.reason})"
 
     def add_subclass(self, subclass):
         """

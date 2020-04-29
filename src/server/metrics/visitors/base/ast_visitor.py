@@ -452,7 +452,7 @@ class ASTVisitor(GraphVisitor):
         """
         Visit AST positional arguments parameter node.
         :param node: The AST positional arguments parameter node.
-        :type node: ASTPositionalArgumentsParameter
+        :type node: ASTPositionalArgumentsParameterNode
         :return: The result of the visit.
         :rtype: Any
         """
@@ -462,7 +462,7 @@ class ASTVisitor(GraphVisitor):
         """
         Visit AST keyword arguments parameter node.
         :param node: The AST keyword arguments parameter node.
-        :type node: ASTKeywordArgumentsParameter
+        :type node: ASTKeywordArgumentsParameterNode
         :return: The result of the visit.
         :rtype: Any
         """

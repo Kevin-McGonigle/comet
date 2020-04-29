@@ -1,6 +1,10 @@
-from metrics.structures.ast import AST, ASTNode
+from typing import TYPE_CHECKING
+
 from metrics.structures.cfg import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
+
+if TYPE_CHECKING:
+    from metrics.structures.ast import AST, ASTNode
 
 
 class CFGGenerationVisitor(ASTVisitor):

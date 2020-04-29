@@ -1098,7 +1098,7 @@ class ASTFunctionDefinitionNode(ASTStatementNode):
         """
         Function definition.
         :param name: The name of the function.
-        :type name: ASTNode
+        :type name: ASTIdentifierNode
         :param parameters: The parameter(s) of the function.
         :type parameters: ASTNode or None
         :param body: The body of the function.
@@ -1136,7 +1136,7 @@ class ASTClassDefinitionNode(ASTStatementNode):
         """
         Class definition.
         :param name: The name of the class.
-        :type name: ASTNode
+        :type name: ASTIdentifierNode
         :param arguments: The argument(s) of the class.
         :type arguments: ASTNode or None
         :param body: The body of the class.

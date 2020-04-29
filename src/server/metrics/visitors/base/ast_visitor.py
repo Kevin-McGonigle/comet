@@ -24,9 +24,39 @@ class ASTVisitor(GraphVisitor):
         :param node: The AST terminal node.
         :type node: ASTTerminalNode
         :return: The terminal node's value.
-        :rtype: str
+        :rtype: list[str]
         """
         return node.values
+
+    def visit_identifier(self, node):
+        """
+        Visit AST identifier node.
+        :param node: The AST identifier node.
+        :type node: ASTIdentifierNode
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_terminal(node)
+
+    def visit_literal(self, node):
+        """
+        Visit AST literal node.
+        :param node: The AST literal node.
+        :type node: ASTLiteralNode
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_terminal(node)
+
+    def visit_multi(self, node):
+        """
+        Visit AST multi node.
+        :param node: The AST multi node.
+        :type node: ASTMultiNode
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_children(node)
 
     def visit_statements(self, node):
         """
@@ -36,7 +66,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_expressions(self, node):
         """
@@ -46,7 +76,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_elements(self, node):
         """
@@ -56,7 +86,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_parameters(self, node):
         """
@@ -66,7 +96,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_arguments(self, node):
         """
@@ -76,7 +106,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_subscripts(self, node):
         """
@@ -86,7 +116,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_catches(self, node):
         """
@@ -96,13 +126,23 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_multi(node)
 
     def visit_decorators(self, node):
         """
         Visit AST decorators node.
         :param node: The AST decorators node.
         :type node: ASTDecoratorsNode
+        :return: The result of the visit.
+        :rtype: Any
+        """
+        return self.visit_multi(node)
+
+    def visit_statement(self, node):
+        """
+        Visit AST statement node.
+        :param node: The AST statement node.
+        :type node: ASTStatementNode
         :return: The result of the visit.
         :rtype: Any
         """
@@ -116,7 +156,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_assignment_statement(self, node):
         """
@@ -126,7 +166,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_augmented_assignment_statement(self, node):
         """
@@ -136,7 +176,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_annotated_assignment_statement(self, node):
         """
@@ -146,7 +186,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_yield_statement(self, node):
         """
@@ -156,7 +196,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_pass_statement(self, node):
         """
@@ -166,7 +206,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_break_statement(self, node):
         """
@@ -176,7 +216,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_continue_statement(self, node):
         """
@@ -186,7 +226,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_return_statement(self, node):
         """
@@ -196,7 +236,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_throw_statement(self, node):
         """
@@ -206,7 +246,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_import_statement(self, node):
         """
@@ -216,7 +256,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_global_statement(self, node):
         """
@@ -226,7 +266,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_non_local_statement(self, node):
         """
@@ -236,7 +276,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_assert_statement(self, node):
         """
@@ -246,7 +286,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_if_statement(self, node):
         """
@@ -256,7 +296,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_if_else_statement(self, node):
         """
@@ -266,7 +306,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_loop_statement(self, node):
         """
@@ -276,7 +316,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_loop_else_statement(self, node):
         """
@@ -286,7 +326,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_try_statement(self, node):
         """
@@ -296,7 +336,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_with_statement(self, node):
         """
@@ -306,7 +346,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_function_definition(self, node):
         """
@@ -316,7 +356,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_class_definition(self, node):
         """
@@ -326,7 +366,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_children(node)
+        return self.visit_statement(node)
 
     def visit_yield_expression(self, node):
         """

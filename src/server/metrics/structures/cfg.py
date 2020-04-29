@@ -2,30 +2,43 @@ from metrics.structures.base.graph import Graph, Node
 
 
 class CFG(Graph):
-    def __init__(self, entry=None):
+    def __init__(self, entry_block=None):
         """
         Control-flow graph.
-        :param entry: The entry block of the control-flow graph.
-        :type entry: CFGBlock or None
+        :param entry_block: The entry block of the control-flow graph.
+        :type entry_block: CFGBlock or None
         """
-        super().__init__(entry)
+        super().__init__(entry_block)
 
     def __str__(self):
-        return f"Control-flow graph.\nEntry: {self.entry}"
+        return f"Control-flow graph.\nEntry block: {self.entry_block}"
 
     def __repr__(self):
-        return f"CFG(entry={self.entry})"
+        return f"CFG(entry_block={self.entry_block})"
 
     @property
-    def entry(self):
+    def entry_block(self):
+        """
+        Getter for entry_block property.
+        :return: The value of entry_block.
+        :rtype: CFGBlock or None
+        """
         return self.root
 
-    @entry.setter
-    def entry(self, new_entry):
+    @entry_block.setter
+    def entry_block(self, new_entry):
+        """
+        Setter for entry_block property.
+        :param new_entry: Value to assign to entry_block.
+        :type new_entry: CFGBlock or None
+        """
         self.root = new_entry
 
-    @entry.deleter
-    def entry(self):
+    @entry_block.deleter
+    def entry_block(self):
+        """
+        Deleter for entry_block property.
+        """
         del self.root
 
     def accept(self, visitor):
@@ -42,22 +55,27 @@ class CFG(Graph):
 class CFGBlock(Node):
     _exit_block = None
 
-    def __str__(self):
-        s = "Basic block"
+    def __init__(self, *children):
+        """
+        Basic block.
+        :param children: The child blocks of the basic block.
+        :type children: CFGBlock
+        """
+        super().__init__(*children)
 
-        if self.exit_block:
-            s += f"\nExit block: {self.exit_block}"
+    def __str__(self):
+        s = f"Basic block.\nChildren: {self.children}\nExit block: {self.exit_block}"
 
         return s
 
     def __repr__(self):
-        return "Basic block"
+        return f"CFGBlock(children={self.children}, exit_block={self.exit_block})"
 
     @property
     def exit_block(self):
         """
-        Getter for exit_node property.
-        :return: Value of exit_node.
+        Getter for exit_block property.
+        :return: Value of exit_block.
         :rtype: CFGBlock or None
         """
         return self._exit_block
@@ -65,8 +83,8 @@ class CFGBlock(Node):
     @exit_block.setter
     def exit_block(self, new_exit_block):
         """
-        Setter for exit_node property.
-        :param new_exit_block: Value to assign to exit_node.
+        Setter for exit_block property.
+        :param new_exit_block: Value to assign to exit_block.
         :type new_exit_block: CFGBlock or None.
         """
         if self.exit_block in self.children:
@@ -74,12 +92,13 @@ class CFGBlock(Node):
 
         self._exit_block = new_exit_block
 
-        self.children.append(self.exit_block)
+        if self.exit_block:
+            self.children.append(self.exit_block)
 
     @exit_block.deleter
     def exit_block(self):
         """
-        Deleter for exit_node property.
+        Deleter for exit_block property.
         """
         if self.exit_block in self.children:
             self.children.remove(self.exit_block)
@@ -91,9 +110,9 @@ class CFGIfBlock(CFGBlock):
     def __init__(self, success_block=None, exit_block=None):
         """
         If statement control flow graph structure.
-        :param success_block: The node to visit if the condition is true.
+        :param success_block: The block to visit if the condition is true.
         :type success_block: CFGBlock or None
-        :param exit_block: The node following the if statement.
+        :param exit_block: The block following the if statement.
         :type exit_block: CFGBlock or None
         """
         if success_block is None:
@@ -142,9 +161,9 @@ class CFGIfBlock(CFGBlock):
 
         self._success_block = new_success_block
 
-        self.success_block.add_child(self.exit_block)
-
-        self.children.append(self.success_block)
+        if self.success_block:
+            self.success_block.add_child(self.exit_block)
+            self.children.append(self.success_block)
 
     @success_block.deleter
     def success_block(self):
@@ -174,9 +193,9 @@ class CFGIfBlock(CFGBlock):
 
         self._exit_block = new_exit_block
 
-        self.success_block.add_child(self.exit_block)
-
-        self.children.append(self.exit_block)
+        if self.exit_block:
+            self.success_block.add_child(self.exit_block)
+            self.children.append(self.exit_block)
 
     @exit_block.deleter
     def exit_block(self):
@@ -211,11 +230,11 @@ class CFGIfElseBlock(CFGBlock):
     def __init__(self, success_block=None, fail_block=None, exit_block=None):
         """
         If-else statement control flow graph structure.
-        :param success_block: The node to visit if the condition is true.
+        :param success_block: The block to visit if the condition is true.
         :type success_block: CFGBlock or None
-        :param fail_block: The node to visit if the condition is false.
+        :param fail_block: The block to visit if the condition is false.
         :type fail_block: CFGBlock or None
-        :param exit_block: The node following the if-else statement.
+        :param exit_block: The block following the if-else statement.
         :type exit_block: CFGBlock or None
         """
         if success_block is None:
@@ -272,7 +291,8 @@ class CFGIfElseBlock(CFGBlock):
 
         self._success_block = new_success_block
 
-        self.children.append(self.success_block)
+        if self.success_block:
+            self.children.append(self.success_block)
 
     @success_block.deleter
     def success_block(self):
@@ -298,14 +318,15 @@ class CFGIfElseBlock(CFGBlock):
         """
         Setter for fail_block property.
         :param new_fail_block: Value to assign to fail_block.
-        :type new_fail_block: CFNode
+        :type new_fail_block: CFGBlock or None
         """
         if self.fail_block in self.children:
             self.children.remove(self.fail_block)
 
         self._fail_block = new_fail_block
 
-        self.children.append(self.fail_block)
+        if self.fail_block:
+            self.children.append(self.fail_block)
 
     @fail_block.deleter
     def fail_block(self):
@@ -367,9 +388,9 @@ class CFGLoopBlock(CFGBlock):
     def __init__(self, success_block=None, exit_block=None):
         """
         Loop control flow graph structure.
-        :param success_block: The node to visit if the condition is true.
+        :param success_block: The block to visit if the condition is true.
         :type success_block: CFGBlock or None
-        :param exit_block: The node to following the while statement.
+        :param exit_block: The block to following the while statement.
         :type exit_block: CFGBlock or None
         """
         if success_block is None:
@@ -418,9 +439,9 @@ class CFGLoopBlock(CFGBlock):
 
         self._success_block = new_success_block
 
-        self.success_block.add_child(self)
-
-        self.children.append(self.success_block)
+        if self.success_block:
+            self.success_block.add_child(self)
+            self.children.append(self.success_block)
 
     @success_block.deleter
     def success_block(self):
@@ -453,11 +474,11 @@ class CFGLoopElseBlock(CFGBlock):
     def __init__(self, success_block=None, fail_block=None, exit_block=None):
         """
         Loop-else control flow graph structure.
-        :param success_block: The node to visit if the condition is true.
+        :param success_block: The block to visit if the condition is true.
         :type success_block: CFGBlock or None
-        :param fail_block: The node to visit if the condition is false.
+        :param fail_block: The block to visit if the condition is false.
         :type fail_block: CFGBlock or None
-        :param exit_block: The node following the while-else statement.
+        :param exit_block: The block following the while-else statement.
         :type exit_block: CFGBlock or None
         """
         if success_block is None:
@@ -515,9 +536,9 @@ class CFGLoopElseBlock(CFGBlock):
 
         self._success_block = new_success_block
 
-        self.success_block.add_child(self)
-
-        self.children.append(self.success_block)
+        if self.success_block:
+            self.success_block.add_child(self)
+            self.children.append(self.success_block)
 
     @success_block.deleter
     def success_block(self):
@@ -550,9 +571,9 @@ class CFGLoopElseBlock(CFGBlock):
 
         self._fail_block = new_fail_block
 
-        self.fail_block.add_child(self.exit_block)
-
-        self.children.append(self.fail_block)
+        if self.fail_block:
+            self.fail_block.add_child(self.exit_block)
+            self.children.append(self.fail_block)
 
     @fail_block.deleter
     def fail_block(self):
@@ -579,7 +600,8 @@ class CFGLoopElseBlock(CFGBlock):
 
         self._exit_block = new_exit_block
 
-        self.fail_block.add_child(self.exit_block)
+        if self.exit_block:
+            self.fail_block.add_child(self.exit_block)
 
     @exit_block.deleter
     def exit_block(self):
@@ -611,9 +633,9 @@ class CFGSwitchBlock(CFGBlock):
     def __init__(self, case_blocks, exit_block=None):
         """
         Switch statement control flow graph structure.
-        :param case_blocks: The nodes representing each respective case.
+        :param case_blocks: The blocks representing each respective case.
         :type case_blocks: list[CFGBlock]
-        :param exit_block: The node following the switch statement.
+        :param exit_block: The block following the switch statement.
         :type exit_block: CFGBlock or None
         """
         self._case_blocks = case_blocks

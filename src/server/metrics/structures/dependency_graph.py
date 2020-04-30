@@ -2,20 +2,25 @@ from metrics.structures.base.graph import Graph, Node
 
 
 class DependencyGraph(Graph):
-    def __init__(self, base=None):
+    def __init__(self, base=None, classes=None):
         """
         Dependency Graph.
         :param base: The base class in the given language.
         :type base: Class
+        :param classes: The classes contained in the graph.
+        :type classes: list[Class]
         """
+        if classes is None:
+            classes = []
+        self.classes = classes
 
         super().__init__(base)
 
     def __str__(self):
-        return f"Dependency graph.\nBase: {self.base}"
+        return f"Dependency graph.\nBase: {self.base}\nClasses: {self.classes}"
 
     def __repr__(self):
-        return f"DependencyGraph(base={self.base})"
+        return f"DependencyGraph(base={self.base}, classes={self.classes})"
 
     @property
     def base(self):
@@ -57,10 +62,10 @@ class Class(Node):
         super().__init__(*dependencies)
 
     def __str__(self):
-        return f"Class.\nDependencies: {self.dependencies}"
+        return f"Class.\nName: {self.name}\nDependencies: {self.dependencies}"
 
     def __repr__(self):
-        return f"Class(dependencies={self.dependencies})"
+        return f"Class(name={self.name}, dependencies={self.dependencies})"
 
     @property
     def dependencies(self):
@@ -86,3 +91,19 @@ class Class(Node):
         Deleter for dependencies property.
         """
         del self.children
+
+    def add_dependency(self, dependency):
+        """
+        Add a dependency to the class.
+        :param dependency: The dependency to add.
+        :type dependency: Class
+        """
+        self.add_child(dependency)
+
+    def add_dependent(self, dependent):
+        """
+        Add the class as a dependency of the dependent.
+        :param dependent: The dependent.
+        :type dependent: Class
+        """
+        dependent.add_dependent(self)

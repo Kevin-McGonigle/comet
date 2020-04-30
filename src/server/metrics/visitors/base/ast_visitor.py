@@ -7,6 +7,11 @@ if TYPE_CHECKING:
 
 
 class ASTVisitor(GraphVisitor):
+    """
+    Abstract syntax tree visitor.
+
+    Base class for visiting abstract syntax tree structures.
+    """
     def visit(self, ast):
         """
         Visit an AST structure.

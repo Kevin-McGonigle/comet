@@ -1,4 +1,9 @@
+from typing import TYPE_CHECKING
+
 from metrics.structures.base.graph import Graph, Node
+
+if TYPE_CHECKING:
+    from metrics.visitors.base.cfg_visitor import CFGVisitor
 
 
 class CFG(Graph):
@@ -49,7 +54,8 @@ class CFG(Graph):
         :return: The result of the accept.
         :rtype: Any
         """
-        return super().accept(visitor)
+        if isinstance(self.entry_block, CFGBlock):
+            return self.entry_block.accept(visitor)
 
 
 class CFGBlock(Node):
@@ -105,6 +111,16 @@ class CFGBlock(Node):
 
         del self._exit_block
 
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_block(self)
+
 
 class CFGIfBlock(CFGBlock):
     def __init__(self, success_block=None, exit_block=None):
@@ -127,18 +143,10 @@ class CFGIfBlock(CFGBlock):
         super().__init__(self.success_block, self.exit_block)
 
     def __str__(self):
-        s = "If block"
-
-        if self.success_block:
-            s += f"Success block: {self.success_block}"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"If block.\nSuccess block: {self.success_block}\nExit block: {self.exit_block}"
 
     def __repr__(self):
-        return "If block"
+        return f"CFGIfBlock(success_block={self.success_block}, exit_block={self.exit_block})"
 
     @property
     def success_block(self):
@@ -209,6 +217,16 @@ class CFGIfBlock(CFGBlock):
 
         del self._exit_block
 
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_if_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_if_block(self)
+
     def add_child(self, child):
         """
         Add a child to the if structure's exit block.
@@ -254,21 +272,12 @@ class CFGIfElseBlock(CFGBlock):
         super().__init__(self.success_block, self.fail_block)
 
     def __str__(self):
-        s = "If-else block"
-
-        if self.success_block:
-            s += f"Success block: {self.success_block}"
-
-        if self.fail_block:
-            s += f"Fail block: {self.fail_block}"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"If-else block.\nSuccess block: {self.success_block}\nFail block: {self.fail_block}\n" \
+               f"Exit block: {self.exit_block}"
 
     def __repr__(self):
-        return "If-else block"
+        return f"CFGIfElseBlock(success_block={self.success_block}, fail_block={self.fail_block}, " \
+               f"exit_block={self.exit_block})"
 
     @property
     def success_block(self):
@@ -367,6 +376,16 @@ class CFGIfElseBlock(CFGBlock):
 
         del self._exit_block
 
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_if_else_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_if_else_block(self)
+
     def add_child(self, child):
         """
         Add child to the if-else structure's exit block.
@@ -405,18 +424,10 @@ class CFGLoopBlock(CFGBlock):
         super().__init__(self.success_block, self.exit_block)
 
     def __str__(self):
-        s = "Loop block"
-
-        if self.success_block:
-            s += f"Success block: {self.success_block}"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"Loop block.\nSuccess block: {self.success_block}\nExit block: {self.exit_block}"
 
     def __repr__(self):
-        return "Loop block"
+        return f"CFGLoopBlock(success_block={self.success_block}, exit_block={self.exit_block})"
 
     @property
     def success_block(self):
@@ -452,6 +463,16 @@ class CFGLoopBlock(CFGBlock):
             self.children.remove(self.success_block)
 
         del self._success_block
+
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_loop_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_loop_block(self)
 
     def add_child(self, child):
         """
@@ -499,21 +520,12 @@ class CFGLoopElseBlock(CFGBlock):
         super().__init__(self.success_block, self.fail_block)
 
     def __str__(self):
-        s = "Loop-else block"
-
-        if self.success_block:
-            s += f"Success block: {self.success_block}"
-
-        if self.fail_block:
-            s += f"Fail block: {self.fail_block}"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"Loop-else block.\nSuccess block: {self.success_block}\nFail block: {self.fail_block}\n" \
+               f"Exit block: {self.exit_block}"
 
     def __repr__(self):
-        return "Loop-else block"
+        return f"CFGLoopElseBlock(success_block={self.success_block}, fail_block={self.fail_block}, " \
+               f"exit_block={self.exit_block})"
 
     @property
     def success_block(self):
@@ -612,6 +624,16 @@ class CFGLoopElseBlock(CFGBlock):
 
         del self._exit_block
 
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_loop_else_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_loop_else_block(self)
+
     def add_child(self, child):
         """
         Add a child to the while-else structure's exit block.
@@ -650,18 +672,10 @@ class CFGSwitchBlock(CFGBlock):
         super().__init__(*self.case_blocks)
 
     def __str__(self):
-        s = "Switch block"
-
-        if self.case_blocks:
-            s += f"Case blocks: {self.case_blocks}"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"Switch block.\nCase blocks: {self.case_blocks}\nExit block: {self.exit_block}"
 
     def __repr__(self):
-        return "Switch block"
+        return f"CFGSwitchBlock(case_blocks={self.case_blocks}, exit_block={self.exit_block})"
 
     @property
     def case_blocks(self):
@@ -739,6 +753,16 @@ class CFGSwitchBlock(CFGBlock):
 
         del self._exit_block
 
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_switch_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_switch_block(self)
+
     def add_child(self, child):
         """
         Add a child to the switch structure's exit block.
@@ -767,15 +791,20 @@ class CFGBreakBlock(CFGBlock):
         super().__init__(self.exit_block)
 
     def __str__(self):
-        s = "Break block"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"Break block.\nExit block: {self.exit_block}"
 
     def __repr__(self):
-        return "Break block"
+        return f"CFGBreakBlock(exit_block={self.exit_block})"
+
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_break_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_break_block(self)
 
     # TODO: Evaluate whether "add/remove child" is a valid operation for break blocks.
     def add_child(self, child):
@@ -806,15 +835,20 @@ class CFGContinueBlock(CFGBlock):
         super().__init__(self.exit_block)
 
     def __str__(self):
-        s = "Continue block"
-
-        if self.exit_block:
-            s += f"Exit block: {self.exit_block}"
-
-        return s
+        return f"Continue block.\nExit block: {self.exit_block}"
 
     def __repr__(self):
-        return "Continue block"
+        return f"CFGContinueBlock(exit_block={self.exit_block})"
+
+    def accept(self, visitor):
+        """
+        Accept a CFG visitor and call its visit_continue_block method.
+        :param visitor: The CFG visitor to accept.
+        :type visitor: CFGVisitor
+        :return: The result of the accept.
+        :rtype: Any
+        """
+        return visitor.visit_continue_block(self)
 
     # TODO: Evaluate whether "add/remove child" is a valid operation for continue blocks.
     def add_child(self, child):

@@ -7,6 +7,12 @@ if TYPE_CHECKING:
 
 
 class AST(Graph):
+    """
+    Abstract syntax tree.
+
+    A tree structure that represents a program in a language-independent
+    tree-like manner.
+    """
     # Binary Operators
     ADD = "Add"
     SUBTRACT = "Subtract"
@@ -66,7 +72,6 @@ class AST(Graph):
 
     def __init__(self, root=None):
         """
-        Abstract syntax tree.
         :param root: The root node of the AST.
         :type root: ASTNode or None
         """

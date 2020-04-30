@@ -46,7 +46,13 @@ class DependencyGraph(Graph):
 
 
 class Class(Node):
-    def __init__(self, name, dependencies=None):
+    """
+    Class.
+
+    Dependency graph representation of a class, with a list of dependencies that
+    the class directly depends on.
+    """
+    def __init__(self, name=None, dependencies=None):
         """
         Class.
         :param name: The name of the class.
@@ -107,3 +113,56 @@ class Class(Node):
         :type dependent: Class
         """
         dependent.add_dependent(self)
+
+
+class KnownClass(Class):
+    """
+    Known class.
+
+    A class that is known with a valid identifier.
+    """
+
+    def __init__(self, name=None, dependencies=None):
+        """
+        Known class.
+        :param name: The name of the class.
+        :type name: str
+        :param dependencies: The classes that this class directly depends on.
+        :type dependencies: list[Class] or None
+        """
+        super().__init__(name, dependencies)
+
+    def __str__(self):
+        return f"Known class.\nName: {self.name}\nDependencies: {self.dependencies}"
+
+    def __repr__(self):
+        return f"KnownClass(name={self.name}, dependencies={self.dependencies})"
+
+
+class UnknownClass(Class):
+    """
+    Unknown class.
+
+    A class that cannot be identified due to an unsupported argument/parameter expression
+    (e.g. function call, positional/keyword unpacking or generator expression),
+    an identifier that does not map to a known class, etc.
+    """
+
+    def __init__(self, name=None, dependencies=None, reason=None):
+        """
+        Unknown class.
+        :param name: The name of the class.
+        :type name: str
+        :param dependencies: The classes that the class directly depends on.
+        :type dependencies: list[Class] or None
+        :param reason: The reason that the class cannot be identified.
+        :type reason: str
+        """
+        self.reason = reason
+        super().__init__(name, dependencies)
+
+    def __str__(self):
+        return f"Unknown class.\nName: {self.name}\nDependencies: {self.dependencies}\nReason: {self.reason}"
+
+    def __repr__(self):
+        return f"UnknownClass(name={self.name}, dependencies={self.dependencies}, reason={self.reason})"

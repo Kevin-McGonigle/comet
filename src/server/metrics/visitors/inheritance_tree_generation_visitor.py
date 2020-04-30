@@ -78,7 +78,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
             if child_results:
                 if isinstance(child_result, list):
                     child_results += child_result
-                else:
+                elif child_result:
                     child_results.append(child_result)
 
         return child_results

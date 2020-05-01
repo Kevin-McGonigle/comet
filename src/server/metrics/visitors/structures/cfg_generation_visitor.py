@@ -1,3 +1,5 @@
+# TODO: Work on creating connected components based on different packages/classes/methods
+
 from typing import TYPE_CHECKING
 
 from metrics.structures.cfg import *

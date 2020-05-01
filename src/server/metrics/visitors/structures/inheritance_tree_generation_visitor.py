@@ -13,7 +13,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         :type classes: list[Class] or None
         """
         if base is None:
-            base = Class("object")
+            base = KnownClass("object")
         self.base = base
 
         if classes is None:
@@ -52,7 +52,6 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         """
         if name in self.classes:
             return self.classes[name][-1]
-        return None
 
     def visit(self, ast):
         """
@@ -109,7 +108,13 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         self.scope = tmp
 
         # Create class
-        self.add_class(Class(name, superclasses, methods))
+        cls = KnownClass(name, methods=methods)
+
+        # Add as a subclass to superclasses
+        for superclass in superclasses:
+            cls.add_superclass(superclass)
+
+        self.add_class(cls)
 
     def visit_function_definition(self, node):
         """
@@ -161,30 +166,34 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
                 return name
 
             # Check for class at same scope
-            class_ = None
             if self.scope:
-                class_ = self.get_class(f"{self.scope}.{name}")
+                cls = self.get_class(f"{self.scope}.{name}")
+                if cls:
+                    return cls
 
             # Check for class at global scope
-            if class_ is None:
-                class_ = self.get_class(name)
-
-            if class_:
-                return class_
+            cls = self.get_class(name)
+            if cls:
+                return cls
 
             if not self.scope:
-                return UnknownClass(self.base, name, f"Class with name \"{name}\" cannot be found globally.")
-            return UnknownClass(self.base, name,
-                                f"Class with name \"{name}\" cannot be found at scope {self.scope} or globally.")
+                cls = UnknownClass(name, reason=f"Class with name \"{name}\" cannot be found globally.")
+            else:
+                cls = UnknownClass(name,
+                                   reason=f"Class with name \"{name}\" cannot be found at scope {self.scope} "
+                                          f"or globally.")
 
-        if isinstance(node.value, ASTPositionalUnpackExpressionNode):
-            return UnknownClasses(self.base, "Unpacking positional arguments from iterable.")
+        elif isinstance(node.value, ASTPositionalUnpackExpressionNode):
+            cls = UnknownClass(reason="Unpacking positional arguments from iterable.")
 
-        if isinstance(node.value, ASTKeywordUnpackExpressionNode):
-            return UnknownClasses(self.base, "Unpacking keyword arguments from key-value map.")
+        elif isinstance(node.value, ASTKeywordUnpackExpressionNode):
+            cls = UnknownClass(reason="Unpacking keyword arguments from key-value map.")
 
-        return UnknownClass(self.base,
-                            reason=f"{node.value} unsupported for class identification. Type: {type(node.value)}")
+        else:
+            cls = UnknownClass(reason=f"{node.value} unsupported for class identification. Type: {type(node.value)}")
+
+        cls.add_superclass(self.base)
+        return cls
 
     def visit_member(self, node):
         """
@@ -205,10 +214,14 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
                     return member
 
                 return parent + "." + member
-            return UnknownClass(self.base,
-                                reason=f"{node.member} unsupported for class identification. Type: {type(node.member)}")
-        return UnknownClass(self.base,
-                            reason=f"{node.parent} unsupported for class identification. Type: {type(node.parent)}")
+            else:
+                cls = UnknownClass(reason=f"{node.member} unsupported for class identification. "
+                                          f"Type: {type(node.member)}")
+        else:
+            cls = UnknownClass(reason=f"{node.parent} unsupported for class identification. "
+                                      f"Type: {type(node.parent)}")
+        cls.add_superclass(self.base)
+        return cls
 
     def visit_parameter(self, node):
         """

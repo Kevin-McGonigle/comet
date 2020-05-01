@@ -11,15 +11,15 @@ class DependencyGraph(Graph):
         """
         Dependency Graph.
         :param base: The base class in the given language.
-        :type base: Class
+        :type base: Class or None
         :param classes: The classes contained in the graph.
-        :type classes: list[Class]
+        :type classes: list[Class] or None
         """
         if classes is None:
             classes = []
         self.classes = classes
 
-        super().__init__(base)
+        super().__init__(base if base is not None else Class("object"))
 
     def __str__(self):
         return f"Dependency graph.\nBase: {self.base}\nClasses: {self.classes}"
@@ -29,14 +29,27 @@ class DependencyGraph(Graph):
 
     @property
     def base(self):
+        """
+        Getter for base property.
+        :return: The base class in the tree.
+        :rtype: Class or None
+        """
         return self.root
 
     @base.setter
     def base(self, new_base):
+        """
+        Setter for base property.
+        :param new_base: The value to assign to base.
+        :type new_base: Class or None
+        """
         self.root = new_base
 
     @base.deleter
     def base(self):
+        """
+        Deleter for base property.
+        """
         del self.root
 
     def accept(self, visitor):
@@ -127,7 +140,7 @@ class Class(Node):
         :param dependent: The dependent.
         :type dependent: Class
         """
-        dependent.add_dependent(self)
+        dependent.add_dependency(self)
 
 
 class KnownClass(Class):

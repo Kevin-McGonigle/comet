@@ -19,7 +19,7 @@ class DependencyGraph(Graph):
             classes = []
         self.classes = classes
 
-        super().__init__(base if base is not None else Class("object"))
+        super().__init__(base if base is not None else KnownClass("object"))
 
     def __str__(self):
         return f"Dependency graph.\nBase: {self.base}\nClasses: {self.classes}"
@@ -106,7 +106,7 @@ class Class(Node):
         """
         Getter for dependencies property.
         :return: Value of dependencies.
-        :rtype: list[DependencyGraphNode] or None
+        :rtype: list[Class] or None
         """
         return self.children
 
@@ -115,7 +115,7 @@ class Class(Node):
         """
         Setter for dependencies property.
         :param new_dependencies: Value to assign to dependencies.
-        :type new_dependencies: list[DependencyGraphNode] or None
+        :type new_dependencies: list[Class] or None
         """
         self.children = new_dependencies
 

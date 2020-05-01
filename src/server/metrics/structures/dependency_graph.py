@@ -1,4 +1,9 @@
+from typing import TYPE_CHECKING
+
 from metrics.structures.base.graph import Graph, Node
+
+if TYPE_CHECKING:
+    from metrics.visitors.base.dependency_graph_visitor import *
 
 
 class DependencyGraph(Graph):
@@ -36,13 +41,13 @@ class DependencyGraph(Graph):
 
     def accept(self, visitor):
         """
-        Accept a dependency graph visitor.
+        Accept a dependency graph visitor and visit each of the classes in the graph.
         :param visitor: The dependency graph visitor to accept.
         :type visitor: DependencyGraphVisitor
         :return: The result of the accept.
         :rtype: Any
         """
-        return super().accept(visitor)
+        return {cls: cls.accept(visitor) for cls in self.classes}
 
 
 class Class(Node):
@@ -72,6 +77,16 @@ class Class(Node):
 
     def __repr__(self):
         return f"Class(name={self.name}, dependencies={self.dependencies})"
+
+    def accept(self, visitor):
+        """
+        Accept a dependency graph visitor and call its visit_class method.
+        :param visitor: The dependency graph visitor to accept.
+        :type visitor:
+        :return:
+        :rtype:
+        """
+        return visitor.visit_class(self)
 
     @property
     def dependencies(self):

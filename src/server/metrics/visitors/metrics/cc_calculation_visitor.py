@@ -39,7 +39,8 @@ class CCCalculationVisitor(CFGVisitor):
 
         cfg.accept(self)
 
-        return self._edge_count - self._node_count + 2
+        if self._node_count:
+            return self._edge_count - self._node_count + 2
 
     def visit_children(self, block):
         """
@@ -48,12 +49,12 @@ class CCCalculationVisitor(CFGVisitor):
         :type block: CFGBlock
         """
         for child in block.children:
-            child.accept()
+            child.accept(self)
 
     def visit_block(self, block):
         """
-        Visit a CFG basic block, adding to _node_count and _edge_count accordingly and visiting its children if this block
-        has not been visited before.
+        Visit a CFG basic block, adding to _node_count and _edge_count accordingly and visiting its children if
+        the block has not been visited before.
         :param block: The CFG basic block to visit.
         :type block: CFGBlock
         """

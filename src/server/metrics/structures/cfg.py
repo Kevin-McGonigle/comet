@@ -139,7 +139,7 @@ class CFGIfBlock(CFGBlock):
             exit_block = CFGBlock()
         self._exit_block = exit_block
 
-        self.success_block.add_child(self.exit_block)
+        self.success_block.exit_block = self.exit_block
         super().__init__(self.success_block, self.exit_block)
 
     def __str__(self):

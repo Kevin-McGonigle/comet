@@ -6,6 +6,9 @@ DEFAULT_RETURN_TYPE = "void"
 
 @unique
 class Visibility(IntEnum):
+    """
+    Visibility.
+    """
     PUBLIC = 1
     PACKAGE = 2
     PROTECTED = 3
@@ -14,6 +17,9 @@ class Visibility(IntEnum):
 
 @unique
 class RelationshipType(IntEnum):
+    """
+    Relationship type.
+    """
     ASSOCIATION = 1
     INHERITANCE = 2
     IMPLEMENTATION = 3

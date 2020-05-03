@@ -1,5 +1,5 @@
 from enum import IntEnum, unique
-from typing import List, Any
+from typing import List, Any, Optional
 
 DEFAULT_RETURN_TYPE = "void"
 
@@ -14,6 +14,12 @@ class Visibility(IntEnum):
     PROTECTED = 3
     PRIVATE = 4
 
+    def __str__(self):
+        return f"Visibility.\nName: {self.name}\nValue: {self.value}"
+
+    def __repr__(self):
+        return f"Visibility(name={self.name}, value={self.value})"
+
 
 @unique
 class RelationshipType(IntEnum):
@@ -27,13 +33,19 @@ class RelationshipType(IntEnum):
     AGGREGATION = 5
     COMPOSITION = 6
 
+    def __str__(self):
+        return f"Relationship type.\nName: {self.name}\nValue: {self.value}"
+
+    def __repr__(self):
+        return f"RelationshipType(name={self.name}, value={self.value})"
+
 
 class Variable:
     """
     Variable.
     """
 
-    def __init__(self, name: str, type_: str = None, default: Any = None) -> None:
+    def __init__(self, name: str, type_: Optional[str] = None, default: Any = None) -> None:
         """
         Variable.
         :param name: The variable's name/identifier.
@@ -56,7 +68,7 @@ class Attribute(Variable):
     Attribute.
     """
 
-    def __init__(self, name: str, visibility: Visibility, type_: str = None, default: Any = None,
+    def __init__(self, name: str, visibility: Visibility, type_: Optional[str] = None, default: Any = None,
                  static: bool = False) -> None:
         """
         Attribute.
@@ -84,7 +96,7 @@ class Parameter(Variable):
     Parameter.
     """
 
-    def __init__(self, name: str, type_: str = None, default: Any = None) -> None:
+    def __init__(self, name: str, type_: Optional[str] = None, default: Any = None) -> None:
         """
         Parameter.
         :param name: The parameter's name/identifier.
@@ -105,8 +117,8 @@ class Method:
     Method.
     """
 
-    def __init__(self, name: str, visibility: Visibility, parameters: List[Parameter] = None,
-                 return_type: str = None) -> None:
+    def __init__(self, name: str, visibility: Visibility, parameters: Optional[List[Parameter]] = None,
+                 return_type: Optional[str] = None) -> None:
         """
         Method.
         :param name: The method's name/identifier.
@@ -133,7 +145,8 @@ class Class:
     Class.
     """
 
-    def __init__(self, name: str, attributes: List[Attribute] = None, methods: List[Method] = None) -> None:
+    def __init__(self, name: str, attributes: Optional[List[Attribute]] = None,
+                 methods: Optional[List[Method]] = None) -> None:
         """
         Class.
         :param name: The class' name/identifier.
@@ -157,25 +170,32 @@ class Relationship(object):
     """
 
     def __init__(self, type_: RelationshipType, from_class: Class, to_class: Class,
+                 from_multiplicity: Optional[str] = None, to_multiplicity: Optional[str] = None,
                  bidirectional: bool = False) -> None:
         """
         Relationship.
         :param type_: The type of relationship.
         :param from_class: The class to draw the arrow from.
         :param to_class: The class to draw the arrow to.
+        :param from_multiplicity: The multiplicity of the class to draw the arrow from.
+        :param to_multiplicity: The multiplicity of the class to draw the arrow to.
         :param bidirectional: Whether or not the relationship is bidirectional.
         """
         self.type = type_
         self.from_class = from_class
         self.to_class = to_class
+        self.from_multiplicity = from_multiplicity
+        self.to_multiplicity = to_multiplicity
         self.bidirectional = bidirectional
 
     def __str__(self) -> str:
         return f"Relationship.\nType: {self.type}\nFrom: {self.from_class}\nTo: {self.to_class}\n" \
+               f"From multiplicity: {self.from_multiplicity}\nTo multiplicity: {self.to_multiplicity}\n" \
                f"Bidirectional: {self.bidirectional}"
 
     def __repr__(self) -> str:
         return f"Relationship(type={self.type}, from_class={self.from_class}, to_class={self.to_class}, " \
+               f"from_multiplicity={self.from_multiplicity}, to_multiplicity={self.to_multiplicity}, " \
                f"bidirectional={self.bidirectional})"
 
 
@@ -184,14 +204,15 @@ class ClassDiagram(object):
     Class diagram.
     """
 
-    def __init__(self, classes: List[Class], relationships: List[Relationship]) -> None:
+    def __init__(self, classes: Optional[List[Class]] = None,
+                 relationships: Optional[List[Relationship]] = None) -> None:
         """
         Class diagram.
         :param classes: The classes to display in the class diagram.
         :param relationships: The relationships between the classes.
         """
-        self.classes = classes
-        self.relationships = relationships
+        self.classes = classes if classes is not None else []
+        self.relationships = relationships if relationships is not None else []
 
     def __str__(self) -> str:
         return f"Class diagram.\nClasses: {self.classes}\nRelationships: {self.relationships}"

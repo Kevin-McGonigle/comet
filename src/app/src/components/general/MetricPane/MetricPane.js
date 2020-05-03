@@ -29,10 +29,11 @@ const MetricPane = props => {
             height={120}
             margin={24}
             display="flex"
-            flexDirection="row"
+            flexDirection="column"
             alignItems="center"
             justifyContent="center"
         >
+
             <div className={cx('metricInfo')}>
                 <Text color="black">{ metricName }</Text>
                 <Text color="black">{ metricValue }</Text>

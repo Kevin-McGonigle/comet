@@ -1,0 +1,6 @@
+.astContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-right: 20px;
+}

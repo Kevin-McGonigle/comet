@@ -15,16 +15,48 @@ const shapeTreeGraphData = (fileName, data) => {
 // { A: ['B', 'C'], B: [], C: ['D']}
 
 const initialState = {
-    name: '/src',
+    name: 'WHILE',
     children: [{
-        name: 'A',
+        name: 'LESS',
         children: [{
-            name: 'B'
-        }, {
-            name: 'C',
+            name: 'VARIABLE',
+            children: [{ name: "x" }],
+        },
+        { 
+            name: "CONST",
             children: [{
-                name: 'D',
+                name: 20
+        }]}],
+        name: 'ASSIGN',
+        children: [{
+            name: 'VARIABLE',
+            children: [{
+                name: 'X'
+            },
+        {
+            name: "PLUS",
+            children: [{
+                name: "VARIABLE",
+                children: [{
+                    name: "X"
+                }, 
+                {
+                name: "TIMES",
+                children: [{
+                    name: "VARIABLE",
+                    children: [{
+                        name: "Y"
+                    }, 
+                    {
+                    name: "CONST",
+                    children: [{
+                        name: "2"
+                    }]
+                    }]
+                }]    
+                }]
             }]
+        }],
         }]
     }]
 };
@@ -34,21 +66,14 @@ const TreeGraph = props => {
         tree,
     } = props;
 
-    const onClickHandler = (event) => {
-        const nodeId = event.target.parentNode.id;
-        // Set ClassDiagram 
-        console.log(nodeId);
-    };
-    
     return (
+        <div className={cx('treeGraphContainer')}>
             <Tree
                 data={initialState}
-                height={450}
-                width={450}
-                gProps={{
-                    onClick: onClickHandler
-                }}
+                height={600}
+                width={800}
             />
+        </div>
     );
 };
 

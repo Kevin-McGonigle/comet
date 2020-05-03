@@ -6,7 +6,10 @@ import classnames from 'classnames';
 import Toolbar from '../general/Toolbar/Toolbar';
 import MetricPaneContainer  from '../general/MetricPane/MetricPaneContainer';
 import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
-import InheritanceTree from './InheritanceTree';
+import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
+import InheritanceTreeContainer from '../general/Charts/InheritanceTreeContainer';
+import { controlFlowGraphData, dependencyGraphData } from '../general/Charts/configs';
+import ForceDirectedGraph from '../general/Charts/ForceDirectedGraph';
 
 const cx = args => classnames(styles, args)
 
@@ -14,7 +17,21 @@ const Metrics = props => {
     const [tabState, setTabState] = useState({
         selectedIndex: 0,
         tabs: ["Metrics", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
-        tabContent: [<MetricPaneContainer />, <InheritanceTree />]
+        tabContent: [
+            <MetricPaneContainer />, 
+            <InheritanceTreeContainer title="Inheritance Tree"/>,
+            <AbstractSyntaxTree />, 
+            <ForceDirectedGraph 
+                title="Control Flow Graph"
+                data={controlFlowGraphData} 
+                graphType="controlFlow"         
+            />,
+            <ForceDirectedGraph 
+                title="Dependency Graph"
+                data={dependencyGraphData} 
+                graphType="controlFlow"         
+            />
+        ]
     });
 
     return (

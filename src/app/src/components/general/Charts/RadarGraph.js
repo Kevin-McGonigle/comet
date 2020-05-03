@@ -1,6 +1,5 @@
 import React from 'react';
 import { Radar } from 'react-chartjs-2';
-// import styles from './FileDirectory.css';
 
 const RadarGraph = (props) => {
     // const { data } = props;

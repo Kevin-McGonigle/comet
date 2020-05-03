@@ -70,18 +70,3 @@ test('removeFileFromUploadedFiles should return the expected value', () => {
     expect(final).toStrictEqual([{ name: 'name', fileType: '', size: '' }]);
 });
 
-test('readFile should read a single file and returns its contents', () => { 
-    const file = readFile(new File(["foojkhjkhkjhkhhj"], "foo.txt", {
-        type: "text/plain",
-      }));
-    file.then(value => expect(value).toEqual("foojkhjkhkjhkhhj"));
-});
-
-test('readFile should read multiple files and returns their contents', () => { 
-    const file = readFile([new File(["foojkhjkhkjhkhhj"], "foo.txt", {
-        type: "text/plain",
-      }), new File(["test"], "test.txt", {
-        type: "text/plain",
-      })]);
-    file.then(value => expect(value).toEqual(["foojkhjkhkjhkhhj", "test"]));
-});

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styles from './Metrics.css';
@@ -10,14 +10,16 @@ import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
 import InheritanceTreeContainer from '../general/Charts/InheritanceTreeContainer';
 import { controlFlowGraphData, dependencyGraphData } from '../general/Charts/configs';
 import ForceDirectedGraph from '../general/Charts/ForceDirectedGraph';
+import TreeMapContainer from '../general/TreeMap/TreeMapContainer';
 
 const cx = args => classnames(styles, args)
 
 const Metrics = props => {
     const [tabState, setTabState] = useState({
         selectedIndex: 0,
-        tabs: ["Metrics", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
+        tabs: ["TreeMap", "Metrics", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
         tabContent: [
+            <TreeMapContainer />,
             <MetricPaneContainer />, 
             <InheritanceTreeContainer title="Inheritance Tree"/>,
             <AbstractSyntaxTree />, 

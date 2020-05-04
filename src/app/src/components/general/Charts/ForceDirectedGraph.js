@@ -29,7 +29,7 @@ const ForceDirectedGraph = (props) => {
             background="tint2"
             elevation={4}   
         >
-            
+                        
             <div className={cx("title")}>{ title }<hr/></div>
             <Graph
                 borderStyle="solid"

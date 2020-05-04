@@ -24,15 +24,12 @@ const initialState = {
         },
         { 
             name: "CONST",
-            children: [{
-                name: 20
-        }]}],
+            children: [{ name: 20 }]
+        }],
         name: 'ASSIGN',
         children: [{
             name: 'VARIABLE',
-            children: [{
-                name: 'X'
-            },
+            children: [{ name: 'X' },
         {
             name: "PLUS",
             children: [{
@@ -70,8 +67,9 @@ const TreeGraph = props => {
         <div className={cx('treeGraphContainer')}>
             <Tree
                 data={initialState}
-                height={600}
+                height={900}
                 width={800}
+                svgProps={{ transform: 'rotate(90)'}}
             />
         </div>
     );

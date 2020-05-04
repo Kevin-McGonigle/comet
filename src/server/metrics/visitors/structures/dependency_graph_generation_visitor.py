@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from metrics.structures.dependency_graph import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
 
@@ -127,7 +125,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         return_dependency = self.get_dependency(node.return_type)
         if return_dependency:
             dependencies.append(return_dependency)
-            
+
         scope_tmp = self.scope
         self.scope = f"{self.scope}.{name}.<locals>" if self.scope else f"{name}.<locals>"
 
@@ -197,20 +195,20 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
                 type_name = type_.accept(self)
                 if isinstance(type_name, Class):
                     return type_name
-        
+
                 if self.scope:
                     class_ = self.get_class(f"{self.scope}.{type_name}")
                     if class_:
                         return class_
-        
+
                 class_ = self.get_class(type_name)
                 if class_:
                     return class_
-        
+
                 return UnknownClass(name=type_name, dependencies=[self.base],
                                     reason=Reason.not_found(type_name, self.scope))
             return UnknownClass(dependencies=[self.base], reason=Reason.unsupported(type_))
-    
+
 
 class Reason:
     @staticmethod
@@ -226,7 +224,7 @@ class Reason:
         """
         if scope:
             return f"A class with name \"{class_name}\" cannot be found at scope {scope} or globally."
-        
+
         return f"A class with name \"{class_name}\" cannot be found."
 
     @staticmethod

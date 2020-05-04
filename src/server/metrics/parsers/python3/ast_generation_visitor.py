@@ -199,19 +199,19 @@ class ASTGenerationVisitor(Python3Visitor):
 
     def visitAugassign(self, ctx: Python3Parser.AugassignContext):
         return {
-            "+=": AST.INPLACE_ADD,
-            "-=": AST.INPLACE_SUBTRACT,
-            "*=": AST.INPLACE_MULTIPLY,
-            "/=": AST.INPLACE_DIVIDE,
-            "//=": AST.INPLACE_FLOOR_DIVIDE,
-            "%=": AST.INPLACE_MODULO,
-            "**=": AST.INPLACE_POWER,
-            "&=": AST.INPLACE_BITWISE_AND,
-            "|=": AST.INPLACE_BITWISE_OR,
-            "^=": AST.INPLACE_BITWISE_XOR,
-            "<<=": AST.INPLACE_LEFT_SHIFT,
-            ">>=": AST.INPLACE_RIGHT_SHIFT,
-            "@=": AST.INPLACE_MATRIX_MULTIPLY,
+            "+=": ASTInPlaceOperation.ADD,
+            "-=": ASTInPlaceOperation.SUBTRACT,
+            "*=": ASTInPlaceOperation.MULTIPLY,
+            "/=": ASTInPlaceOperation.DIVIDE,
+            "//=": ASTInPlaceOperation.FLOOR_DIVIDE,
+            "%=": ASTInPlaceOperation.MODULO,
+            "**=": ASTInPlaceOperation.POWER,
+            "&=": ASTInPlaceOperation.BITWISE_AND,
+            "|=": ASTInPlaceOperation.BITWISE_OR,
+            "^=": ASTInPlaceOperation.BITWISE_XOR,
+            "<<=": ASTInPlaceOperation.LEFT_SHIFT,
+            ">>=": ASTInPlaceOperation.RIGHT_SHIFT,
+            "@=": ASTInPlaceOperation.MATRIX_MULTIPLY,
         }[ctx.getText()]
 
     def visitDel_stmt(self, ctx: Python3Parser.Del_stmtContext):
@@ -282,7 +282,7 @@ class ASTGenerationVisitor(Python3Visitor):
         alias = ctx.NAME(1)
 
         if alias:
-            return ASTAsNode(name, ASTIdentifierNode(alias.getText()))
+            return ASTAliasNode(name, ASTIdentifierNode(alias.getText()))
 
         return name
 
@@ -291,7 +291,7 @@ class ASTGenerationVisitor(Python3Visitor):
         alias = ctx.NAME()
 
         if alias:
-            return ASTAsNode(name, ASTIdentifierNode(alias.getText()))
+            return ASTAliasNode(name, ASTIdentifierNode(alias.getText()))
 
         return name
 
@@ -352,10 +352,10 @@ class ASTGenerationVisitor(Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body,
+            return ASTLoopElseStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body,
                                             else_body.accept(self))
 
-        return ASTLoopStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, testlist), body)
+        return ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body)
 
     def visitTry_stmt(self, ctx: Python3Parser.Try_stmtContext):
         body = None
@@ -391,7 +391,7 @@ class ASTGenerationVisitor(Python3Visitor):
         alias = ctx.expr()
 
         if alias:
-            return ASTAsNode(expression, alias.accept(self))
+            return ASTAliasNode(expression, alias.accept(self))
 
         return expression
 
@@ -400,7 +400,7 @@ class ASTGenerationVisitor(Python3Visitor):
         alias = ctx.NAME()
 
         if alias:
-            return ASTAsNode(expression.accept(self), ASTIdentifierNode(alias.getText()))
+            return ASTAliasNode(expression.accept(self), ASTIdentifierNode(alias.getText()))
 
         if expression:
             return expression.accept(self)
@@ -445,78 +445,76 @@ class ASTGenerationVisitor(Python3Visitor):
         return ASTAnonymousFunctionDefinitionNode(body)
 
     def visitOr_test(self, ctx: Python3Parser.Or_testContext):
-        build_bin_op(AST.LOGICAL_OR, self.visitChildren(ctx))
+        build_bin_op(ASTLogicalOperation.OR, self.visitChildren(ctx))
 
     def visitAnd_test(self, ctx: Python3Parser.And_testContext):
-        build_bin_op(AST.LOGICAL_AND, self.visitChildren(ctx))
+        build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
 
     def visitNot_test(self, ctx: Python3Parser.Not_testContext):
-        return ASTUnaryOperationNode(AST.LOGICAL_NEGATION, ctx.getChild(1).accept(self))
+        return ASTUnaryOperationNode(ASTLogicalOperation.NOT, ctx.getChild(1).accept(self))
 
     def visitComparison(self, ctx: Python3Parser.ComparisonContext):
         build_bin_op_choice(self.visitChildren(ctx))
 
     def visitComp_op(self, ctx: Python3Parser.Comp_opContext):
-        comparison_operators = {
-            "==": AST.EQUAL,
-            "!=": AST.NOT_EQUAL,
-            "<>": AST.NOT_EQUAL,
-            "<": AST.LESS_THAN,
-            ">": AST.GREATER_THAN,
-            "<=": AST.LESS_THAN_OR_EQUAL,
-            ">=": AST.GREATER_THAN_OR_EQUAL,
-            "in": AST.IN,
-            "not in": [AST.LOGICAL_NEGATION, AST.IS],
-            "is": AST.IS,
-            "is not": [AST.LOGICAL_NEGATION, AST.IN]
-        }
-
-        return comparison_operators[ctx.getText()]
+        return {
+            "==": ASTComparisonOperation.EQUAL,
+            "!=": ASTComparisonOperation.NOT_EQUAL,
+            "<>": ASTComparisonOperation.NOT_EQUAL,
+            "<": ASTComparisonOperation.LESS_THAN,
+            ">": ASTComparisonOperation.GREATER_THAN,
+            "<=": ASTComparisonOperation.LESS_THAN_OR_EQUAL,
+            ">=": ASTComparisonOperation.GREATER_THAN_OR_EQUAL,
+            "in": ASTComparisonOperation.IN,
+            "not in": [ASTLogicalOperation.NOT, ASTComparisonOperation.IN],
+            "is": ASTComparisonOperation.IS,
+            "is not": [ASTLogicalOperation.NOT, ASTComparisonOperation.IS]
+        }[ctx.getText()]
 
     def visitStar_expr(self, ctx: Python3Parser.Star_exprContext):
         return ASTPositionalUnpackExpressionNode(ctx.expr().accept(self))
 
     def visitExpr(self, ctx: Python3Parser.ExprContext):
-        return build_bin_op(AST.BITWISE_OR, self.visitChildren(ctx))
+        return build_bin_op(ASTBitwiseOperation.OR, self.visitChildren(ctx))
 
     def visitXor_expr(self, ctx: Python3Parser.Xor_exprContext):
-        return build_bin_op(AST.BITWISE_XOR, self.visitChildren(ctx))
+        return build_bin_op(ASTBitwiseOperation.XOR, self.visitChildren(ctx))
 
     def visitAnd_expr(self, ctx: Python3Parser.And_exprContext):
-        return build_bin_op(AST.BITWISE_AND, self.visitChildren(ctx))
+        return build_bin_op(ASTBitwiseOperation.AND, self.visitChildren(ctx))
 
     def visitShift_expr(self, ctx: Python3Parser.Shift_exprContext):
         operators = {
-            "<<": AST.LEFT_SHIFT,
-            ">>": AST.RIGHT_SHIFT
+            "<<": ASTBitwiseOperation.LEFT_SHIFT,
+            ">>": ASTBitwiseOperation.RIGHT_SHIFT
         }
 
         return build_bin_op_choice(
-            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()] for
-             child in ctx.getChildren()])
+            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()]
+             for child in ctx.getChildren()])
 
     def visitArith_expr(self, ctx: Python3Parser.Arith_exprContext):
         operators = {
-            "+": AST.ADD,
-            "-": AST.SUBTRACT
+            "+": ASTArithmeticOperation.ADD,
+            "-": ASTArithmeticOperation.SUBTRACT
         }
 
         return build_bin_op_choice(
-            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()] for
-             child in ctx.getChildren()])
+            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()]
+             for child in ctx.getChildren()])
 
     def visitTerm(self, ctx: Python3Parser.TermContext):
         operators = {
-            "*": AST.MULTIPLY,
-            "@": AST.MATRIX_MULTIPLY,
-            "/": AST.DIVIDE,
-            "%": AST.MODULO,
-            "//": AST.FLOOR_DIVIDE
+            "*": ASTArithmeticOperation.MULTIPLY,
+            "@": ASTArithmeticOperation.MATRIX_MULTIPLY,
+            "/": ASTArithmeticOperation.DIVIDE,
+            "%": ASTArithmeticOperation.MODULO,
+            "//": ASTArithmeticOperation.FLOOR_DIVIDE
         }
 
         return build_bin_op_choice(
-            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()] for
-             child in ctx.getChildren()])
+            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()]
+             for child in ctx.getChildren()])
 
     def visitFactor(self, ctx: Python3Parser.FactorContext):
         power = ctx.power()
@@ -524,15 +522,15 @@ class ASTGenerationVisitor(Python3Visitor):
             return power.accept(self)
 
         operators = {
-            "+": AST.POSITIVE,
-            "-": AST.ARITH_NEGATION,
-            "~": AST.BITWISE_INVERSION
+            "+": ASTArithmeticOperation.POSITIVE,
+            "-": ASTArithmeticOperation.NEGATION,
+            "~": ASTBitwiseOperation.INVERSION
         }
 
         return ASTUnaryOperationNode(operators[ctx.getChild(0).getText()], ctx.factor().accept(self))
 
     def visitPower(self, ctx: Python3Parser.PowerContext):
-        return build_bin_op_rassoc(AST.POWER, self.visitChildren(ctx))
+        return build_bin_op_rassoc(ASTArithmeticOperation.POWER, self.visitChildren(ctx))
 
     def visitAtom_expr(self, ctx: Python3Parser.Atom_exprContext):
         await_ = ctx.AWAIT()
@@ -566,24 +564,25 @@ class ASTGenerationVisitor(Python3Visitor):
 
         number = ctx.NUMBER()
         if number:
-            return ASTLiteralNode(AST.NUMBER, number.getText())
+            return ASTLiteralNode(ASTLiteralType.NUMBER, number.getText())
 
         strings = ctx.STRING()
         if strings:
-            return build_bin_op(AST.ADD, [ASTLiteralNode(AST.STRING, string.getText()) for string in strings])
+            return build_bin_op(ASTSequenceOperations.CONCAT,
+                                [ASTLiteralNode(ASTLiteralType.STRING, string.getText()) for string in strings])
 
         ellipsis_ = ctx.ELLIPSIS()
         if ellipsis_:
-            return ASTLiteralNode(AST.ELLIPSIS)
+            return ASTLiteralNode(ASTLiteralType.ELLIPSIS)
 
         none = ctx.NONE()
         if none:
-            return ASTLiteralNode(AST.NULL)
+            return ASTLiteralNode(ASTLiteralType.NULL)
 
         if ctx.TRUE():
-            return ASTLiteralNode(AST.BOOLEAN, "True")
+            return ASTLiteralNode(ASTLiteralType.BOOLEAN, "True")
 
-        return ASTLiteralNode(AST.BOOLEAN, "False")
+        return ASTLiteralNode(ASTLiteralType.BOOLEAN, "False")
 
     def visitTestlist_comp(self, ctx: Python3Parser.Testlist_compContext):
         comp_for = ctx.comp_for()
@@ -714,10 +713,12 @@ class ASTGenerationVisitor(Python3Visitor):
         comprehension = ctx.comp_iter()
 
         if comprehension:
-            output = ASTLoopStatementNode(
-                ASTBinaryOperationNode(AST.IN, exprlist, ASTComprehensionNode(or_test, comprehension.accept(self))))
+            output = ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist,
+                                                                 ASTComprehensionNode(or_test,
+                                                                                      comprehension.accept(self))),
+                                          None)
         else:
-            output = ASTLoopStatementNode(ASTBinaryOperationNode(AST.IN, exprlist, or_test))
+            output = ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, or_test))
 
         return ASTAsyncNode(output) if ctx.ASYNC() else output
 

@@ -23,17 +23,7 @@ class ASTVisitor(GraphVisitor):
         return super().visit(ast)
 
     @staticmethod
-    def visit_terminal(node):
-        """
-        Visit AST terminal node.
-        :param node: The AST terminal node.
-        :type node: ASTTerminalNode
-        :return: The terminal node's value.
-        :rtype: list[str]
-        """
-        return node.values
-
-    def visit_identifier(self, node):
+    def visit_identifier(node):
         """
         Visit AST identifier node.
         :param node: The AST identifier node.
@@ -41,9 +31,10 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_terminal(node)
+        return node.name
 
-    def visit_literal(self, node):
+    @staticmethod
+    def visit_literal(node):
         """
         Visit AST literal node.
         :param node: The AST literal node.
@@ -51,7 +42,7 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         :rtype: Any
         """
-        return self.visit_terminal(node)
+        return node.value
 
     def visit_multi(self, node):
         """
@@ -427,7 +418,7 @@ class ASTVisitor(GraphVisitor):
         """
         Visit AST as node.
         :param node: The AST as node.
-        :type node: ASTAsNode
+        :type node: ASTAliasNode
         :return: The result of the visit.
         :rtype: Any
         """

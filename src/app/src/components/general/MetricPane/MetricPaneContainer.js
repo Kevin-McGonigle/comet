@@ -3,7 +3,6 @@ import styles from './MetricPaneContainer.css';
 import classnames from 'classnames';
 import { Pane } from 'evergreen-ui';
 import RadarGraph from '../Charts/RadarGraph';
-import ForceDirectedGraph from '../Charts/ForceDirectedGraph';
 import MetricPane from './MetricPane';
 
 const cx = args => classnames(styles, args)

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TreeMap from 'react-d3-treemap';
-import { Pane } from 'evergreen-ui';
+import { Pane, SelectMenu, Button } from 'evergreen-ui';
 import "react-d3-treemap/dist/react.d3.treemap.css";
 
 const data = {
@@ -1871,6 +1871,8 @@ const data = {
   
 
 const TreeMapContainer = props => {
+    const [menuState, setMenuState] = useState({ selected: null })
+
     return (
         <Pane
             display="flex"
@@ -1880,8 +1882,19 @@ const TreeMapContainer = props => {
             background="tint2"
             elevation={4}  
         >
+            <SelectMenu
+                title="Select metric"
+                options={["Cycolmatic Complexity", "Lines of Comment", "Afferent Coupling", 
+                    "Efferent Coupling", "Instability", "Abstractness", 
+                    "Method Cohesion", "Relational Cohesion", "Nesting Depth"].map(label => ({ label, value: label }))}
+                selected={menuState.selected}
+                onSelect={item => setMenuState({ selected: item.value })}
+            >
+                <Button float="right">{ menuState.selected || "Select metric" }</Button>
+            </SelectMenu>
+
             <TreeMap
-                height={500}
+                height={450}
                 width={1000}
                 data={data}
                 valueUnit={"MB"}

@@ -1,36 +1,55 @@
-# TODO: Work on creating connected components based on different packages/classes/methods
+from typing import Optional, Sequence
 
 from metrics.structures.cfg import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
 
-if TYPE_CHECKING:
-    from metrics.structures.ast import AST, ASTNode
-
 
 class CFGGenerationVisitor(ASTVisitor):
+    """
+    Control-flow graph generation visitor.
+
+    Provides functionality for visiting an abstract syntax tree and generating the corresponding
+    control-flow graph.
+    """
+
     def __init__(self):
         """
-        CFG generation visitor.
+        Control-flow graph generation visitor.
         """
         self.loop_scope = None
 
-    def visit(self, ast):
+    # Helpers
+
+    def build_sequence(self, sequence: Optional[Sequence[CFGBlock]]) -> Optional[CFGBlock]:
+        """
+        Build sequence of blocks.
+        :param sequence: The list of blocks to build into a sequence.
+        :return: The first node of the sequence with built sequence as its exit block.
+        None if no/empty sequence supplied.
+        """
+        if not sequence:
+            return None
+
+        if len(sequence) > 1:
+            sequence[0].add_child(self.build_sequence(sequence[1:]))
+
+        return sequence[0]
+
+    # Visits
+
+    def visit(self, ast) -> CFG:
         """
         Visit the AST and produce a CFG.
         :param ast: The AST to visit.
-        :type ast: AST
         :return: The generated CFG.
-        :rtype: CFG
         """
         return CFG(super().visit(ast))
 
-    def visit_children(self, node):
+    def visit_children(self, node) -> Optional[CFGBlock]:
         """
-        Visit all of a node's children.
-        :param node: The node whose children to visit.
-        :type node: ASTNode
+        Visit each of an AST node's children.
+        :param node: The parent AST node whose children to visit.
         :return: A built sequence of CFGNodes returned by visiting each child. None if no CFGNodes returned.
-        :rtype: CFGBlock or None
         """
         sequence = []
         for child in node.children:
@@ -38,58 +57,67 @@ class CFGGenerationVisitor(ASTVisitor):
             if isinstance(child_result, CFGBlock):
                 sequence.append(child_result)
 
-        return build_sequence(sequence)
+        return self.build_sequence(sequence)
 
-    def visit_break_statement(self, node):
+    def visit_break_statement(self, node) -> CFGBreakBlock:
+        """
+        Visit AST break statement node and return the corresponding CFG block.
+        :param node: The AST break statement node to visit.
+        :return: The corresponding CFG block.
+        """
         if self.loop_scope is not None:
             return CFGBreakBlock(self.loop_scope.exit_block)
 
         return CFGBreakBlock()
 
-    def visit_continue_statement(self, node):
+    def visit_continue_statement(self, node) -> CFGContinueBlock:
+        """
+        Visit AST continue statement node and return the corresponding CFG block.
+        :param node: The AST continue statement node to visit.
+        :return: The corresponding CFG block.
+        """
         if self.loop_scope is not None:
             return CFGContinueBlock(self.loop_scope)
 
         return CFGContinueBlock()
 
-    def visit_if_statement(self, node):
-        condition = node.condition.accept(self)
-        body = node.body.accept(self)
+    def visit_if_statement(self, node) -> CFGIfBlock:
+        """
+        Visit AST if statement node and return the corresponding CFG block.
+        :param node: The AST if statement node to visit.
+        :return: The corresponding CFG block.
+        """
+        return CFGIfBlock(node.body.accept(self))
 
-        if isinstance(condition, CFGBlock):
-            condition.exit_block = CFGIfBlock(body)
-            return condition
+    def visit_if_else_statement(self, node) -> CFGIfElseBlock:
+        """
+        Visit AST if-else statement node and return the corresponding CFG block.
+        :param node: The AST if-else statement node to visit.
+        :return: The corresponding CFG block.
+        """
+        return CFGIfElseBlock(node.body.accept(self), node.else_body.accept(self))
 
-        return CFGIfBlock(body)
-
-    def visit_if_else_statement(self, node):
-        condition = node.condition.accept(self)
-        body = node.body.accept(self)
-        else_body = node.else_body.accept(self)
-
-        if isinstance(condition, CFGBlock):
-            condition.exit_block = CFGIfElseBlock(body, else_body)
-            return condition
-
-        return CFGIfElseBlock(body, else_body)
-
-    def visit_loop_statement(self, node):
-        condition = node.condition.accept(self)
-
+    def visit_loop_statement(self, node) -> CFGLoopBlock:
+        """
+        Visit AST loop statement node and return the corresponding CFG block.
+        :param node: The AST loop statement node to visit.
+        :return: The corresponding CFG block.
+        """
         outer_loop_scope = self.loop_scope
         self.loop_scope = loop = CFGLoopBlock()
 
-        if isinstance(condition, CFGBlock):
-            condition.exit_block = node.body.accept(self)
-            loop.success_block = condition
-        else:
-            loop.success_block = node.body.accept(self)
+        loop.success_block = node.body.accept(self)
 
         self.loop_scope = outer_loop_scope
 
         return loop
 
-    def visit_loop_else_statement(self, node):
+    def visit_loop_else_statement(self, node) -> CFGLoopElseBlock:
+        """
+        Visit AST loop-else statement node and return the corresponding CFG block.
+        :param node: The AST loop-else statement node to visit.
+        :return: The corresponding CFG block.
+        """
         outer_loop_scope = self.loop_scope
         self.loop_scope = loop_else = CFGLoopElseBlock()
 
@@ -100,20 +128,3 @@ class CFGGenerationVisitor(ASTVisitor):
         loop_else.fail_block = node.else_body.accept(self)
 
         return loop_else
-
-
-def build_sequence(sequence):
-    """
-    Build sequence of blocks.
-    :param sequence: The list of blocks to build into a sequence.
-    :type sequence: list[CFGBlock] or None
-    :return: The first node of the sequence with built sequence as its exit block. None if no/empty sequence supplied.
-    :rtype: CFGBlock or None
-    """
-    if not sequence:
-        return None
-
-    if len(sequence) > 1:
-        sequence[0].exit_block = build_sequence(sequence[1:])
-
-    return sequence[0]

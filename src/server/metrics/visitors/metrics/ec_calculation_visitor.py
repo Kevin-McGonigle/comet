@@ -12,7 +12,6 @@ class ECCalculationVisitor(DependencyGraphVisitor):
 
     Provides functionality for visiting a dependency graph and returning the efferent coupling of each class in the
     graph, where the efferent coupling of a class is the number of classes that it directly depends on.
-
     """
 
     def __init__(self):

@@ -9,107 +9,6 @@ if TYPE_CHECKING:
     from metrics.visitors.base.ast_visitor import ASTVisitor
 
 
-# Enums
-
-class ASTEnum(Enum):
-    """
-    Base class for enums.
-    """
-
-    def __repr__(self):
-        return self.value
-
-
-class ASTArithmeticOperation(ASTEnum):
-    """
-    Arithmetic operations enum.
-    """
-
-    ADD = "Add"
-    SUBTRACT = "Subtract"
-    MULTIPLY = "Multiply"
-    DIVIDE = "Divide"
-    FLOOR_DIVIDE = "Floor Divide"
-    MODULO = "Modulo"
-    POWER = "Power"
-    MATRIX_MULTIPLY = "Matrix Multiply"
-    POSITIVE = "Positive"
-    NEGATION = "Negation (Arithmetic)"
-
-
-class ASTBitwiseOperation(ASTEnum):
-    """
-    Bitwise operations enum.
-    """
-
-    AND = "Bitwise And"
-    BITWISE_OR = "Bitwise Or"
-    BITWISE_XOR = "Bitwise Xor"
-    LEFT_SHIFT = "Bitwise Left Shift"
-    RIGHT_SHIFT = "Bitwise Right Shift"
-    INVERSION = "Bitwise Inversion"
-
-
-class ASTLogicalOperation(ASTEnum):
-    """
-    Logical operations enum.
-    """
-    AND = "Logical And"
-    OR = "Logical Or"
-    NOT = "Negation (Logical)"
-
-
-class ASTComparisonOperation(ASTEnum):
-    """
-    Comparison operations enum.
-    """
-
-    EQUAL = "Equal"
-    NOT_EQUAL = "Not Equal"
-    LESS_THAN = "Less Than"
-    GREATER_THAN = "Greater Than"
-    LESS_THAN_OR_EQUAL = "Less Than Or Equal"
-    GREATER_THAN_OR_EQUAL = "Greater Than Or Equal"
-    IN = "In"
-    IS = "Is"
-
-
-class ASTInPlaceOperation(ASTEnum):
-    """
-    In-place operations enum.
-    """
-
-    ADD = "In-Place Add"
-    SUBTRACT = "In-Place Subtract"
-    MULTIPLY = "In-Place Multiply"
-    DIVIDE = "In-Place Divide"
-    FLOOR_DIVIDE = "In-Place Floor Divide"
-    MODULO = "In-Place Modulo"
-    POWER = "In-Place Power"
-    MATRIX_MULTIPLY = "In-Place Matrix Multiply"
-    BITWISE_AND = "In-Place Bitwise And"
-    BITWISE_OR = "In-Place Bitwise Or"
-    BITWISE_XOR = "In-Place Bitwise Xor"
-    LEFT_SHIFT = "In-Place Left Shift"
-    RIGHT_SHIFT = "In-Place Right Shift"
-
-
-class ASTSequenceOperations(ASTEnum):
-    CONCAT = "Concatenation"
-
-
-class ASTLiteralType(ASTEnum):
-    """
-    Literal types enum.
-    """
-
-    NUMBER = "Number"
-    STRING = "String"
-    BOOLEAN = "Boolean"
-    NULL = "Null"
-    ELLIPSIS = "Ellipsis"
-
-
 class AST(Graph):
     """
     Abstract syntax tree.
@@ -243,18 +142,18 @@ class ASTLiteralNode(ASTNode):
 
 # Multiples
 
-class ASTMultiNode(ASTNode):
+class ASTMultiplesNode(ASTNode):
     """
-    Multiple.
+    Multiples.
 
     Base class for representing a series of multiple, consecutive nodes.
     """
 
     def __init__(self, children: Sequence[ASTNode]):
         """
-        Multiple.
+        Multiples.
 
-        :param children: The sequence of nodes being represented.
+        :param children: The sequence of multiple nodes being represented.
         """
         if children is None:
             children = []
@@ -264,19 +163,19 @@ class ASTMultiNode(ASTNode):
         return f"Multiple, consecutive nodes (generic).\nChildren: {self.children}"
 
     def __repr__(self):
-        return f"ASTMultiNode(children={self.children})"
+        return f"ASTMultiplesNode(children={self.children})"
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_multi method.
+        Accept AST visitor and call its visit_multiples method.
 
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
-        return visitor.visit_multi(self)
+        return visitor.visit_multiples(self)
 
 
-class ASTStatementsNode(ASTMultiNode):
+class ASTStatementsNode(ASTMultiplesNode):
     """
     Statements.
 
@@ -307,7 +206,7 @@ class ASTStatementsNode(ASTMultiNode):
         return visitor.visit_statements(self)
 
 
-class ASTExpressionsNode(ASTMultiNode):
+class ASTExpressionsNode(ASTMultiplesNode):
     """
     Expressions.
 
@@ -338,7 +237,37 @@ class ASTExpressionsNode(ASTMultiNode):
         return visitor.visit_expressions(self)
 
 
-class ASTElementsNode(ASTMultiNode):
+class ASTVariablesNode(ASTMultiplesNode):
+    """
+    Variables.
+
+    Representation of multiple, consecutive variables.
+    """
+
+    def __init__(self, variables: Sequence[ASTNode]):
+        """
+        Variables.
+
+        :param variables: The variables (in order) to be represented.
+        """
+        super().__init__(variables)
+
+    def __str__(self):
+        return f"Multiple, consecutive variables.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTVariablesNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_variabes method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_variables(self)
+
+
+class ASTElementsNode(ASTMultiplesNode):
     """
     Elements.
 
@@ -369,7 +298,7 @@ class ASTElementsNode(ASTMultiNode):
         return visitor.visit_elements(self)
 
 
-class ASTParametersNode(ASTMultiNode):
+class ASTParametersNode(ASTMultiplesNode):
     """
     Parameters.
 
@@ -400,7 +329,7 @@ class ASTParametersNode(ASTMultiNode):
         return visitor.visit_parameters(self)
 
 
-class ASTArgumentsNode(ASTMultiNode):
+class ASTArgumentsNode(ASTMultiplesNode):
     """
     Arguments.
 
@@ -431,7 +360,7 @@ class ASTArgumentsNode(ASTMultiNode):
         return visitor.visit_arguments(self)
 
 
-class ASTSubscriptsNode(ASTMultiNode):
+class ASTSubscriptsNode(ASTMultiplesNode):
     """
     Subscripts.
 
@@ -462,7 +391,7 @@ class ASTSubscriptsNode(ASTMultiNode):
         return visitor.visit_subscripts(self)
 
 
-class ASTCatchesNode(ASTMultiNode):
+class ASTCatchesNode(ASTMultiplesNode):
     """
     Catches.
 
@@ -493,7 +422,7 @@ class ASTCatchesNode(ASTMultiNode):
         return visitor.visit_catches(self)
 
 
-class ASTDecoratorsNode(ASTMultiNode):
+class ASTDecoratorsNode(ASTMultiplesNode):
     """
     Decorators.
 
@@ -585,6 +514,41 @@ class ASTDelStatementNode(ASTStatementNode):
         :return: The result of the visit.
         """
         return visitor.visit_del_statement(self)
+
+
+class ASTVariableDeclarationNode(ASTStatementNode):
+    """
+    Variable declaration.
+
+    Declaring one or more variables.
+    """
+
+    def __init__(self, variables: ASTNode, type_: ASTNode = None, modifiers: Sequence[ASTModifier] = None):
+        """
+        Variable declaration.
+        :param variables: The variable(s) being declared.
+        :param type_: The type of the variable(s) being declared.
+        :param modifiers: The modifier(s) applied to the variable(s).
+        """
+        self.variables = variables
+        self.type = type_
+        self.modifiers = modifiers if modifiers is not None else []
+        super().__init__(self.variables, self.type)
+
+    def __str__(self):
+        return f"Variable declaration.\nVariable(s): {self.variables}\nType: {self.type}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTVariableDeclaration(variables={self.variables}, type={self.type}, modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_variable_declaration method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_variable_declaration(self)
 
 
 class ASTAssignmentStatementNode(ASTStatementNode):
@@ -1164,141 +1128,6 @@ class ASTTryStatementNode(ASTStatementNode):
         return visitor.visit_try_statement(self)
 
 
-class ASTWithStatementNode(ASTStatementNode):
-    """
-    With statement.
-    """
-
-    def __init__(self, expressions: ASTNode, body: ASTNode):
-        """
-        With statement.
-
-        :param expressions: The expression(s) to evaluate to create a context manager.
-        :param body: The code to execute within the established runtime context.
-        """
-        self.expressions = expressions
-        self.body = body
-        super().__init__(self.expressions, self.body)
-
-    def __str__(self):
-        return f"With statement.\nExpressions: {self.expressions}\nBody: {self.body}"
-
-    def __repr__(self):
-        return f"ASTWithStatementNode(expressions={self.expressions}, body={self.body})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_with_statement method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_with_statement(self)
-
-
-class ASTFunctionDefinitionNode(ASTStatementNode):
-    """
-    Function definition.
-    """
-
-    def __init__(self, name, parameters: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
-                 return_type: Optional[ASTNode] = None):
-        """
-        Function definition.
-
-        :param name: The name of the function.
-        :param parameters: The parameter(s) of the function.
-        :param body: The body of the function.
-        :param return_type: The return type of the function.
-        """
-        self.name = name
-        self.body = body
-        self.parameters = parameters
-        self.return_type = return_type
-        super().__init__(self.name, self.parameters, self.return_type, self.body)
-
-    def __str__(self):
-        return f"Function definition.\nName: {self.name}\nParameters: {self.parameters}\nBody: {self.body}" \
-               f"\nReturn type: {self.return_type}"
-
-    def __repr__(self):
-        return f"ASTFunctionDefinitionNode(name={self.name}, parameters={self.parameters}, body={self.body}, " \
-               f"return_type={self.return_type})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_function_definition method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_function_definition(self)
-
-
-class ASTClassDefinitionNode(ASTStatementNode):
-    """
-    Class definition.
-    """
-
-    def __init__(self, name: ASTNode, arguments: Optional[ASTNode] = None, body: Optional[ASTNode] = None):
-        """
-        Class definition.
-
-        :param name: The name of the class.
-        :param arguments: The argument(s) of the class.
-        :param body: The body of the class.
-        """
-        self.name = name
-        self.body = body
-        self.arguments = arguments
-        super().__init__(self.name, self.arguments, self.body)
-
-    def __str__(self):
-        return f"Class definition\nName: {self.name}\nArguments: {self.arguments}\nBody: {self.body}"
-
-    def __repr__(self):
-        return f"ASTClassDefinitionNode(name={self.name}, arguments={self.arguments}, body={self.body})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_class_definition method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_class_definition(self)
-
-
-class ASTYieldExpressionNode(ASTNode):
-    """
-    Yield expression.
-    """
-
-    def __init__(self, values: Optional[ASTNode] = None):
-        """
-        Yield expression.
-
-        :param values: The value(s) being yielded.
-        """
-        self.values = values
-        super().__init__(self.values)
-
-    def __str__(self):
-        return f"Yield expression.\nValues: {self.values}"
-
-    def __repr__(self):
-        return f"ASTYieldExpressionNode(values={self.values})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_yield_expression method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_yield_expression(self)
-
-
 class ASTCatchNode(ASTNode):
     """
     Catch clause.
@@ -1360,6 +1189,148 @@ class ASTFinallyNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_finally(self)
+
+
+class ASTWithStatementNode(ASTStatementNode):
+    """
+    With statement.
+    """
+
+    def __init__(self, expressions: ASTNode, body: ASTNode):
+        """
+        With statement.
+
+        :param expressions: The expression(s) to evaluate to create a context manager.
+        :param body: The code to execute within the established runtime context.
+        """
+        self.expressions = expressions
+        self.body = body
+        super().__init__(self.expressions, self.body)
+
+    def __str__(self):
+        return f"With statement.\nExpressions: {self.expressions}\nBody: {self.body}"
+
+    def __repr__(self):
+        return f"ASTWithStatementNode(expressions={self.expressions}, body={self.body})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_with_statement method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_with_statement(self)
+
+
+class ASTFunctionDefinitionNode(ASTStatementNode):
+    """
+    Function definition.
+    """
+
+    def __init__(self, name, parameters: Optional[ASTNode] = None, return_type: Optional[ASTNode] = None,
+                 body: Optional[ASTNode] = None, modifiers: Optional[Sequence[ASTModifier]] = None):
+        """
+        Function definition.
+
+        :param name: The name of the function.
+        :param parameters: The parameter(s) of the function.
+        :param return_type: The return type of the function.
+        :param body: The body of the function.
+        :param modifiers: The modifier(s) applied to the function.
+        """
+        self.name = name
+        self.parameters = parameters
+        self.return_type = return_type
+        self.body = body
+        self.modifiers = modifiers if modifiers is not None else []
+        super().__init__(self.name, self.parameters, self.return_type, self.body)
+
+    def __str__(self):
+        return f"Function definition.\nName: {self.name}\nParameters: {self.parameters}\n" \
+               f"Return type: {self.return_type}\nBody: {self.body}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTFunctionDefinitionNode(name={self.name}, parameters={self.parameters}, " \
+               f"return_type={self.return_type}, body={self.body}, modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_function_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_function_definition(self)
+
+
+class ASTClassDefinitionNode(ASTStatementNode):
+    """
+    Class definition.
+    """
+
+    def __init__(self, name: ASTNode, arguments: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None):
+        """
+        Class definition.
+
+        :param name: The name of the class.
+        :param arguments: The argument(s) of the class.
+        :param body: The body of the class.
+        :param modifiers: The modifier(s) applied to the class.
+        """
+        self.name = name
+        self.body = body
+        self.arguments = arguments
+        self.modifiers = modifiers if modifiers is not None else []
+        super().__init__(self.name, self.arguments, self.body)
+
+    def __str__(self):
+        return f"Class definition\nName: {self.name}\nArguments: {self.arguments}\n" \
+               f"Body: {self.body}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTClassDefinitionNode(name={self.name}, arguments={self.arguments}, " \
+               f"body={self.body}, modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_class_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_class_definition(self)
+
+
+class ASTYieldExpressionNode(ASTNode):
+    """
+    Yield expression.
+    """
+
+    def __init__(self, values: Optional[ASTNode] = None):
+        """
+        Yield expression.
+
+        :param values: The value(s) being yielded.
+        """
+        self.values = values
+        super().__init__(self.values)
+
+    def __str__(self):
+        return f"Yield expression.\nValues: {self.values}"
+
+    def __repr__(self):
+        return f"ASTYieldExpressionNode(values={self.values})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_yield_expression method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_yield_expression(self)
 
 
 class ASTBinaryOperationNode(ASTNode):
@@ -1459,42 +1430,44 @@ class ASTAliasNode(ASTNode):
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_as method.
+        Accept AST visitor and call its visit_alias method.
 
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
-        return visitor.visit_as(self)
+        return visitor.visit_alias(self)
 
 
-class ASTAsyncNode(ASTNode):
+class ASTFromNode(ASTNode):
     """
-    Async declaration.
+    "From" expression.
     """
 
-    def __init__(self, target: ASTNode):
+    def __init__(self, source: ASTNode, expressions: Optional[ASTNode] = None):
         """
-        Async declaration.
+        "From" expression.
 
-        :param target: The code to be declared as asynchronous.
+        :param source: The source to take the expression(s) from.
+        :param expressions: The expressions to take.
         """
-        self.target = target
-        super().__init__(self.target)
+        self.source = source
+        self.expressions = expressions
+        super().__init__(self.source, self.expressions)
 
     def __str__(self):
-        return f"Async declaration.\nTarget: {self.target}"
+        return f"\"From\" expression.\nSource: {self.source}\nExpressions: {self.expressions}"
 
     def __repr__(self):
-        return f"ASTAsyncNode(target={self.target}"
+        return f"ASTFromNode(source={self.source}, expressions={self.expressions})"
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_async method.
+        Accept AST visitor and call its visit_from method.
 
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
-        return visitor.visit_async(self)
+        return visitor.visit_from(self)
 
 
 class ASTParameterNode(ASTNode):
@@ -1529,6 +1502,38 @@ class ASTParameterNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_parameter(self)
+
+
+class ASTAnonymousFunctionDefinitionNode(ASTNode):
+    """
+    Anonymous function definition.
+    """
+
+    def __init__(self, body: ASTNode, parameters: Optional[ASTNode] = None):
+        """
+        Anonymous function definition.
+
+        :param body: The body of the anonymous function.
+        :param parameters: The parameter(s) of the function.
+        """
+        self.body = body
+        self.parameters = parameters
+        super().__init__(self.parameters, self.body)
+
+    def __str__(self):
+        return f"Anonymous function definition.\nBody: {self.body}\nParameters: {self.parameters}"
+
+    def __repr__(self):
+        return f"ASTAnonymousFunctionDefinitionNode(body={self.body}, parameters={self.parameters})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_anonymous_function_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_anonymous_function_definition(self)
 
 
 class ASTPositionalArgumentsParameterNode(ASTNode):
@@ -1595,70 +1600,6 @@ class ASTKeywordArgumentsParameterNode(ASTNode):
         return visitor.visit_keyword_arguments_parameter(self)
 
 
-class ASTFromNode(ASTNode):
-    """
-    "From" expression.
-    """
-
-    def __init__(self, source: ASTNode, expressions: Optional[ASTNode] = None):
-        """
-        "From" expression.
-
-        :param source: The source to take the expression(s) from.
-        :param expressions: The expressions to take.
-        """
-        self.source = source
-        self.expressions = expressions
-        super().__init__(self.source, self.expressions)
-
-    def __str__(self):
-        return f"\"From\" expression.\nSource: {self.source}\nExpressions: {self.expressions}"
-
-    def __repr__(self):
-        return f"ASTFromNode(source={self.source}, expressions={self.expressions})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_from method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_from(self)
-
-
-class ASTAnonymousFunctionDefinitionNode(ASTNode):
-    """
-    Anonymous function definition.
-    """
-
-    def __init__(self, body: ASTNode, parameters: Optional[ASTNode] = None):
-        """
-        Anonymous function definition.
-
-        :param body: The body of the anonymous function.
-        :param parameters: The parameter(s) of the function.
-        """
-        self.body = body
-        self.parameters = parameters
-        super().__init__(self.parameters, self.body)
-
-    def __str__(self):
-        return f"Anonymous function definition.\nBody: {self.body}\nParameters: {self.parameters}"
-
-    def __repr__(self):
-        return f"ASTAnonymousFunctionDefinitionNode(body={self.body}, parameters={self.parameters})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_anonymous_function_definition method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_anonymous_function_definition(self)
-
-
 class ASTPositionalUnpackExpressionNode(ASTNode):
     """
     Positional unpack expression.
@@ -1719,6 +1660,36 @@ class ASTKeywordUnpackExpressionNode(ASTNode):
         return visitor.visit_keyword_unpack_expression(self)
 
 
+class ASTAsyncNode(ASTNode):
+    """
+    Async declaration.
+    """
+
+    def __init__(self, target: ASTNode):
+        """
+        Async declaration.
+
+        :param target: The code to be declared as asynchronous.
+        """
+        self.target = target
+        super().__init__(self.target)
+
+    def __str__(self):
+        return f"Async declaration.\nTarget: {self.target}"
+
+    def __repr__(self):
+        return f"ASTAsyncNode(target={self.target}"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_async method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_async(self)
+
+
 class ASTAwaitNode(ASTNode):
     """
     Await expression.
@@ -1747,6 +1718,38 @@ class ASTAwaitNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_await(self)
+
+
+class ASTMemberNode(ASTNode):
+    """
+    Member access.
+    """
+
+    def __init__(self, parent: ASTNode, member: ASTNode):
+        """
+        Member access.
+
+        :param parent: The member's parent.
+        :param member: The member to access.
+        """
+        self.parent = parent
+        self.member = member
+        super().__init__(self.parent, self.member)
+
+    def __str__(self):
+        return f"Member access.\nParent: {self.parent}\nMember: {self.member}"
+
+    def __repr__(self):
+        return f"ASTMemberNode(parent={self.parent}, member={self.member})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_member method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_member(self)
 
 
 class ASTAccessNode(ASTNode):
@@ -1946,98 +1949,6 @@ class ASTKeywordArgumentNode(ASTNode):
         return visitor.visit_keyword_argument(self)
 
 
-class ASTMemberNode(ASTNode):
-    """
-    Member access.
-    """
-
-    def __init__(self, parent: ASTNode, member: ASTNode):
-        """
-        Member access.
-
-        :param parent: The member's parent.
-        :param member: The member to access.
-        """
-        self.parent = parent
-        self.member = member
-        super().__init__(self.parent, self.member)
-
-    def __str__(self):
-        return f"Member access.\nParent: {self.parent}\nMember: {self.member}"
-
-    def __repr__(self):
-        return f"ASTMemberNode(parent={self.parent}, member={self.member})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_member method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_member(self)
-
-
-class ASTListNode(ASTNode):
-    """
-    List declaration.
-    """
-
-    def __init__(self, elements: ASTNode):
-        """
-        List declaration.
-
-        :param elements: The elements of the list.
-        """
-        self.elements = elements
-        super().__init__(self.elements)
-
-    def __str__(self):
-        return f"List declaration.\nElements: {self.elements}"
-
-    def __repr__(self):
-        return f"ASTListNode(elements={self.elements})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_list method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_list(self)
-
-
-class ASTTupleNode(ASTNode):
-    """
-    Tuple declaration.
-    """
-
-    def __init__(self, elements: ASTNode):
-        """
-        Tuple declaration.
-
-        :param elements: The elements of the tuple.
-        """
-        self.elements = elements
-        super().__init__(self.elements)
-
-    def __str__(self):
-        return f"Tuple declaration.\nElements: {self.elements}"
-
-    def __repr__(self):
-        return f"ASTTupleNode(elements={self.elements})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_tuple method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_tuple(self)
-
-
 class ASTGeneratorExpressionNode(ASTNode):
     """
     Generator Expression.
@@ -2100,34 +2011,64 @@ class ASTComprehensionNode(ASTNode):
         return visitor.visit_comprehension(self)
 
 
-class ASTMapNode(ASTNode):
+class ASTListNode(ASTNode):
     """
-    Map declaration.
+    List declaration.
     """
 
     def __init__(self, elements: ASTNode):
         """
-        Map declaration.
+        List declaration.
 
-        :param elements: The elements of the map.
+        :param elements: The elements of the list.
         """
         self.elements = elements
         super().__init__(self.elements)
 
     def __str__(self):
-        return f"Map declaration.\nElements: {self.elements}"
+        return f"List declaration.\nElements: {self.elements}"
 
     def __repr__(self):
-        return f"ASTMapNode(elements={self.elements})"
+        return f"ASTListNode(elements={self.elements})"
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_map method.
+        Accept AST visitor and call its visit_list method.
 
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
-        return visitor.visit_map(self)
+        return visitor.visit_list(self)
+
+
+class ASTTupleNode(ASTNode):
+    """
+    Tuple declaration.
+    """
+
+    def __init__(self, elements: ASTNode):
+        """
+        Tuple declaration.
+
+        :param elements: The elements of the tuple.
+        """
+        self.elements = elements
+        super().__init__(self.elements)
+
+    def __str__(self):
+        return f"Tuple declaration.\nElements: {self.elements}"
+
+    def __repr__(self):
+        return f"ASTTupleNode(elements={self.elements})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_tuple method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_tuple(self)
 
 
 class ASTSetNode(ASTNode):
@@ -2158,6 +2099,36 @@ class ASTSetNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_set(self)
+
+
+class ASTMapNode(ASTNode):
+    """
+    Map declaration.
+    """
+
+    def __init__(self, elements: ASTNode):
+        """
+        Map declaration.
+
+        :param elements: The elements of the map.
+        """
+        self.elements = elements
+        super().__init__(self.elements)
+
+    def __str__(self):
+        return f"Map declaration.\nElements: {self.elements}"
+
+    def __repr__(self):
+        return f"ASTMapNode(elements={self.elements})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_map method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_map(self)
 
 
 class ASTKeyValuePairNode(ASTNode):
@@ -2254,3 +2225,159 @@ class ASTDecoratorNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_decorator(self)
+
+
+# Enums
+
+class ASTEnum(Enum):
+    """
+    Base class for enums.
+    """
+
+    def __repr__(self):
+        return self.value
+
+
+# Operation Enums
+
+class ASTOperation(ASTEnum):
+    """
+    Base class for operation enums.
+    """
+    pass
+
+
+class ASTArithmeticOperation(ASTOperation):
+    """
+    Arithmetic operations enum.
+    """
+
+    ADD = "Add"
+    SUBTRACT = "Subtract"
+    MULTIPLY = "Multiply"
+    DIVIDE = "Divide"
+    FLOOR_DIVIDE = "Floor Divide"
+    MODULO = "Modulo"
+    POWER = "Power"
+    MATRIX_MULTIPLY = "Matrix Multiply"
+    POSITIVE = "Positive"
+    NEGATION = "Negation (Arithmetic)"
+
+
+class ASTBitwiseOperation(ASTOperation):
+    """
+    Bitwise operations enum.
+    """
+
+    AND = "Bitwise And"
+    BITWISE_OR = "Bitwise Or"
+    BITWISE_XOR = "Bitwise Xor"
+    LEFT_SHIFT = "Bitwise Left Shift"
+    RIGHT_SHIFT = "Bitwise Right Shift"
+    INVERSION = "Bitwise Inversion"
+
+
+class ASTLogicalOperation(ASTOperation):
+    """
+    Logical operations enum.
+    """
+    AND = "Logical And"
+    OR = "Logical Or"
+    NOT = "Negation (Logical)"
+
+
+class ASTComparisonOperation(ASTOperation):
+    """
+    Comparison operations enum.
+    """
+
+    EQUAL = "Equal"
+    NOT_EQUAL = "Not Equal"
+    LESS_THAN = "Less Than"
+    GREATER_THAN = "Greater Than"
+    LESS_THAN_OR_EQUAL = "Less Than Or Equal"
+    GREATER_THAN_OR_EQUAL = "Greater Than Or Equal"
+    IN = "In"
+    IS = "Is"
+
+
+class ASTInPlaceOperation(ASTOperation):
+    """
+    In-place operations enum.
+    """
+
+    ADD = "In-Place Add"
+    SUBTRACT = "In-Place Subtract"
+    MULTIPLY = "In-Place Multiply"
+    DIVIDE = "In-Place Divide"
+    FLOOR_DIVIDE = "In-Place Floor Divide"
+    MODULO = "In-Place Modulo"
+    POWER = "In-Place Power"
+    MATRIX_MULTIPLY = "In-Place Matrix Multiply"
+    BITWISE_AND = "In-Place Bitwise And"
+    BITWISE_OR = "In-Place Bitwise Or"
+    BITWISE_XOR = "In-Place Bitwise Xor"
+    LEFT_SHIFT = "In-Place Left Shift"
+    RIGHT_SHIFT = "In-Place Right Shift"
+
+
+class ASTSequenceOperation(ASTOperation):
+    """
+    Sequence operations enum.
+    """
+
+    CONCAT = "Concatenation"
+
+
+# Modifier Enums
+
+class ASTModifier(ASTEnum):
+    """
+    Base class for modifier enums.
+    """
+    pass
+
+
+class ASTAccessModifier(ASTModifier):
+    """
+    Access modifiers enum.
+    """
+
+    PRIVATE = "Private"
+    INTERNAL = "Internal"
+    PROTECTED = "Protected"
+    PUBLIC = "Public"
+
+
+class ASTMiscModifier(ASTModifier):
+    """
+    Miscellaneous modifiers enum.
+    """
+    ABSTRACT = "Abstract"
+    ASYNC = "Async"
+    EVENT = "Event"
+    CONST = "Const"
+    EXTERN = "Extern"
+    NEW = "New"
+    OVERRIDE = "Override"
+    PARTIAL = "Partial"
+    READONLY = "Read-only"
+    SEALED = "Sealed"
+    STATIC = "Static"
+    UNSAFE = "Unsafe"
+    VIRTUAL = "Virtual"
+    VOLATIOLE = "Volatile"
+
+
+# Literal Enums
+
+class ASTLiteralType(ASTEnum):
+    """
+    Literal types enum.
+    """
+
+    NUMBER = "Number"
+    STRING = "String"
+    BOOLEAN = "Boolean"
+    NULL = "Null"
+    ELLIPSIS = "Ellipsis"

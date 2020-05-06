@@ -866,7 +866,3 @@ class CFGContinueBlock(CFGBlock):
         :type child: CFGBlock
         """
         self.exit_block.remove_child(child)
-
-
-if __name__ == '__main__':
-    pass

@@ -2338,7 +2338,7 @@ class ASTModifier(ASTEnum):
     pass
 
 
-class ASTAccessModifier(ASTModifier):
+class ASTVisibilityModifier(ASTModifier):
     """
     Access modifiers enum.
     """

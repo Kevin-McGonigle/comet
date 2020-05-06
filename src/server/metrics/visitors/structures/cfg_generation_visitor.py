@@ -8,8 +8,7 @@ class CFGGenerationVisitor(ASTVisitor):
     """
     Control-flow graph generation visitor.
 
-    Provides functionality for visiting an abstract syntax tree and generating the corresponding
-    control-flow graph.
+    Provides functionality for visiting an abstract syntax tree and generating the corresponding control-flow graph.
     """
 
     def __init__(self):
@@ -18,7 +17,7 @@ class CFGGenerationVisitor(ASTVisitor):
         """
         self.loop_scope = None
 
-    # Helpers
+    # region Helpers
 
     def build_sequence(self, sequence: Optional[Sequence[CFGBlock]]) -> Optional[CFGBlock]:
         """
@@ -35,7 +34,9 @@ class CFGGenerationVisitor(ASTVisitor):
 
         return sequence[0]
 
-    # Visits
+    # endregion
+
+    # region Visits
 
     def visit(self, ast) -> CFG:
         """
@@ -128,3 +129,5 @@ class CFGGenerationVisitor(ASTVisitor):
         loop_else.fail_block = node.else_body.accept(self)
 
         return loop_else
+
+    # endregion

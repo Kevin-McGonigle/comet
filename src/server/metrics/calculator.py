@@ -1,23 +1,23 @@
-from typing import Optional
-from antlr4 import InputStream, CommonTokenStream
+from typing import Optional, Type
 
+from antlr4 import InputStream, CommonTokenStream, Lexer, ParseTreeVisitor
+
+from metrics.parsers.parser import Parser
 from metrics.structures.ast import AST
 from metrics.structures.cfg import CFG
-from metrics.structures.inheritance_tree import InheritanceTree
-from metrics.structures.dependency_graph import DependencyGraph
 from metrics.structures.class_diagram import ClassDiagram
-
-from metrics.visitors.structures.cfg_generation_visitor import CFGGenerationVisitor
-from metrics.visitors.structures.inheritance_tree_generation_visitor import InheritanceTreeGenerationVisitor
-from metrics.visitors.structures.dependency_graph_generation_visitor import DependencyGraphGenerationVisitor
-from metrics.visitors.structures.class_diagram_generation_visitor import ClassDiagramGenerationVisitor
-
-from metrics.visitors.metrics.lloc_calculation_visitor import LLOCCalculationVisitor
+from metrics.structures.dependency_graph import DependencyGraph
+from metrics.structures.inheritance_tree import InheritanceTree
 from metrics.visitors.metrics.ac_calculation_visitor import ACCalculationVisitor
-from metrics.visitors.metrics.ec_calculation_visitor import ECCalculationVisitor
 from metrics.visitors.metrics.cc_calculation_visitor import CCCalculationVisitor
+from metrics.visitors.metrics.ec_calculation_visitor import ECCalculationVisitor
+from metrics.visitors.metrics.lloc_calculation_visitor import LLOCCalculationVisitor
 from metrics.visitors.metrics.mid_calculation_visitor import MIDCalculationVisitor
 from metrics.visitors.metrics.mnd_calculation_visitor import MNDCalculationVisitor
+from metrics.visitors.structures.cfg_generation_visitor import CFGGenerationVisitor
+from metrics.visitors.structures.class_diagram_generation_visitor import ClassDiagramGenerationVisitor
+from metrics.visitors.structures.dependency_graph_generation_visitor import DependencyGraphGenerationVisitor
+from metrics.visitors.structures.inheritance_tree_generation_visitor import InheritanceTreeGenerationVisitor
 
 
 class Calculator(object):
@@ -27,26 +27,25 @@ class Calculator(object):
     Class for calculating metrics and generating models for a given AST.
     """
 
-    def __init__(self, content, lexer, parser, visitor):
+    def __init__(self, content: str, lexer_type: Type[Lexer], parser_type: Type[Parser],
+                 visitor_type: Type[ParseTreeVisitor]):
         """
         Metric/model calculator.
 
-        :param ast: Abstract syntax tree.
+        :param content: The content for which to calculate metrics and models.
+        :param lexer_type: The lexer to use when lexing the content.
+        :param parser_type: The parser_type to use when parsing the content.
+        :param visitor_type: The visitor to use when visiting the parse tree to generate an AST.
         """
         input_stream = InputStream(content)
-        calc_lexer = lexer(input_stream)
-        tokens = CommonTokenStream(calc_lexer)
-        calc_parser = parser(tokens)
-        parse_tree = calc_parser.file_input()
-        calc_visitor = visitor()
+        lexer = lexer_type(input_stream)
+        tokens = CommonTokenStream(lexer)
+        parser = parser_type(tokens)
+        parse_tree = parser.parse()
+        visitor = visitor_type()
 
-        self.__ast = calc_visitor.visit(parse_tree)
-        self.models = {
-            "cd": None,
-            "cfg": None,
-            "it": None,
-            "dg": None,
-        }
+        self.__ast = visitor.visit(parse_tree)
+        self.models = {}
 
     # region ast Property
 
@@ -82,7 +81,7 @@ class Calculator(object):
 
     def clear(self):
         self.__ast = None
-        self.models = dict.fromkeys(self.models, None)
+        self.models = {}
 
     # endregion
 
@@ -90,67 +89,72 @@ class Calculator(object):
 
     def control_flow_graph(self, ast: Optional[AST]) -> CFG:
         """
-        Calculate control flow graph.
+        Generate control-flow graph.
+
         :param ast: Abstract syntax tree to generate CFG from.
         :return: The corresponding control-flow graph.
         """
         if ast:
             return CFGGenerationVisitor().visit(ast)
 
-        if not self.models["cfg"]:
-            self.models["cfg"] = CFGGenerationVisitor().visit(self.ast)
+        if CFG not in self.models or not isinstance(self.models[CFG], CFG):
+            self.models[CFG] = CFGGenerationVisitor().visit(self.ast)
 
-        return self.models["cfg"]
+        return self.models[CFG]
 
     def inheritance_tree(self, ast: Optional[AST]) -> InheritanceTree:
         """
-        Calculate inheritance tree.
+        Generate inheritance tree.
+
         :param ast: Abstract syntax tree to generate inheritance tree from.
         :return: The corresponding inheritance tree.
         """
         if ast:
             return InheritanceTreeGenerationVisitor().visit(ast)
 
-        if not self.models["it"]:
-            self.models["it"] = InheritanceTreeGenerationVisitor().visit(self.ast)
+        if InheritanceTree not in self.models or not isinstance(self.models[InheritanceTree], InheritanceTree):
+            self.models[InheritanceTree] = InheritanceTreeGenerationVisitor().visit(self.ast)
 
-        return self.models["it"]
+        return self.models[InheritanceTree]
 
     def dependency_graph(self, ast: Optional[AST]) -> DependencyGraph:
         """
-        Calculate dependency graph.
-        :param ast: Abstract syntax tree to generetate dependency graph from.
-        :return: The corresponding DependencyGraph
+        Generate dependency graph.
+
+        :param ast: Abstract syntax tree to generate dependency graph from.
+        :return: The corresponding dependency graph.
         """
         if ast:
             return DependencyGraphGenerationVisitor().visit(ast)
-        
-        if not self.models["dg"]:
-            self.models["dg"] = DependencyGraphGenerationVisitor().visit(self.ast)
 
-        return self.models["dg"]
+        if DependencyGraph not in self.models or not isinstance(self.models[DependencyGraph], DependencyGraph):
+            self.models[DependencyGraph] = DependencyGraphGenerationVisitor().visit(self.ast)
+
+        return self.models[DependencyGraph]
 
     def class_diagram(self, ast: Optional[AST]) -> ClassDiagram:
         """
-        Calculate Class Diagram graph.
-        :param ast: Abstract syntax tree to generetate class diagram from.
-        :return: The corresponding ClassDiagram
+        Generate class diagram.
+
+        :param ast: Abstract syntax tree to generate class diagram from.
+        :return: The corresponding class diagram.
         """
         if ast:
             return ClassDiagramGenerationVisitor().visit(ast)
-        
-        if not self.models["cd"]:
-            self.models["cd"] = ClassDiagramGenerationVisitor().visit(self.ast)
 
-        return self.models["cd"]
+        if ClassDiagram not in self.models or not isinstance(self.models[ClassDiagram], ClassDiagram):
+            self.models[ClassDiagram] = ClassDiagramGenerationVisitor().visit(self.ast)
+
+        return self.models[ClassDiagram]
 
     # endregion
 
     # region Metrics
 
-    def logical_lines_of_code(self, ast: Optional[AST]) -> int:
+    def logical_lines_of_code(self, ast: Optional[AST] = None) -> int:
         """
         Calculate logical lines of code.
+
         :param ast: Abstract syntax tree to calculate logical lines of code from.
         :return: The corresponding logical lines of code.
         """
@@ -159,60 +163,61 @@ class Calculator(object):
 
         return LLOCCalculationVisitor().visit(self.ast)
 
-    def afferent_coupling(self, ast: Optional[ast]) -> dict:
+    def afferent_coupling(self, dg: Optional[DependencyGraph] = None) -> dict:
         """
-        Calculate afferent couplings within code.
-        :param ast: Abstract syntax tree to calculate afferent couplings of code from.
-        :return: The corresponding afferent couplings of code.
+        Calculate afferent coupling within code.
+        :param dg: Dependency graph to calculate afferent coupling of code from.
+        :return: The corresponding afferent coupling of code.
         """
-        if ast:
-            return ACCalculationVisitor().visit(ast)
+        if dg:
+            return ACCalculationVisitor().visit(dg)
 
-        return ACCalculationVisitor().visit(self.ast)
+        return ACCalculationVisitor().visit(self.models[DependencyGraph])
 
-    def efferent_coupling(self, ast: Optional[ast]) -> dict:
+    def efferent_coupling(self, dg: Optional[DependencyGraph] = None) -> dict:
         """
-        Calculate efferent couplings within code.
-        :param ast: Abstract syntax tree to calculate efferent couplings of code from.
-        :return: The corresponding efferent couplings of code.
-        """
-        if ast:
-            return ECCalculationVisitor().visit(ast)
+        Calculate efferent coupling within code.
 
-        return ECCalculationVisitor().visit(self.ast)
-    
-    def cyclomatic_complexity(self, ast: Optional[ast]) -> int:
+        :param dg: Dependency graph to calculate efferent coupling of code from.
+        :return: The corresponding efferent coupling of code.
+        """
+        if dg:
+            return ECCalculationVisitor().visit(dg)
+
+        return ECCalculationVisitor().visit(self.models[DependencyGraph])
+
+    def cyclomatic_complexity(self, cfg: Optional[CFG] = None) -> int:
         """
         Calculate cyclomatic complexity within code.
-        :param ast: Abstract syntax tree to calculate cyclomatic complexity of code from.
+
+        :param cfg: Control-flow graph to calculate cyclomatic complexity of code from.
         :return: The corresponding cyclomatic complexity of code.
         """
-        if ast:
-            return CCCalculationVisitor().visit(ast)
+        if cfg:
+            return CCCalculationVisitor().visit(cfg)
 
-        return CCCalculationVisitor().visit(self.ast)
+        return CCCalculationVisitor().visit(self.models[CFG])
 
-    def maximum_inheritance_depth(self, ast: Optional[ast]) -> dict:
+    def maximum_inheritance_depth(self, it: Optional[InheritanceTree] = None) -> dict:
         """
         Calculate the inheritance depth in code.
-        :param ast: Abstract syntax tree to calculate inheritance depth of code from.
+        :param it: Inheritance tree to calculate inheritance depth of code from.
         :return: The corresponding inheritance depth of code.
         """
-        if ast:
-            return MIDCalculationVisitor().visit(ast)
+        if it:
+            return MIDCalculationVisitor().visit(it)
 
-        return MIDCalculationVisitor().visit(self.ast)
-    
-    def maximum_nesting_depth(self, ast: Optional[ast]) -> dict:
+        return MIDCalculationVisitor().visit(self.models[InheritanceTree])
+
+    def maximum_nesting_depth(self, cfg: Optional[CFG] = None) -> dict:
         """
         Calculate maximum nesting depth within code.
-        :param ast: Abstract syntax tree to calculate maximum nesting depth of code from.
+        :param cfg: Control-flow graph to calculate maximum nesting depth of code from.
         :return: The corresponding maximum nesting depth of code.
         """
-        if ast:
-            return MNDCalculationVisitor().visit(ast)
+        if cfg:
+            return MNDCalculationVisitor().visit(cfg)
 
-        return MNDCalculationVisitor().visit(self.ast)
+        return MNDCalculationVisitor().visit(self.models[CFG])
 
     # endregion
-

@@ -13,22 +13,19 @@ class ClassDiagram:
     Class diagram.
     """
 
-    def __init__(self, classes: Optional[List[Class]] = None,
-                 relationships: Optional[List[Relationship]] = None) -> None:
+    def __init__(self, classes: Optional[List[Class]] = None) -> None:
         """
         Class diagram.
 
         :param classes: The classes to display in the class diagram.
-        :param relationships: The relationships between the classes.
         """
         self.classes = classes if classes is not None else []
-        self.relationships = relationships if relationships is not None else []
 
     def __str__(self) -> str:
-        return f"Class diagram.\nClasses: {self.classes}\nRelationships: {self.relationships}"
+        return f"Class diagram.\nClasses: {self.classes}"
 
     def __repr__(self) -> str:
-        return f"ClassDiagram(classes={self.classes}, relationships={self.relationships})"
+        return f"ClassDiagram(classes={self.classes})"
 
 
 class Relationship:
@@ -36,39 +33,37 @@ class Relationship:
     Relationship.
     """
 
-    def __init__(self, type_: RelationshipType, from_class: Class, to_class: Class,
-                 from_multiplicity: Optional[str] = None, to_multiplicity: Optional[str] = None, from_role=None,
-                 to_role=None, bidirectional: bool = False) -> None:
+    def __init__(self, type_: RelationshipType, relation: Class, multiplicity: Optional[str] = None,
+                 relation_multiplicity: Optional[str] = None, role=None, relation_role=None,
+                 bidirectional: bool = False) -> None:
         """
         Relationship.
 
-        :param from_role:
-        :param to_role:
         :param type_: The type of relationship.
-        :param from_class: The class to draw the arrow from.
-        :param to_class: The class to draw the arrow to.
-        :param from_multiplicity: The multiplicity of the class to draw the arrow from.
-        :param to_multiplicity: The multiplicity of the class to draw the arrow to.
+        :param relation: The class to draw the arrow to.
+        :param multiplicity: The multiplicity of the class.
+        :param relation_multiplicity: The multiplicity of the related class.
+        :param role: The role of the class.
+        :param relation_role: The role of the related class.
         :param bidirectional: Whether or not the relationship is bidirectional.
         """
         self.type = type_
-        self.from_class = from_class
-        self.to_class = to_class
-        self.from_multiplicity = from_multiplicity
-        self.to_multiplicity = to_multiplicity
-        self.from_role = from_role
-        self.to_role = to_role
+        self.relation = relation
+        self.multiplicity = multiplicity
+        self.relation_multiplicity = relation_multiplicity
+        self.role = role
+        self.relation_role = relation_role
         self.bidirectional = bidirectional
 
     def __str__(self) -> str:
-        return f"Relationship.\nType: {self.type}\nFrom: {self.from_class}\nTo: {self.to_class}\n" \
-               f"From multiplicity: {self.from_multiplicity}\nTo multiplicity: {self.to_multiplicity}\n" \
-               f"Bidirectional: {self.bidirectional}"
+        return f"Relationship.\nType: {self.type}\nRelation: {self.relation}\nMultiplicity: {self.multiplicity}\n" \
+               f"Relation multiplicity: {self.relation_multiplicity}\nRole: {self.role}\n" \
+               f"Relation role: {self.relation_role}\nBidirectional: {self.bidirectional}"
 
     def __repr__(self) -> str:
-        return f"Relationship(type={self.type}, from_class={self.from_class}, to_class={self.to_class}, " \
-               f"from_multiplicity={self.from_multiplicity}, to_multiplicity={self.to_multiplicity}, " \
-               f"bidirectional={self.bidirectional})"
+        return f"Relationship(type={self.type}, relation={self.relation}, multiplicity={self.multiplicity}, " \
+               f"relation_multiplicity={self.relation_multiplicity}, role={self.role}, " \
+               f"relation_role={self.relation_role}, bidirectional={self.bidirectional})"
 
 
 class Class:
@@ -77,17 +72,19 @@ class Class:
     """
 
     def __init__(self, name: str, attributes: Optional[List[Attribute]] = None,
-                 methods: Optional[List[Method]] = None) -> None:
+                 methods: Optional[List[Method]] = None, relationships: Optional[List[Relationship]] = None) -> None:
         """
         Class.
 
         :param name: The class' name/identifier.
         :param attributes: The class' attributes.
         :param methods: The class' methods.
+        :param relationships: The class' relationships to other classes.
         """
         self.name = name
         self.attributes = attributes if attributes is not None else []
         self.methods = methods if methods is not None else []
+        self.relationships = relationships if relationships is not None else []
 
     def __str__(self) -> str:
         return f"Class.\nName: {self.name}\nAttributes: {self.attributes}\nMethods: {self.methods}"

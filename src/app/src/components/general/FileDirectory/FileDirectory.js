@@ -24,7 +24,7 @@ const FileDirectory = props => {
                 <img src={comet} width="50px" height="50px" />
             </div>
             
-            <div className={cx('title')}>File Directory</div>
+            <div className={cx('fileDirTitle')}>File Directory</div>
 
             <div className={cx('fileDirTable')}>
                 <Table>

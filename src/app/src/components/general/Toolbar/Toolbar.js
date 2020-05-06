@@ -8,11 +8,7 @@ import ToolbarMenu from '../Menu/Menu';
 const cx = args => classnames(styles, args);
 
 const Toolbar  = props => {
-    const {} = props;
-    const [tabState, setTabState] = useState({
-        selectedIndex: 0,
-        tabs: ["Metrics", "Metric Graph", "Tree"]
-    });
+    const { tabState, setTabState } = props;
 
     const onClickHandler = (event) => {
         const tabTitle = event.currentTarget.id;

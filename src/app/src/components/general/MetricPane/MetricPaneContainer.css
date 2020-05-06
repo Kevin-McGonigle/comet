@@ -1,0 +1,11 @@
+.metricPaneContainer {
+    width: 510px;
+}
+
+.overviewContainer {
+    display: flex;
+    flex-grow: 1;
+    margin-left: 10px;
+    margin-right: 10px;
+    align-items: stretch;
+}

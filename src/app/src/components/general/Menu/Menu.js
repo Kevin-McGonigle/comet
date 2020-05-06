@@ -3,8 +3,6 @@ import styles from './Menu.css';
 import classnames from 'classnames';
 import { Menu, Popover, Button, Position } from 'evergreen-ui';
 
-const cx = args => classnames(styles, args);
-
 const ToolbarMenu  = props => {
     const {
         metricInfo,

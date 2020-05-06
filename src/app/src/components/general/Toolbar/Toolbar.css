@@ -1,5 +1,6 @@
 .tabMenu {
     color: white;
+    background: #11182f;
     display: flex;
     flex-direction: row;
     align-items: center;

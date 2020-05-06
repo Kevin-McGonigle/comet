@@ -13,8 +13,8 @@ body {
     width: 100%;
     text-align: center;
     position: relative;
-    overflow: hidden; /* hack to stop div extending below page, find better fix later */
-    background-color:#ff8b94 ;
+    overflow: hidden;
+    background-color:#11182f ;
 }
 
 .topBar {

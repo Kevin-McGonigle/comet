@@ -15,16 +15,45 @@ const shapeTreeGraphData = (fileName, data) => {
 // { A: ['B', 'C'], B: [], C: ['D']}
 
 const initialState = {
-    name: '/src',
+    name: 'WHILE',
     children: [{
-        name: 'A',
+        name: 'LESS',
         children: [{
-            name: 'B'
-        }, {
-            name: 'C',
+            name: 'VARIABLE',
+            children: [{ name: "x" }],
+        },
+        { 
+            name: "CONST",
+            children: [{ name: 20 }]
+        }],
+        name: 'ASSIGN',
+        children: [{
+            name: 'VARIABLE',
+            children: [{ name: 'X' },
+        {
+            name: "PLUS",
             children: [{
-                name: 'D',
+                name: "VARIABLE",
+                children: [{
+                    name: "X"
+                }, 
+                {
+                name: "TIMES",
+                children: [{
+                    name: "VARIABLE",
+                    children: [{
+                        name: "Y"
+                    }, 
+                    {
+                    name: "CONST",
+                    children: [{
+                        name: "2"
+                    }]
+                    }]
+                }]    
+                }]
             }]
+        }],
         }]
     }]
 };
@@ -34,23 +63,15 @@ const TreeGraph = props => {
         tree,
     } = props;
 
-    console.log(shapeTreeGraphData(tree));
-    const onClickHandler = (event) => {
-        const nodeId = event.target.parentNode.id;
-        // Set ClassDiagram 
-        console.log(nodeId);
-    };
-
-    
     return (
-        <Tree
-            data={initialState}
-            height={600}
-            width={600}
-            gProps={{
-                onClick: onClickHandler
-            }}
-        />
+        <div className={cx('treeGraphContainer')}>
+            <Tree
+                data={initialState}
+                height={900}
+                width={800}
+                svgProps={{ transform: 'rotate(90)'}}
+            />
+        </div>
     );
 };
 

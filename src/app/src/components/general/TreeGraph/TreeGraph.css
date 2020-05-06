@@ -1,3 +1,8 @@
+.treeGraphContainer {
+	display: flex;
+	align-items: center;
+}
+
 div.custom-container {
 	background-color: #242424;
 }
@@ -6,6 +11,10 @@ div.custom-container {
 	fill: #F3F3FF;
 	stroke: #2593B8;
 	stroke-width: 1.5px;
+}
+
+.node text {
+	color: black;
 }
 
 .class {

@@ -1,8 +1,8 @@
+import hashlib
+import uuid
+
 from django.db import models
 
-import uuid
-import hashlib
-import json
 
 def uploaded_file_path(instance, filename):
     """
@@ -13,12 +13,14 @@ def uploaded_file_path(instance, filename):
     """
     return "{0}_{1}".format(instance.when_uploaded.strftime("%Y%m%d_%H%M%S"), filename)
 
+
 def generate_hash(filename):
     """
     :param filename: The original filename of the file that was uploaded.
     :return: A string representing the hash of the file.
     """
     return hashlib.sha224(f'{filename}{uuid.uuid4()}'.encode('utf-8')).hexdigest()
+
 
 class File(models.Model):
     hash = models.CharField(max_length=64, primary_key=True, editable=False)
@@ -31,28 +33,29 @@ class File(models.Model):
     def save(self, *args, **kwargs):
         self.hash = generate_hash(self.name)
         super(File, self).save(*args, **kwargs)
-        
+
 
 class Method(models.Model):
     method_hash = models.CharField(max_length=64, primary_key=True, editable=False)
     parent = models.CharField(max_length=64, null=True)
     name = models.CharField(max_length=64)
-    arguments = models.CharField(max_length=64) # JSON-serialized list
+    arguments = models.CharField(max_length=64)  # JSON-serialized list
     returns = models.CharField(max_length=64)
-    child_hash = models.CharField(max_length=64, null=True) 
-    
+    child_hash = models.CharField(max_length=64, null=True)
+
     def save(self, *args, **kwargs):
         self.method_hash = generate_hash(self.name)
         super(Method, self).save(*args, **kwargs)
+
 
 class Class(models.Model):
     class_hash = models.CharField(max_length=64, primary_key=True, editable=False)
     parent = models.CharField(max_length=64, null=True)
     name = models.CharField(max_length=64)
-    arguments = models.CharField(max_length=64) # JSON-serialized list [ { argName: argType }, ...]
-    methods = models.CharField(max_length=64) # JSON-serialized list [ { methodName: [ {argName: argType}, ...] }, ...]
+    arguments = models.CharField(max_length=64)  # JSON-serialized list [ { argName: argType }, ...]
+    methods = models.CharField(max_length=64)  # JSON-serialized list [ { methodName: [ {argName: argType}, ...] }, ...]
     returns = models.CharField(max_length=64, null=True)
-    child_hash = models.CharField(max_length=64, null=True) 
+    child_hash = models.CharField(max_length=64, null=True)
 
     def save(self, *args, **kwargs):
         self.class_hash = generate_hash(self.name)

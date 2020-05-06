@@ -18,6 +18,9 @@ __pycache__/
 # Ignore auto-generated static files.
 /src/server/static/
 
+# Ignore uploads.
+/src/server/uploads/
+
 # Ignore JetBrains project files.
 /.idea/
 

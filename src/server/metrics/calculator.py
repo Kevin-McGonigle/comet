@@ -1,11 +1,11 @@
 from typing import Optional
+from antlr4 import InputStream, CommonTokenStream
 
 from metrics.structures.ast import AST
 from metrics.structures.cfg import CFG
 from metrics.structures.inheritance_tree import InheritanceTree
 from metrics.structures.dependency_graph import DependencyGraph
 from metrics.structures.class_diagram import ClassDiagram
-
 
 from metrics.visitors.structures.cfg_generation_visitor import CFGGenerationVisitor
 from metrics.visitors.structures.inheritance_tree_generation_visitor import InheritanceTreeGenerationVisitor
@@ -20,7 +20,6 @@ from metrics.visitors.metrics.mid_calculation_visitor import MIDCalculationVisit
 from metrics.visitors.metrics.mnd_calculation_visitor import MNDCalculationVisitor
 
 
-
 class Calculator(object):
     """
     Metric/model calculator.
@@ -28,19 +27,26 @@ class Calculator(object):
     Class for calculating metrics and generating models for a given AST.
     """
 
-    def __init__(self, ast: AST = None):
+    def __init__(self, content, lexer, parser, visitor):
         """
         Metric/model calculator.
 
         :param ast: Abstract syntax tree.
         """
-        self.__ast = None
+        input_stream = InputStream(content)
+        calc_lexer = lexer(input_stream)
+        tokens = CommonTokenStream(calc_lexer)
+        calc_parser = parser(tokens)
+        parse_tree = calc_parser.file_input()
+        calc_visitor = visitor()
 
-        # TODO: Maybe substitute the below for a single dictionary for extensibility and easier clearing.
-        self.cd = None
-        self.cfg = None
-        self.it = None
-        self.dg = None
+        self.__ast = calc_visitor.visit(parse_tree)
+        self.models = {
+            "cd": None,
+            "cfg": None,
+            "it": None,
+            "dg": None,
+        }
 
     # region ast Property
 
@@ -76,10 +82,7 @@ class Calculator(object):
 
     def clear(self):
         self.__ast = None
-        self.cd = None
-        self.cfg = None
-        self.it = None
-        self.dg = None
+        self.models = dict.fromkeys(self.models, None)
 
     # endregion
 
@@ -94,10 +97,10 @@ class Calculator(object):
         if ast:
             return CFGGenerationVisitor().visit(ast)
 
-        if not self.cfg:
-            self.cfg = CFGGenerationVisitor().visit(self.ast)
+        if not self.models["cfg"]:
+            self.models["cfg"] = CFGGenerationVisitor().visit(self.ast)
 
-        return self.cfg
+        return self.models["cfg"]
 
     def inheritance_tree(self, ast: Optional[AST]) -> InheritanceTree:
         """
@@ -108,10 +111,10 @@ class Calculator(object):
         if ast:
             return InheritanceTreeGenerationVisitor().visit(ast)
 
-        if not self.it:
-            self.it = InheritanceTreeGenerationVisitor().visit(self.ast)
+        if not self.models["it"]:
+            self.models["it"] = InheritanceTreeGenerationVisitor().visit(self.ast)
 
-        return self.it
+        return self.models["it"]
 
     def dependency_graph(self, ast: Optional[AST]) -> DependencyGraph:
         """
@@ -122,10 +125,10 @@ class Calculator(object):
         if ast:
             return DependencyGraphGenerationVisitor().visit(ast)
         
-        if not self.dg:
-            self.dg = DependencyGraphGenerationVisitor().visit(self.ast)
+        if not self.models["dg"]:
+            self.models["dg"] = DependencyGraphGenerationVisitor().visit(self.ast)
 
-        return self.dg
+        return self.models["dg"]
 
     def class_diagram(self, ast: Optional[AST]) -> ClassDiagram:
         """
@@ -136,10 +139,10 @@ class Calculator(object):
         if ast:
             return ClassDiagramGenerationVisitor().visit(ast)
         
-        if not self.cd:
-            self.cd = ClassDiagramGenerationVisitor().visit(self.ast)
+        if not self.models["cd"]:
+            self.models["cd"] = ClassDiagramGenerationVisitor().visit(self.ast)
 
-        return self.cd
+        return self.models["cd"]
 
     # endregion
 

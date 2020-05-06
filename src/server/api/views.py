@@ -3,7 +3,18 @@ from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
-# from metrics.managers.manager import Manager
+from metrics.calculator import Calculator
+from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
+from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
+from metrics.parsers.python3.base.Python3Parser import Python3Parser
+
+calc_args = {
+    "python3": {
+        "parser": Python3Parser,
+        "lexer": Python3Lexer,
+        "visitor": ASTGenerationVisitor,
+    }
+}
 
 
 class FileUploadViewset(viewsets.ModelViewSet):
@@ -20,10 +31,12 @@ class FileUploadViewset(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
-        # TODO: Change to use new "Calculator" at src\server\metrics\calculator.py
-        # file_manager = Manager(self.queryset.get(hash=serializer.data['hash']).file)
-        # comet_result = file_manager.generate_comet_result()
-        # print(comet_result.inheritance_tree.get_json())
+        # Hardcoded for now
+        file_type = calc_args["python3"]
+        content = self.queryset.get(hash=serializer.data['hash']).file
+        calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
+        print(calc)
+        
         # return JsonResponse(
         #     {'hash': serializer.data['hash'], 'inheritance_tree': comet_result.inheritance_tree.get_json()},
         #     status=status.HTTP_201_CREATED, safe=False)

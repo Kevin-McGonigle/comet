@@ -8,7 +8,7 @@ from metrics.structures.ast import *
 
 
 class ASTGenerationVisitor(Python3Visitor):
-    # Behaviour
+    # region Behaviour
     def visit(self, tree):
         return AST(super().visit(tree))
 
@@ -37,7 +37,10 @@ class ASTGenerationVisitor(Python3Visitor):
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)
 
-    # Helpers
+    # endregion
+
+    # region Helpers
+
     def build_multi(self, sequence: Optional[Sequence[ASTNode]], multi_node: Type[ASTMultiplesNode]):
         if not sequence:
             return self.defaultResult()
@@ -121,7 +124,28 @@ class ASTGenerationVisitor(Python3Visitor):
 
         return False
 
-    # Visits
+    @staticmethod
+    def get_visibility(name: str) -> ASTVisibilityModifier:
+        """
+        Get the corresponding visibility modifier for the member's name; with one leading underscore indicating a
+        protected member and two indicating a private member
+        (according to the PEP 8 style guide
+        https://www.python.org/dev/peps/pep-0008/#method-names-and-instance-variables).
+
+        :param name: The member's name/identifier.
+        :return: The corresponding visibility/access modifier.
+        """
+        if name.startswith("__"):
+            return ASTVisibilityModifier.PRIVATE
+
+        if name.startswith("_"):
+            return ASTVisibilityModifier.PROTECTED
+
+        return ASTVisibilityModifier.PUBLIC
+
+    # endregion
+
+    # region Visits
     def visitSingle_input(self, ctx: Python3Parser.Single_inputContext):
         statement = ctx.simple_stmt()
         if not statement:
@@ -156,14 +180,15 @@ class ASTGenerationVisitor(Python3Visitor):
 
     def visitFuncdef(self, ctx: Python3Parser.FuncdefContext):
         name = ASTIdentifierNode(ctx.NAME().getText())
-        body = ctx.suite().accept(self)
         parameters = ctx.parameters().accept(self)
         return_type = ctx.test()
+        body = ctx.suite().accept(self)
+        visibility = self.get_visibility(name.name)
 
         if return_type:
-            return ASTFunctionDefinitionNode(name, parameters, return_type.accept(self), body)
+            return ASTFunctionDefinitionNode(name, parameters, return_type.accept(self), body, [visibility])
 
-        return ASTFunctionDefinitionNode(name, parameters, body)
+        return ASTFunctionDefinitionNode(name, parameters, body=body, modifiers=[visibility])
 
     def visitParameters(self, ctx: Python3Parser.ParametersContext):
         parameters = ctx.typedargslist()
@@ -768,11 +793,12 @@ class ASTGenerationVisitor(Python3Visitor):
         name = ASTIdentifierNode(ctx.NAME().getText())
         arguments = ctx.arglist()
         body = ctx.suite().accept(self)
+        visibility = self.get_visibility(name.name)
 
         if arguments:
-            return ASTClassDefinitionNode(name, arguments.accept(self), body)
+            return ASTClassDefinitionNode(name, body, arguments.accept(self), modifiers=[visibility])
 
-        return ASTClassDefinitionNode(name, body)
+        return ASTClassDefinitionNode(name, body, modifiers=[visibility])
 
     def visitArglist(self, ctx: Python3Parser.ArglistContext):
         return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
@@ -832,3 +858,5 @@ class ASTGenerationVisitor(Python3Visitor):
         if ctx.FROM():
             return ASTFromNode(ctx.test().accept(self))
         return ctx.testlist().accept(self)
+
+    # endregion

@@ -72,7 +72,7 @@ class ASTNode(Node):
         return super().accept(visitor)
 
 
-# Terminals
+# region Terminals
 
 class ASTIdentifierNode(ASTNode):
     """
@@ -140,7 +140,9 @@ class ASTLiteralNode(ASTNode):
         return visitor.visit_literal(self)
 
 
-# Multiples
+# endregion
+
+# region Multiples
 
 class ASTMultiplesNode(ASTNode):
     """
@@ -453,7 +455,9 @@ class ASTDecoratorsNode(ASTMultiplesNode):
         return visitor.visit_decorators(self)
 
 
-# Statements
+# endregion
+
+# region Statements
 
 class ASTStatementNode(ASTNode):
     """
@@ -1269,29 +1273,31 @@ class ASTClassDefinitionNode(ASTStatementNode):
     Class definition.
     """
 
-    def __init__(self, name: ASTNode, arguments: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
-                 modifiers: Optional[Sequence[ASTModifier]] = None):
+    def __init__(self, name: ASTNode, body: Optional[ASTNode] = None, superclasses: Optional[ASTNode] = None,
+                 interfaces: Optional[ASTNode] = None, modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Class definition.
 
         :param name: The name of the class.
-        :param arguments: The argument(s) of the class.
         :param body: The body of the class.
+        :param superclasses: The class(es) that the class inherits from.
+        :param interfaces: The interface(s) that the class implements.
         :param modifiers: The modifier(s) applied to the class.
         """
         self.name = name
         self.body = body
-        self.arguments = arguments
+        self.superclasses = superclasses
+        self.interfaces = interfaces
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, self.arguments, self.body)
+        super().__init__(self.name, self.superclasses, self.interfaces, self.body)
 
     def __str__(self):
-        return f"Class definition\nName: {self.name}\nArguments: {self.arguments}\n" \
-               f"Body: {self.body}\nModifiers: {self.modifiers}"
+        return f"Class definition\nName: {self.name}\nSuperclasses: {self.superclasses}\n" \
+               f"Interfaces: {self.interfaces}\nBody: {self.body}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTClassDefinitionNode(name={self.name}, arguments={self.arguments}, " \
-               f"body={self.body}, modifiers={self.modifiers})"
+        return f"ASTClassDefinitionNode(name={self.name}, arguments={self.superclasses}, " \
+               f"interfaces={self.interfaces}\nbody={self.body}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1302,6 +1308,10 @@ class ASTClassDefinitionNode(ASTStatementNode):
         """
         return visitor.visit_class_definition(self)
 
+
+# endregion
+
+# region Expressions and Misc.
 
 class ASTYieldExpressionNode(ASTNode):
     """
@@ -2227,7 +2237,9 @@ class ASTDecoratorNode(ASTNode):
         return visitor.visit_decorator(self)
 
 
-# Enums
+# endregion
+
+# region Enums
 
 class ASTEnum(Enum):
     """
@@ -2366,7 +2378,7 @@ class ASTMiscModifier(ASTModifier):
     STATIC = "Static"
     UNSAFE = "Unsafe"
     VIRTUAL = "Virtual"
-    VOLATIOLE = "Volatile"
+    VOLATILE = "Volatile"
 
 
 # Literal Enums
@@ -2381,3 +2393,6 @@ class ASTLiteralType(ASTEnum):
     BOOLEAN = "Boolean"
     NULL = "Null"
     ELLIPSIS = "Ellipsis"
+
+
+# endregion

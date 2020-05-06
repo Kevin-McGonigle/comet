@@ -56,7 +56,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         class_ = Class(name, attributes, methods)
 
         nested_classes = [class_ for class_ in body if isinstance(class_, Class)]
-        superclasses = node.arguments.accept(self)
+        superclasses = node.superclasses.accept(self)
 
         return class_
 

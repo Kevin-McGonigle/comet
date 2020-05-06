@@ -89,8 +89,8 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
 
         # Class superclasses
         superclasses = [self.base]
-        if node.arguments:
-            superclasses = node.arguments.accept(self)
+        if node.superclasses:
+            superclasses = node.superclasses.accept(self)
 
         # Dependencies inside the class
         scope_tmp = self.scope

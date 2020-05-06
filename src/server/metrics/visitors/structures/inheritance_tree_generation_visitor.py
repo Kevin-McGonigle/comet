@@ -94,8 +94,8 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
             name = self.scope + "." + name
 
         # Class superclasses
-        if node.arguments:
-            superclasses = node.arguments.accept(self)
+        if node.superclasses:
+            superclasses = node.superclasses.accept(self)
         else:
             superclasses = [self.base]
 

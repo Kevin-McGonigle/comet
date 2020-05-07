@@ -12,7 +12,7 @@ const fileDataReducer = (state = initialState, action) => {
         case SET_FILE_DATA:
             const files = action.payload;
             return {
-                ...state,
+                selected: files[0].name,
                 files
             }
         case SET_SELECTED_FILE:

@@ -2,8 +2,7 @@ from typing import TYPE_CHECKING, Dict
 
 from metrics.visitors.base.dependency_graph_visitor import DependencyGraphVisitor
 
-if TYPE_CHECKING:
-    from metrics.structures.dependency_graph import *
+from metrics.structures.dependency_graph import *
 
 
 class ACCalculationVisitor(DependencyGraphVisitor):

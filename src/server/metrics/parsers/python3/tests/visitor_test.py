@@ -8,7 +8,8 @@ from metrics.parsers.python3.base.Python3Parser import Python3Parser
 
 
 def main():
-    content = stdin.read()
+    with open("test.txt", "r") as f:
+        content = f.read
     input_stream = InputStream(content)
     lexer = Python3Lexer(input_stream)
     tokens = CommonTokenStream(lexer)

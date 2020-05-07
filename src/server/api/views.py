@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
-from metrics.calculator import Calculator
+from metrics.calculator import CalculatorStub
 from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
 from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
@@ -31,18 +31,65 @@ class FileUploadViewset(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
-        # Hardcoded for now
-        file_type = calc_args["python3"]
-        file_name = self.queryset.get(hash=serializer.data['hash']).file
-        with open(f'../server/uploads/{file_name}') as f:
-            content = f.read()
 
-        calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
-        print(calc)
+        file_name = str(self.queryset.get(hash=serializer.data['hash']).file)
+        # with open(f'../server/uploads/{file_name}') as f:
+        #    content = f.read()
+
+        calc = CalculatorStub()
+        # Structures
+        inheritance_tree = calc.inheritance_tree(None)
+        control_flow_graph = calc.control_flow_graph(None)
+        dependency_graph = calc.dependency_graph(None)
+        class_diagram = calc.class_diagram(None)
+        # Metrics
+        lloc = calc.logical_lines_of_code(None)
+        ac = calc.afferent_coupling(None)
+        ec = calc.efferent_coupling(None)
+        cc = calc.cyclomatic_complexity(None)
+        mid = calc.maximum_inheritance_depth(None)
+        mnd = calc.maximum_nesting_depth(None)
+
+        dependency_graph_graph_data = {
+            "nodes": [],
+            "links": [],
+        }
+
+        for node in dependency_graph.classes:
+            dependency_graph_graph_data["nodes"].append({"id": node.name})
+
+            for dependency in node.dependencies:
+                dependency_graph_graph_data["links"].append({"source": dependency.name, "target": node.name})
+
+        ac_graph_data = [{"name": node.name, "value": ac[node]} for node in ac]
+        ec_graph_data = [{"name": node.name, "value": ec[node]} for node in ec]
+
+        data_dict = {
+            "fileName": "_".join(file_name.split("_")[2:]),
+            "structures": {
+                "controlFlowGraph": "cfg",
+                "classDiagram": "cd",
+                "inheritanceTree": "it",
+                "abstractSyntaxTree": "ast",
+                "dependencyGraph": dependency_graph_graph_data,
+            },
+            "metrics": {
+                "afferentCoupling": ac_graph_data,
+                "efferentCoupling": ec_graph_data,
+                "logicalLinesOfCode": lloc,
+                "cyclomaticComplexity": cc,
+                "maximumInheritanceDepth": mid,
+                "maximumNestingDepth": mnd,
+            }
+        }
+
+        print(data_dict)
         
-        # return JsonResponse(
-        #     {'hash': serializer.data['hash'], 'inheritance_tree': comet_result.inheritance_tree.get_json()},
-        #     status=status.HTTP_201_CREATED, safe=False)
+        # Hardcoded for now
+        # file_type = calc_args["python3"]
+        # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
+        
+        return JsonResponse(data_dict, status=status.HTTP_201_CREATED, safe=False)
 
 
 class FileInformationViewset(viewsets.ModelViewSet):

@@ -15,6 +15,10 @@ import TreeMapContainer from '../general/TreeMap/TreeMapContainer';
 const cx = args => classnames(styles, args)
 
 const Metrics = props => {
+    const { selected, metrics } = props;
+
+    const selectedMetrics = Object.values(metrics).filter(value => value.fileName === selected)[0]
+
     const [tabState, setTabState] = useState({
         selectedIndex: 0,
         tabs: ["TreeMap", "Metrics", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
@@ -30,7 +34,7 @@ const Metrics = props => {
             />,
             <ForceDirectedGraph 
                 title="Dependency Graph"
-                data={dependencyGraphData} 
+                data={selectedMetrics.structures.dependencyGraph} 
                 graphType="controlFlow"         
             />
         ]

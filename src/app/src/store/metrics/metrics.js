@@ -1,18 +1,33 @@
-const initialState = {
-    hash: {},
-    inheritanceTree: {},
-};
+const initialState = [
+    {
+        "fileName": null,
+        "structures": {
+            "controlFlowGraph": null,
+            "classDiagram": null,
+            "inheritanceTree": null,
+            "abstractSyntaxTree": null,
+        },
+        "metrics": {
+            "dependencyGraph": null,
+            "afferentCoupling": null,
+            "efferentCoupling": null,
+            "logicalLinesOfCode": null,
+            "cyclomaticComplexity": null,
+            "maximumInheritanceDepth": null,
+            "maximumNestingDepth": null,
+        }
+    }
+];
 
-export const SET_INHERITANCE_TREE = 'SET_INHERITANCE_TREE';
+export const SET_METRICS = 'SET_METRICS';
 
 const metricsReducer = (state = initialState, action) => {
     switch(action.type) {
-        case SET_INHERITANCE_TREE:
-            const { hash, inheritance_tree } = action.payload;
+        case SET_METRICS:
+            const metrics = state;
+            metrics.push(action.payload);
             return {
-                inheritance_tree,
-                hash,
-                ...state.metrics,
+                ...metrics,
             }
 
         default:
@@ -21,9 +36,9 @@ const metricsReducer = (state = initialState, action) => {
 };
 
 export const actions = {
-    setInheritanceTree: (data) => {
+    setMetrics: (data) => {
         return {
-            type: SET_INHERITANCE_TREE,
+            type: SET_METRICS,
             payload: data
         }
     }

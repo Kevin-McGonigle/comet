@@ -14,7 +14,7 @@ const CreateModal = props => {
         createModalOnConfirmHandler,
         createModalOnCloseHandler,
         createModalOnFailureHandler,
-        setInheritanceTree,
+        setMetrics,
         setAlertSuccess,
         setAlertDanger,
         setFileData,
@@ -66,7 +66,7 @@ const CreateModal = props => {
         upload_files(fileData).then((data) => {
             if (data) {
                 setFileData(shapedData);
-                setInheritanceTree(data);
+                setMetrics(data);
                 setAlertSuccess("Uploaded succesfully!")
                 history.push('/metrics');
             } else {

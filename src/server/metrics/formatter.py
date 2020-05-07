@@ -1,4 +1,6 @@
 from metrics.calculator import Calculator
+from metrics.structures.ast import AST
+
 
 class Formatter(object):
     """

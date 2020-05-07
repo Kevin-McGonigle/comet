@@ -1,7 +1,7 @@
 from antlr4 import ParserRuleContext
 
-from parsers.parser import Parser
-from parsers.python3.base.Python3Parser import Python3Parser as AntlrParser
+from metrics.parsers.parser import Parser
+from metrics.parsers.python3.base.Python3Parser import Python3Parser as AntlrParser
 
 
 class Python3Parser(AntlrParser, Parser):

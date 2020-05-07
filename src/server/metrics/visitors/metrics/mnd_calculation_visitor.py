@@ -1,3 +1,6 @@
+from typing import Union
+
+from metrics.structures.cfg import CFGLoopBlock, CFGIfBlock, CFGIfElseBlock, CFGLoopElseBlock
 from metrics.visitors.base.cfg_visitor import CFGVisitor
 
 
@@ -8,12 +11,16 @@ class MNDCalculationVisitor(CFGVisitor):
     Provides functionality for visiting a control-flow graph and returning its maximum nesting depth, i.e. the
     maximum number of encapsulated scopes.
     """
-    def visit_children(self, block):
+
+    def visit(self, cfg) -> int:
+        return cfg.accept(self)
+
+    def visit_children(self, block) -> int:
         if block.children:
             return max([child.accept(self) for child in block.children])
         return 1
 
-    def visit_block(self, block):
+    def visit_block(self, block) -> int:
         if block in self._visited:
             return 1
 
@@ -28,19 +35,19 @@ class MNDCalculationVisitor(CFGVisitor):
 
         return max(exit_depth, children_depth)
 
-    def visit_if_block(self, block):
+    def visit_if_block(self, block) -> int:
         return self.visit_if_or_loop_block(block)
 
-    def visit_if_else_block(self, block):
+    def visit_if_else_block(self, block) -> int:
         return self.visit_if_else_or_loop_else_block(block)
 
-    def visit_loop_block(self, block):
+    def visit_loop_block(self, block) -> int:
         return self.visit_if_or_loop_block(block)
 
-    def visit_loop_else_block(self, block):
+    def visit_loop_else_block(self, block) -> int:
         return self.visit_if_else_or_loop_else_block(block)
 
-    def visit_switch_block(self, block):
+    def visit_switch_block(self, block) -> int:
         if block in self._visited:
             return 1
 
@@ -58,7 +65,7 @@ class MNDCalculationVisitor(CFGVisitor):
 
         return max(exit_depth, cases_depth)
 
-    def visit_if_or_loop_block(self, block):
+    def visit_if_or_loop_block(self, block: Union[CFGIfBlock, CFGLoopBlock]) -> int:
         if block in self._visited:
             return 1
 
@@ -73,7 +80,7 @@ class MNDCalculationVisitor(CFGVisitor):
 
         return max(exit_depth, success_depth)
 
-    def visit_if_else_or_loop_else_block(self, block):
+    def visit_if_else_or_loop_else_block(self, block: Union[CFGIfElseBlock, CFGLoopElseBlock]):
         if block in self._visited:
             return 1
 

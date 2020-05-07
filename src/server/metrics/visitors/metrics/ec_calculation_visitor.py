@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 from metrics.visitors.base.dependency_graph_visitor import DependencyGraphVisitor
 
@@ -15,11 +15,11 @@ class ECCalculationVisitor(DependencyGraphVisitor):
     """
 
     def __init__(self):
+        super().__init__()
         self._visited = []
         self.efferent_couplings = {}
-        super().__init__()
 
-    def visit(self, graph):
+    def visit(self, graph) -> Dict[Class, int]:
         self._visited = []
         self.efferent_couplings = {cls: 0 for cls in graph.classes}
 
@@ -28,21 +28,21 @@ class ECCalculationVisitor(DependencyGraphVisitor):
 
         return self.efferent_couplings
 
-    def visit_children(self, cls):
+    def visit_children(self, cls) -> None:
         """
         Visit each of a class' dependencies.
+
         :param cls: The parent class whose dependencies to visit.
-        :type cls: Class
         """
         if cls.dependencies:
             for dependency in cls.dependencies:
                 dependency.accept(self)
 
-    def visit_class(self, cls):
+    def visit_class(self, cls) -> None:
         """
         Visit dependency graph generic class and update efferent couplings.
+
         :param cls: The generic class.
-        :type cls: Class
         """
         if cls not in self._visited:
             self._visited.append(cls)

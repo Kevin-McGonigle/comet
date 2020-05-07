@@ -3,11 +3,11 @@ from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
-from metrics.visitors.base.inheritance_tree_visitor import InheritanceTreeVisitor
 from metrics.calculator import CalculatorStub
 from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
 from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
+from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
 
 calc_args = {
     "python3": {
@@ -32,14 +32,13 @@ class FileUploadViewset(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
 
-
         file_name = str(self.queryset.get(hash=serializer.data['hash']).file)
         # with open(f'../server/uploads/{file_name}') as f:
         #    content = f.read()
 
         calc = CalculatorStub()
         # Structures
-        inheritance_tree = InheritanceTreeVisitor().visit(calc.inheritance_tree(None))
+        inheritance_tree = calc.inheritance_tree(None)
         control_flow_graph = calc.control_flow_graph(None)
         dependency_graph = calc.dependency_graph(None)
         class_diagram = calc.class_diagram(None)
@@ -51,25 +50,15 @@ class FileUploadViewset(viewsets.ModelViewSet):
         mid = calc.maximum_inheritance_depth(None)
         mnd = calc.maximum_nesting_depth(None)
 
+        nodes, links = InheritanceTreeFormattingVisitor().visit(inheritance_tree)
         inheritance_tree_graph_data = {
-            "nodes": [],
-            "links": [],
+            "nodes": nodes,
+            "links": links
         }
-
-        def rec_visit(node):
-            if len(node.subclasses) == 0:
-                return node.name
-            else:
-                for item in node.subclasses:
-                    return node.name, rec_visit(item)
-
-        nodes = [rec_visit(node) for node in inheritance_tree]
-        print(nodes)
-
 
         # nodes [{"id": A}, {"id": B}, {"id": C}, {"id": D}]
         # links [{"source": "object", "target": "A"}, {"source": "object", "target": "B"}
-        # {"source": "A", "target": "C"}, {"source": "A", "target": "D"}, {"source": "B", "target": "D"}]
+        # {"source": "A", "target": "C"}, {"source": "C", "target": "D"}, {"source": "B", "target": "D"}]
 
         print(inheritance_tree_graph_data)
 
@@ -105,11 +94,11 @@ class FileUploadViewset(viewsets.ModelViewSet):
                 "maximumNestingDepth": mnd,
             }
         }
-        
+
         # Hardcoded for now
         # file_type = calc_args["python3"]
         # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
-        
+
         return JsonResponse(data_dict, status=status.HTTP_201_CREATED, safe=False)
 
 

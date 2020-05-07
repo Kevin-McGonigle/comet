@@ -1480,6 +1480,38 @@ class ASTFromNode(ASTNode):
         return visitor.visit_from(self)
 
 
+class ASTAnonymousFunctionDefinitionNode(ASTNode):
+    """
+    Anonymous function definition.
+    """
+
+    def __init__(self, body: ASTNode, parameters: Optional[ASTNode] = None):
+        """
+        Anonymous function definition.
+
+        :param body: The body of the anonymous function.
+        :param parameters: The parameter(s) of the function.
+        """
+        self.body = body
+        self.parameters = parameters
+        super().__init__(self.parameters, self.body)
+
+    def __str__(self):
+        return f"Anonymous function definition.\nBody: {self.body}\nParameters: {self.parameters}"
+
+    def __repr__(self):
+        return f"ASTAnonymousFunctionDefinitionNode(body={self.body}, parameters={self.parameters})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_anonymous_function_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_anonymous_function_definition(self)
+
+
 class ASTParameterNode(ASTNode):
     """
     Parameter.
@@ -1514,36 +1546,70 @@ class ASTParameterNode(ASTNode):
         return visitor.visit_parameter(self)
 
 
-class ASTAnonymousFunctionDefinitionNode(ASTNode):
+class ASTPositionalOnlyParameterNode(ASTParameterNode):
     """
-    Anonymous function definition.
+    Positional-only parameter.
+
+    A parameter that may only be fulfilled by a positional argument.
     """
 
-    def __init__(self, body: ASTNode, parameters: Optional[ASTNode] = None):
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None):
         """
-        Anonymous function definition.
+        Positional-only parameter.
 
-        :param body: The body of the anonymous function.
-        :param parameters: The parameter(s) of the function.
+        :param name: The name of the parameter.
+        :param type_: The parameter's type.
+        :param default: The default value of the parameter.
         """
-        self.body = body
-        self.parameters = parameters
-        super().__init__(self.parameters, self.body)
+        super().__init__(name, type_, default)
 
     def __str__(self):
-        return f"Anonymous function definition.\nBody: {self.body}\nParameters: {self.parameters}"
+        return f"Positional-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}"
 
     def __repr__(self):
-        return f"ASTAnonymousFunctionDefinitionNode(body={self.body}, parameters={self.parameters})"
+        return f"ASTPositionalOnlyParameterNode(name={self.name}, type={self.type}, default={self.default})"
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_anonymous_function_definition method.
+        Accept AST visitor and call its visit_positional_only_parameter method.
 
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
-        return visitor.visit_anonymous_function_definition(self)
+        return visitor.visit_positional_only_parameter(self)
+
+
+class ASTKeywordOnlyParameterNode(ASTParameterNode):
+    """
+    Keyword-only parameter.
+
+    A parameter that may only be fulfilled by a keyword argument.
+    """
+
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None):
+        """
+        Keyword-only parameter.
+
+        :param name: The name of the parameter.
+        :param type_: The parameter's type.
+        :param default: The default value of the parameter.
+        """
+        super().__init__(name, type_, default)
+
+    def __str__(self):
+        return f"Keyword-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}"
+
+    def __repr__(self):
+        return f"ASTKeywordOnlyParameterNode(name={self.name}, type={self.type}, default={self.default})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_keyword_only_parameter method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_keyword_only_parameter(self)
 
 
 class ASTPositionalArgumentsParameterNode(ASTNode):

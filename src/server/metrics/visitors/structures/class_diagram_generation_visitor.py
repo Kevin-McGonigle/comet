@@ -1,7 +1,4 @@
-from typing import Sequence
-
-from metrics.structures.ast import AST, ASTNode, ASTClassDefinitionNode, ASTFunctionDefinitionNode, \
-    ASTVariableDeclarationNode, ASTVisibilityModifier, ASTMiscModifier, ASTIdentifierNode
+from metrics.structures.ast import ASTVisibilityModifier, ASTMiscModifier, ASTIdentifierNode
 from metrics.structures.class_diagram import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
 
@@ -17,20 +14,29 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         self.classes = {}
         self.relationships = []
 
-    def visit(self, ast: AST) -> ClassDiagram:
+    def create_relationships(self) -> None:
+        """
+        Iterate over the classes and create corresponding relationships based on attributes, method parameters and
+        return types, superclasses, etc.
+        :return:
+        """
+        pass
+
+    def visit(self, ast) -> ClassDiagram:
         """
         Visit the AST and produce a class diagram.
         :param ast: The AST to visit.
         :return: The generated class diagram.
         """
         self.classes = {}
-        self.relationships = []
 
         super().visit(ast)
 
-        return ClassDiagram(list(self.classes.values()), self.relationships)
+        self.create_relationships()
 
-    def visit_children(self, node: ASTNode) -> Sequence:
+        return ClassDiagram(list(self.classes.values()))
+
+    def visit_children(self, node) -> List:
         """
         Visit each of an AST node's children.
         :param node: The parent AST node whose children to visit.
@@ -46,23 +52,30 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
 
         return child_results
 
-    def visit_class_definition(self, node: ASTClassDefinitionNode):
+    def visit_class_definition(self, node):
         name = node.name.accept(self)
-        body = node.body.accept(self)
 
-        attributes = [attribute for attribute in body if isinstance(attribute, Attribute)]
-        methods = [method for method in body if isinstance(method, Method)]
+        superclasses = node.superclasses.accept(self) if node.superclasses else None
+        interfaces = node.interfaces.accept(self) if node.interfaces else None
 
-        class_ = Class(name, attributes, methods)
+        if node.body:
+            body = node.body.accept(self)
 
-        nested_classes = [class_ for class_ in body if isinstance(class_, Class)]
-        superclasses = node.superclasses.accept(self)
-        interfaces = node.interfaces.accept(self)
+            attributes = [attribute for attribute in body if isinstance(attribute, Attribute)]
+            methods = [method for method in body if isinstance(method, Method)]
+            nested_classes = [nested_class.name for nested_class in body if isinstance(nested_class, Class)]
+
+            class_ = Class(name, attributes, methods, superclasses, interfaces, nested_classes)
+        else:
+            class_ = Class(name, superclasses=superclasses, interfaces=interfaces)
+
+        self.classes[name] = class_
 
         return class_
 
-    def visit_function_definition(self, node: ASTFunctionDefinitionNode):
+    def visit_function_definition(self, node):
         return_type = node.return_type.accept(self) if isinstance(node.return_type, ASTIdentifierNode) else None
+
         visibility = None
         static = False
 
@@ -72,25 +85,45 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
             elif modifier is ASTMiscModifier.STATIC:
                 static = True
 
-        return Method(node.name.accept(self), visibility, node.parameters, return_type, static)
+        parameters = node.parameters.accept(self) if node.parameters else None
 
-    def visit_variable_declaration(self, node: ASTVariableDeclarationNode):
+        return Method(node.name.accept(self), visibility, parameters, return_type, static)
+
+    def visit_variable_declaration(self, node):
         type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+
         visibility = None
         static = False
 
         for modifier in node.modifiers:
             if isinstance(modifier, ASTVisibilityModifier):
                 visibility = self.get_visibility(modifier)
-            elif isinstance(modifier, ASTMiscModifier):
-                if modifier is ASTMiscModifier.STATIC:
-                    static = True
+            elif modifier is ASTMiscModifier.STATIC:
+                static = True
 
         attributes = []
         for variable in node.variables.accept(self):
             attributes.append(Attribute(variable, visibility, type_, None, static))
 
         return attributes if attributes else None
+
+    def visit_argument(self, node):
+        return node.value.accept(self) if isinstance(node.value, ASTIdentifierNode) else None
+
+    def visit_keyword_argument(self, node):
+        return None
+
+    def visit_parameter(self, node):
+        name = node.name.accept(self)
+        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+        default = node.default.accept(self) if isinstance(node.default, ASTIdentifierNode) else None
+        return Parameter(node.name.accept(self))
+
+    def visit_positional_arguments_parameter(self, node):
+        return super().visit_positional_arguments_parameter(node)
+
+    def visit_keyword_arguments_parameter(self, node):
+        return super().visit_keyword_arguments_parameter(node)
 
     @staticmethod
     def get_visibility(modifier: ASTVisibilityModifier) -> Visibility:

@@ -41,7 +41,7 @@ class Calculator(object):
         lexer = lexer_type(input_stream)
         tokens = CommonTokenStream(lexer)
         parser = parser_type(tokens)
-        parse_tree = parser.parse()
+        parse_tree = parser.file_input()
         visitor = visitor_type()
 
         self.__ast = visitor.visit(parse_tree)

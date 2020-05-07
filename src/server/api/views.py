@@ -33,7 +33,10 @@ class FileUploadViewset(viewsets.ModelViewSet):
 
         # Hardcoded for now
         file_type = calc_args["python3"]
-        content = self.queryset.get(hash=serializer.data['hash']).file
+        file_name = self.queryset.get(hash=serializer.data['hash']).file
+        with open(f'../server/uploads/{file_name}') as f:
+            content = f.read()
+
         calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
         print(calc)
         

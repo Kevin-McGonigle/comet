@@ -71,26 +71,37 @@ class Class:
     Class.
     """
 
-    def __init__(self, name: str, attributes: Optional[List[Attribute]] = None,
-                 methods: Optional[List[Method]] = None, relationships: Optional[List[Relationship]] = None) -> None:
+    def __init__(self, name: str, attributes: Optional[List[Attribute]] = None, methods: Optional[List[Method]] = None,
+                 superclasses: Optional[List[str]] = None, interfaces: Optional[List[str]] = None,
+                 nested_classes: Optional[List[str]] = None, relationships: Optional[List[Relationship]] = None):
         """
         Class.
 
         :param name: The class' name/identifier.
         :param attributes: The class' attributes.
         :param methods: The class' methods.
+        :param superclasses: The classes that the class inherits from.
+        :param interfaces: The interfaces that the class implements.
+        :param nested_classes: The classes defined within the class.
         :param relationships: The class' relationships to other classes.
         """
         self.name = name
         self.attributes = attributes if attributes is not None else []
         self.methods = methods if methods is not None else []
+        self.superclasses = superclasses if superclasses is not None else []
+        self.interfaces = interfaces if interfaces is not None else []
+        self.nested_classes = nested_classes if nested_classes is not None else []
         self.relationships = relationships if relationships is not None else []
 
     def __str__(self) -> str:
-        return f"Class.\nName: {self.name}\nAttributes: {self.attributes}\nMethods: {self.methods}"
+        return f"Class.\nName: {self.name}\nAttributes: {self.attributes}\nMethods: {self.methods}\n" \
+               f"Superclasses: {self.superclasses}\nInterfaces: {self.interfaces}\n" \
+               f"Nested classes: {self.nested_classes}\nRelationships: {self.relationships}"
 
     def __repr__(self) -> str:
-        return f"Class(name={self.name}, attributes={self.attributes}, methods={self.methods})"
+        return f"Class(name={self.name}, attributes={self.attributes}, methods={self.methods}, " \
+               f"superclasses={self.superclasses}, interfaces={self.interfaces}, " \
+               f"nested_classes={self.nested_classes}, relationships={self.relationships})"
 
 
 class Method:

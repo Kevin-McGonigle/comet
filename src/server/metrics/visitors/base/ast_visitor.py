@@ -375,6 +375,14 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
+    def visit_anonymous_function_definition(self, node: ASTAnonymousFunctionDefinitionNode):
+        """
+        Visit AST anonymous function definition node.
+        :param node: The AST anonymous function definition node to visit.
+        :return: The result of the visit.
+        """
+        return self.visit_children(node)
+
     def visit_parameter(self, node: ASTParameterNode):
         """
         Visit AST parameter node.
@@ -382,6 +390,22 @@ class ASTVisitor(GraphVisitor):
         :return: The result of the visit.
         """
         return self.visit_children(node)
+
+    def visit_positional_only_parameter(self, node: ASTPositionalOnlyParameterNode):
+        """
+        Visit AST positional-only parameter node.
+        :param node: The AST positional-only parameter node to visit.
+        :return: The result of the visit.
+        """
+        return self.visit_parameter(node)
+
+    def visit_keyword_only_parameter(self, node: ASTKeywordOnlyParameterNode):
+        """
+        Visit AST keyword-only parameter node.
+        :param node: The AST keyword-only parameter node to visit.
+        :return: The result of the visit.
+        """
+        return self.visit_parameter(node)
 
     def visit_positional_arguments_parameter(self, node: ASTPositionalArgumentsParameterNode):
         """
@@ -395,14 +419,6 @@ class ASTVisitor(GraphVisitor):
         """
         Visit AST keyword arguments parameter node.
         :param node: The AST keyword arguments parameter node to visit.
-        :return: The result of the visit.
-        """
-        return self.visit_children(node)
-
-    def visit_anonymous_function_definition(self, node: ASTAnonymousFunctionDefinitionNode):
-        """
-        Visit AST anonymous function definition node.
-        :param node: The AST anonymous function definition node to visit.
         :return: The result of the visit.
         """
         return self.visit_children(node)

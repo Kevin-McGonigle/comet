@@ -335,7 +335,7 @@ orderby_clause
 	;
 
 ordering
-	: expression dir=(ASCENDING | DESCENDING)?
+	: expression dir_=(ASCENDING | DESCENDING)?
 	;
 
 select_or_group_clause

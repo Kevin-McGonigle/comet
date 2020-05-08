@@ -4,10 +4,13 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
 from metrics.calculator import CalculatorStub
+from metrics.visitors.base.cfg_visitor import CFGVisitor
 from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
 from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
+from metrics.visitors.formatting.control_flow_graph_formatting_visitor import ControlFlowGraphFormattingVisitor
+
 
 calc_args = {
     "python3": {
@@ -56,12 +59,6 @@ class FileUploadViewset(viewsets.ModelViewSet):
             "links": links
         }
 
-        # nodes [{"id": A}, {"id": B}, {"id": C}, {"id": D}]
-        # links [{"source": "object", "target": "A"}, {"source": "object", "target": "B"}
-        # {"source": "A", "target": "C"}, {"source": "C", "target": "D"}, {"source": "B", "target": "D"}]
-
-        print(inheritance_tree_graph_data)
-
         dependency_graph_graph_data = {
             "nodes": [],
             "links": [],
@@ -76,12 +73,15 @@ class FileUploadViewset(viewsets.ModelViewSet):
         ac_graph_data = [{"name": node.name, "value": ac[node]} for node in ac]
         ec_graph_data = [{"name": node.name, "value": ec[node]} for node in ec]
 
+        nodes, links = ControlFlowGraphFormattingVisitor().visit(control_flow_graph)
+        print(nodes, links)
+
         data_dict = {
             "fileName": "_".join(file_name.split("_")[2:]),
             "structures": {
                 "controlFlowGraph": "cfg",
                 "classDiagram": "cd",
-                "inheritanceTree": "it",
+                "inheritanceTree": inheritance_tree_graph_data,
                 "abstractSyntaxTree": "ast",
                 "dependencyGraph": dependency_graph_graph_data,
             },
@@ -99,7 +99,7 @@ class FileUploadViewset(viewsets.ModelViewSet):
         # file_type = calc_args["python3"]
         # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
 
-        return JsonResponse(data_dict, status=status.HTTP_201_CREATED, safe=False)
+        # return JsonResponse(data_dict, status=status.HTTP_201_CREATED, safe=False)
 
 
 class FileInformationViewset(viewsets.ModelViewSet):

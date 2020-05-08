@@ -2,7 +2,6 @@ import React from 'react';
 import { Pane } from 'evergreen-ui';
 import ClassDiagram from '../ClassDiagram/ClassDiagram';
 import ForceDirectedGraph from './ForceDirectedGraph';
-import { basicRelationshipData } from './configs';
 
 const InheritanceTreeContainer = (props) => {
     const {
@@ -13,7 +12,7 @@ const InheritanceTreeContainer = (props) => {
     return (
         <>
             <ForceDirectedGraph 
-                data={basicRelationshipData} 
+                data={data} 
                 graphType="basic"
                 title={title}
             />

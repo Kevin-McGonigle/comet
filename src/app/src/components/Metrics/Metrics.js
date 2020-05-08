@@ -25,7 +25,7 @@ const Metrics = props => {
         tabContent: [
             <TreeMapContainer />,
             <MetricPaneContainer />, 
-            <InheritanceTreeContainer title="Inheritance Tree"/>,
+            <InheritanceTreeContainer title="Inheritance Tree" data={selectedMetrics.structures.inheritanceTree}/>,
             <AbstractSyntaxTree />, 
             <ForceDirectedGraph 
                 title="Control Flow Graph"

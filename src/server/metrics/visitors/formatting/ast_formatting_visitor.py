@@ -11,7 +11,7 @@ class ASTFormattingVisitor(ASTVisitor):
         return super().visit(ast)
 
     def visit_children(self, node: "ASTNode"):
-        [child.accept(self) for child in node.children] if node.children else None
+        return [child.accept(self) for child in node.children] if node.children else None
 
     @staticmethod
     def visit_identifier(node: "ASTIdentifierNode"):

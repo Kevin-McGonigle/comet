@@ -15,7 +15,7 @@ const ForceDirectedGraph = (props) => {
     } = props;
 
     const windowHeight = window.screen.height - 200;
-    const windowWidth = window.screen.width - 800;
+    const windowWidth = window.screen.width - 350;
     const config = configMapping[graphType];
     config.height = windowHeight;
     config.width = windowWidth;

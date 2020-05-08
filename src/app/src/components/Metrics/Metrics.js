@@ -8,7 +8,7 @@ import MetricPaneContainer  from '../general/MetricPane/MetricPaneContainer';
 import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
 import InheritanceTreeContainer from '../general/Charts/InheritanceTreeContainer';
-import { controlFlowGraphData, dependencyGraphData } from '../general/Charts/configs';
+import { controlFlowGraphData, dependencyGraphData, classDiagramData } from '../general/Charts/configs';
 import ForceDirectedGraph from '../general/Charts/ForceDirectedGraph';
 import TreeMapContainer from '../general/TreeMap/TreeMapContainer';
 
@@ -21,10 +21,15 @@ const Metrics = props => {
 
     const [tabState, setTabState] = useState({
         selectedIndex: 0,
-        tabs: ["TreeMap", "Metrics", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
+        tabs: ["TreeMap", "Metrics", "Class Diagram", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
         tabContent: [
             <TreeMapContainer />,
             <MetricPaneContainer />, 
+            <ForceDirectedGraph
+                title="Class Diagram"
+                data={classDiagramData}
+                graphType="classDiagram"
+            />,
             <InheritanceTreeContainer title="Inheritance Tree" data={selectedMetrics.structures.inheritanceTree}/>,
             <AbstractSyntaxTree />, 
             <ForceDirectedGraph 

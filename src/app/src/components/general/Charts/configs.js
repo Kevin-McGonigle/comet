@@ -1,3 +1,6 @@
+import React from "react";
+import ClassDiagram from "../ClassDiagram/ClassDiagram";
+
 export const basicRelationshipConfig = {
     "automaticRearrangeAfterDropNode": true,
     "collapsible": false,
@@ -192,8 +195,102 @@ export const dependencyGraphData = {
     ]
 }
 
+export const classDiagramConfig = {
+    "automaticRearrangeAfterDropNode": true,
+    "collapsible": false,
+    "directed": true,
+    "focusAnimationDuration": 0.75,
+    "focusZoom": 1,
+    "highlightDegree": 1,
+    "highlightOpacity": 1,
+    "linkHighlightBehavior": false,
+    "maxZoom": 2,
+    "minZoom": -3,
+    "nodeHighlightBehavior": true,
+    "panAndZoom": true,
+    "d3": {
+        "alphaTarget": 0.05,
+        "gravity": -100,
+        "linkLength": 100,
+        "linkStrength": 1,
+        "disableLinkForce": false
+    },
+    "node": {
+        "color": "#3498db",
+        "fontColor": "#1e272e",
+        "fontWeight": "normal",
+        "highlightColor": "SAME",
+        "highlightFontSize": 8,
+        "highlightFontWeight": "normal",
+        "highlightStrokeColor": "SAME",
+        "highlightStrokeWidth": "SAME",
+        "labelProperty": "id",
+        "mouseCursor": "pointer",
+        "opacity": 1,
+        "renderLabel": true,
+        "size": 500,
+        "strokeColor": "#3498db",
+        "strokeWidth": 1.5,
+        "svg": "",
+        "symbolType": "square",
+        viewGenerator: node => <ClassDiagram data={node} />,
+
+    },
+    "link": {
+        "color": "#2c3e50",
+        "fontColor": "black",
+        "fontSize": 8,
+        "fontWeight": "normal",
+        "highlightColor": "true",
+        "highlightFontSize": 8,
+        "highlightFontWeight": "normal",
+        "labelProperty": "label",
+        "mouseCursor": "pointer",
+        "opacity": 1,
+        "renderLabel": false,
+        "semanticStrokeWidth": false,
+        "strokeWidth": 1.5,
+        "markerHeight": 6,
+        "markerWidth": 6
+    }   
+}
+
+export const classDiagramData = {
+    nodes: [
+        {   id: "A",
+            classParent: ['A', 'B', 'C'],
+            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+            classFunctions: {
+                "Function1": {
+                    arguments: {
+                        "Arg1": "String",
+                        "Arg2": "Int",
+                    },
+                    returnType: "String"
+            }}
+        },
+        {   id: "B", 
+            classParent: ['A', 'B', 'C'],
+            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+            classFunctions: {
+                "Function1": {
+                    arguments: {
+                        "Arg1": "String",
+                        "Arg2": "Int",
+                    },
+                    returnType: "String"
+            }}
+        }
+    ],
+    links: [
+        {source: "A", target: "B", value: 1},
+ 
+    ]
+}
+
 
 export const configMapping = {
     "basic": basicRelationshipConfig,
     "controlFlow": controlFlowGraphConfig,
+    "classDiagram": classDiagramConfig,
 }

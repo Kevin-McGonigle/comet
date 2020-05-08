@@ -1,6 +1,6 @@
 from metrics.calculator import CalculatorStub
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
-from metrics.visitors.formatting.control_flow_graph_formatting_visitor import CFGFormattingVisitor
+from metrics.visitors.formatting.cfg_formatting_visitor import CFGFormattingVisitor
 
 
 class Formatter(object):

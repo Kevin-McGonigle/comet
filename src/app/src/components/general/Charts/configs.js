@@ -1,8 +1,8 @@
 import React from "react";
 import ClassDiagram from "../ClassDiagram/ClassDiagram";
 
-export const basicRelationshipConfig = {
-    "automaticRearrangeAfterDropNode": true,
+export const staticRelationshipConfig = {
+    "automaticRearrangeAfterDropNode": false,
     "collapsible": false,
     "directed": true,
     "focusAnimationDuration": 0.75,
@@ -13,6 +13,7 @@ export const basicRelationshipConfig = {
     "maxZoom": 8,
     "minZoom": 0.1,
     "nodeHighlightBehavior": true,
+    "staticGraphWithDragAndDrop": true,
     "panAndZoom": true,
     "d3": {
         "alphaTarget": 0.05,
@@ -290,7 +291,7 @@ export const classDiagramData = {
 
 
 export const configMapping = {
-    "basic": basicRelationshipConfig,
+    "static": staticRelationshipConfig,
     "controlFlow": controlFlowGraphConfig,
     "classDiagram": classDiagramConfig,
 }

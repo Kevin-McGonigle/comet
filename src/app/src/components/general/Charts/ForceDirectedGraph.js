@@ -1,6 +1,6 @@
 import React from 'react';
 import { Graph } from 'react-d3-graph';
-import { Pane, Popover } from 'evergreen-ui';
+import { Pane } from 'evergreen-ui';
 import { configMapping } from './configs';
 import styles from './ForceDirectedGraph.css';
 import classnames from 'classnames';

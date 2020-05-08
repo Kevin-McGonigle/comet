@@ -1,4 +1,5 @@
 from metrics.calculator import CalculatorStub
+from metrics.visitors.formatting.ast_formatting_visitor import ASTFormattingVisitor
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
 from metrics.visitors.formatting.cfg_formatting_visitor import CFGFormattingVisitor
 
@@ -26,7 +27,8 @@ class Formatter(object):
     def generate_structures(self):
         self.generate_inheritance_tree()
         self.generate_dependency_graph()
-        # self.generate_control_flow_graph()
+        self.generate_ast()
+        self.generate_control_flow_graph()
         # self.generate_class_diagram()
 
     def generate_metrics(self):
@@ -62,8 +64,13 @@ class Formatter(object):
 
     def generate_control_flow_graph(self):
         nodes, links = CFGFormattingVisitor().visit(self.calculator.control_flow_graph(None))
-        print("CFG", nodes, links)
-        self.metric_info["structures"]["controlFlowGraph"] = self.calculator.control_flow_graph(None)
+        self.metric_info["structures"]["controlFlowGraph"] = {
+            "nodes": nodes,
+            "links": links
+        }
+
+    def generate_ast(self):
+        print("ASSSTTTT", ASTFormattingVisitor().visit(self.calculator.ast))
 
     def generate_class_diagram(self):
         self.metric_info["structures"]["classDiagram"] = self.calculator.class_diagram(None)

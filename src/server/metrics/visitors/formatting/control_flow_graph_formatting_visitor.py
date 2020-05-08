@@ -55,9 +55,9 @@ class ControlFlowGraphFormattingVisitor(CFGVisitor):
         if block not in self._visited:
             self._visited.append(block)
         
-            self._blocks.append({"id": block.success_block})
+            self._blocks.append({"id": len(self._blocks)})
             if block.children:
                 for child in block.children:
-                    self._links.append({"source": block.success_block, "target": child.exit_block})
+                    self._links.append({"source": len(self._blocks), "target": 1})
 
             self.visit_children(block)

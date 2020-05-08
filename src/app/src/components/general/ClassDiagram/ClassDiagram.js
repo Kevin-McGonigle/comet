@@ -20,7 +20,6 @@ export const generateClassArgsText = classArgs => {
 function ClassDiagram(node) {
     const {
         id,
-        classParent,
         classArgs,
         classFunctions,
     } = node.data;
@@ -38,8 +37,6 @@ function ClassDiagram(node) {
                     >
                     <div className={cx('classDiagramTable')} id="box">
                         <div className={cx('className')}>{ id }</div>
-                        <div className={cx('hrLine')}><hr/></div>
-                        <div className={cx('classParent')}>Inherits from: { classParent }</div>
                         <div className={cx('hrLine')}><hr/></div>
                         <div className={cx('classArgs')}>{ generateClassArgsText(classArgs) }</div>
                         <div className={cx('hrLine')}><hr/></div>

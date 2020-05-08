@@ -70,7 +70,7 @@ class Formatter(object):
         }
 
     def generate_ast(self):
-        print("ASSSTTTT", ASTFormattingVisitor().visit(self.calculator.ast))
+        self.metric_info["structures"]["abstractSyntaxTree"] = ASTFormattingVisitor().visit(self.calculator.ast)
 
     def generate_class_diagram(self):
         self.metric_info["structures"]["classDiagram"] = self.calculator.class_diagram(None)

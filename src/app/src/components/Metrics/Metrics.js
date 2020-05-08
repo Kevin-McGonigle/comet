@@ -7,7 +7,7 @@ import Toolbar from '../general/Toolbar/Toolbar';
 import MetricPaneContainer  from '../general/MetricPane/MetricPaneContainer';
 import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
-import { controlFlowGraphData, classDiagramData } from '../general/Charts/configs';
+import { classDiagramData } from '../general/Charts/configs';
 import ForceDirectedGraph from '../general/Charts/ForceDirectedGraph';
 import TreeMapContainer from '../general/TreeMap/TreeMapContainer';
 
@@ -32,18 +32,18 @@ const Metrics = props => {
             <ForceDirectedGraph
                 title="Inheritance Tree"
                 data={selectedMetrics.structures.inheritanceTree}
-                graphType="static"
+                graphType="dynamic"
             />,
-            <AbstractSyntaxTree />, 
+            <AbstractSyntaxTree data={selectedMetrics.structures.abstractSyntaxTree} />, 
             <ForceDirectedGraph 
                 title="Control Flow Graph"
-                data={controlFlowGraphData} 
-                graphType="controlFlow"         
+                data={selectedMetrics.structures.controlFlowGraph} 
+                graphType="dynamic"         
             />,
             <ForceDirectedGraph 
                 title="Dependency Graph"
                 data={selectedMetrics.structures.dependencyGraph} 
-                graphType="controlFlow"         
+                graphType="dynamic"         
             />
         ]
     });

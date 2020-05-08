@@ -1,7 +1,7 @@
 import React from "react";
 import ClassDiagram from "../ClassDiagram/ClassDiagram";
 
-export const staticRelationshipConfig = {
+export const staticConfig = {
     "automaticRearrangeAfterDropNode": false,
     "collapsible": false,
     "directed": true,
@@ -11,7 +11,7 @@ export const staticRelationshipConfig = {
     "highlightOpacity": 1,
     "linkHighlightBehavior": false,
     "maxZoom": 8,
-    "minZoom": 0.1,
+    "minZoom": 1,
     "nodeHighlightBehavior": true,
     "staticGraphWithDragAndDrop": true,
     "panAndZoom": true,
@@ -81,7 +81,7 @@ export const basicRelationshipData = {
     ]
 }
 
-export const controlFlowGraphConfig = {
+export const dynamicConfig = {
     "automaticRearrangeAfterDropNode": true,
     "collapsible": false,
     "directed": true,
@@ -92,7 +92,7 @@ export const controlFlowGraphConfig = {
     "highlightOpacity": 1,
     "linkHighlightBehavior": false,
     "maxZoom": 8,
-    "minZoom": 0.1,
+    "minZoom": 1,
     "nodeHighlightBehavior": false,
     "panAndZoom": false,
     "staticGraph": false,
@@ -259,7 +259,6 @@ export const classDiagramConfig = {
 export const classDiagramData = {
     nodes: [
         {   id: "A",
-            classParent: ['A', 'B', 'C'],
             classArgs: {"Arg1": "String", "Arg2": "Int"}, 
             classFunctions: {
                 "Function1": {
@@ -271,7 +270,6 @@ export const classDiagramData = {
             }}
         },
         {   id: "B", 
-            classParent: ['A', 'B', 'C'],
             classArgs: {"Arg1": "String", "Arg2": "Int"}, 
             classFunctions: {
                 "Function1": {
@@ -291,7 +289,7 @@ export const classDiagramData = {
 
 
 export const configMapping = {
-    "static": staticRelationshipConfig,
-    "controlFlow": controlFlowGraphConfig,
+    "static": staticConfig,
+    "dynamic": dynamicConfig,
     "classDiagram": classDiagramConfig,
 }

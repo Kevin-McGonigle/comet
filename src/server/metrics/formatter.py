@@ -1,6 +1,6 @@
 from metrics.calculator import CalculatorStub
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
-from metrics.visitors.formatting.control_flow_graph_formatting_visitor import ControlFlowGraphFormattingVisitor
+from metrics.visitors.formatting.control_flow_graph_formatting_visitor import CFGFormattingVisitor
 
 
 class Formatter(object):
@@ -61,7 +61,7 @@ class Formatter(object):
         self.metric_info["structures"]["dependencyGraph"] = dependency_graph_graph_data
 
     def generate_control_flow_graph(self):
-        nodes, links = ControlFlowGraphFormattingVisitor().visit(self.calculator.control_flow_graph(None))
+        nodes, links = CFGFormattingVisitor().visit(self.calculator.control_flow_graph(None))
         print("CFG", nodes, links)
         self.metric_info["structures"]["controlFlowGraph"] = self.calculator.control_flow_graph(None)
 

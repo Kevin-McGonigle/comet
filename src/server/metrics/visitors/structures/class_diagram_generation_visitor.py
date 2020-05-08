@@ -1,3 +1,5 @@
+from typing import Dict
+
 from metrics.structures.ast import ASTVisibilityModifier, ASTMiscModifier, ASTIdentifierNode
 from metrics.structures.class_diagram import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
@@ -11,16 +13,84 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     """
 
     def __init__(self):
-        self.classes = {}
-        self.relationships = []
+        self.classes: Dict[str, Class] = {}
 
-    def create_relationships(self) -> None:
+    def __create_relationships(self) -> None:
         """
-        Iterate over the classes and create corresponding relationships based on attributes, method parameters and
+        Iterate over the classes and store corresponding relationships based on attributes, method parameters and
         return types, superclasses, etc.
-        :return:
         """
-        pass
+        for cls in self.classes.values():
+            # Implementation
+            for interface in cls.interfaces:
+                if interface in self.classes:
+                    self.__add_relationship(cls, self.classes[interface], RelationshipType.IMPLEMENTATION)
+
+            # Inheritance
+            for superclass in cls.superclasses:
+                if superclass in self.classes:
+                    self.__add_relationship(cls, self.classes[superclass], RelationshipType.INHERITANCE)
+
+            # Nesting
+            for nested_class in cls.nested_classes:
+                if nested_class in self.classes:
+                    self.__add_relationship(self.classes[nested_class], cls, RelationshipType.NESTING)
+
+            # Association
+            for attribute in cls.attributes:
+                if attribute.type in self.classes:
+                    relationship_type = RelationshipType.ASSOCIATION
+                    relation = self.classes[attribute.type]
+                    relation_role = attribute.name
+
+                    # Check if relationship already exists
+                    for relationship in cls.relationships:
+                        if relationship.type == relationship_type and relationship.relation == relation \
+                                and relationship.relation_role == relation_role:
+                            break
+                    else:
+                        for relationship in relation.relationships:
+                            # Check if relationship already exists as a bidirectional relationship.
+                            if relationship.type == relationship_type and relationship.relation == cls \
+                                    and relationship.role == relation_role and relationship.bidirectional:
+                                break
+                        else:
+                            for relationship in relation.relationships:
+                                # Check if a relationship between the two classes already exists and update if one does.
+                                if relationship.type == relationship_type and relationship.relation == cls \
+                                        and not relationship.bidirectional:
+                                    relationship.bidirectional = True
+                                    relationship.role = relation_role
+                                    break
+                            else:
+                                cls.relationships.append(Relationship(relationship_type, relation,
+                                                                      relation_role=relation_role))
+
+            # Dependency
+            for method in cls.methods:
+                relationship_type = RelationshipType.DEPENDENCY
+                relation = None
+
+                if method.return_type in self.classes:
+                    relation = self.classes[method.return_type]
+                elif method.parameters:
+                    for parameter in method.parameters:
+                        if parameter.type in self.classes:
+                            relation = self.classes[parameter.type]
+                            break
+
+                if relation:
+                    cls.relationships.append(Relationship, relationship_type, relation)
+
+    @staticmethod
+    def __add_relationship(cls: Class, relation: Class, relationship_type: RelationshipType) -> Relationship:
+        for relationship in cls.relationships:
+            if relationship.type == relationship_type and relationship.relation == relation:
+                break
+            else:
+                new_relationship = Relationship(relationship_type, relation)
+                cls.relationships.append(new_relationship)
+                return new_relationship
 
     def visit(self, ast) -> ClassDiagram:
         """
@@ -32,7 +102,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
 
         super().visit(ast)
 
-        self.create_relationships()
+        self.__create_relationships()
 
         return ClassDiagram(list(self.classes.values()))
 
@@ -117,13 +187,20 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         name = node.name.accept(self)
         type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
         default = node.default.accept(self) if isinstance(node.default, ASTIdentifierNode) else None
-        return Parameter(node.name.accept(self))
+
+        return Parameter(name, type_, default)
 
     def visit_positional_arguments_parameter(self, node):
-        return super().visit_positional_arguments_parameter(node)
+        name = "*" + node.name.accept(self)
+        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+
+        return Parameter(name, type_)
 
     def visit_keyword_arguments_parameter(self, node):
-        return super().visit_keyword_arguments_parameter(node)
+        name = "**" + node.name.accept(self)
+        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+
+        return Parameter(name, type_)
 
     @staticmethod
     def get_visibility(modifier: ASTVisibilityModifier) -> Visibility:

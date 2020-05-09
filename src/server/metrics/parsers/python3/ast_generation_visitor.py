@@ -441,16 +441,16 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         return ASTAnonymousFunctionDefinitionNode(body)
 
     def visitOr_test(self, ctx: Python3Parser.Or_testContext):
-        self.build_bin_op(ASTLogicalOperation.OR, self.visitChildren(ctx))
+        return self.build_bin_op(ASTLogicalOperation.OR, self.visitChildren(ctx))
 
     def visitAnd_test(self, ctx: Python3Parser.And_testContext):
-        self.build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
+        return self.build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
 
     def visitNot_test(self, ctx: Python3Parser.Not_testContext):
         return ASTUnaryOperationNode(ASTLogicalOperation.NOT, ctx.getChild(1).accept(self))
 
     def visitComparison(self, ctx: Python3Parser.ComparisonContext):
-        self.build_bin_op_choice(self.visitChildren(ctx))
+        return self.build_bin_op_choice(self.visitChildren(ctx))
 
     def visitComp_op(self, ctx: Python3Parser.Comp_opContext):
         return {

@@ -1,5 +1,9 @@
 from metrics.parsers.csharp.base.CSharpParser import CSharpParser
 from metrics.parsers.csharp.base.CSharpParserVisitor import CSharpParserVisitor
+from metrics.structures.ast import ASTIdentifierNode, ASTArgumentsNode, ASTInPlaceOperation, ASTAssignmentStatementNode, \
+    ASTAugmentedAssignmentStatementNode, ASTConditionalExpressionNode, ASTNullCoalescingExpressionNode, \
+    ASTLogicalOperation, ASTBitwiseOperation, ASTComparisonOperation, ASTArithmeticOperation, ASTUnaryOperation, \
+    ASTTypeCastNode, ASTAwaitNode, ASTUnaryOperationNode, ASTTypeNode
 from metrics.visitors.structures.ast_generation_visitor import ASTGenerationVisitor as BaseASTGenerationVisitor
 
 
@@ -34,100 +38,236 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         children = ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
                                                                    CSharpParser.Type_argument_listContext))
-        return super().visitNamespace_or_type_name(ctx)
 
     def visitType_(self, ctx: CSharpParser.Type_Context):
+        base_type = ctx.base_type().accept(self)
+
+        children = ctx.getChildren(
+            lambda child: self.filter_child(child, CSharpParser.INTERR, CSharpParser.Rank_specifierContext,
+                                            CSharpParser.STAR))
         return super().visitType_(ctx)
 
     def visitBase_type(self, ctx: CSharpParser.Base_typeContext):
-        return super().visitBase_type(ctx)
+        simple_type = ctx.simple_type()
+        if simple_type:
+            return simple_type.accept(self)
+
+        class_type = ctx.class_type()
+        if class_type:
+            return class_type.accept(self)
+
+        # TODO: return unknown pointer
 
     def visitSimple_type(self, ctx: CSharpParser.Simple_typeContext):
-        return super().visitSimple_type(ctx)
+        numeric_type = ctx.numeric_type()
+        if numeric_type:
+            return numeric_type.accept(self)
+
+        return ASTIdentifierNode(ctx.BOOL().getText())
 
     def visitNumeric_type(self, ctx: CSharpParser.Numeric_typeContext):
-        return super().visitNumeric_type(ctx)
+        integral_type = ctx.integral_type()
+        if integral_type:
+            return integral_type.accept(self)
+
+        floating_point_type = ctx.floating_point_type()
+        if floating_point_type:
+            return floating_point_type.accept(self)
+
+        return ASTIdentifierNode(ctx.DECIMAL().getText())
 
     def visitIntegral_type(self, ctx: CSharpParser.Integral_typeContext):
-        return super().visitIntegral_type(ctx)
+        return ASTIdentifierNode(ctx.getChild(0).getText())
 
     def visitFloating_point_type(self, ctx: CSharpParser.Floating_point_typeContext):
-        return super().visitFloating_point_type(ctx)
+        return ASTIdentifierNode(ctx.getChild(0).getText())
 
     def visitClass_type(self, ctx: CSharpParser.Class_typeContext):
-        return super().visitClass_type(ctx)
+        namespace_or_type_name = ctx.namespace_or_type_name()
+        if namespace_or_type_name:
+            return namespace_or_type_name.accept(self)
+
+        return ASTIdentifierNode(ctx.getChild(0).getText())
 
     def visitType_argument_list(self, ctx: CSharpParser.Type_argument_listContext):
-        return super().visitType_argument_list(ctx)
+        type_ = [type_.accept(self) for type_ in ctx.type_()]
+        return self.build_multi(type_, ASTArgumentsNode)
 
     def visitArgument_list(self, ctx: CSharpParser.Argument_listContext):
-        return super().visitArgument_list(ctx)
+        argument = [argument.accept(self) for argument in ctx.argument()]
+        return self.build_multi(argument, ASTArgumentsNode)
 
     def visitArgument(self, ctx: CSharpParser.ArgumentContext):
-        return super().visitArgument(ctx)
+        expression = ctx.expression()
+
+        identifier = ctx.identifier()
+        if identifier:
+            identifier = identifier.accept(self)
+
+        if ctx.REF():
+            pass
+            # TODO: add support for reference arguments (maybe by adding a modifiers attribute to ASTArgumentNode)
+
+        if ctx.OUT():
+            pass
+            # TODO: add support for output arguments
+
+        if ctx.VAR():
+            pass
+            # TODO: handle variable declaration arguments
+
+        if ctx.type_():
+            pass
+            # TODO: handle variable declaration arguments
+
+        return expression.accept(self)
 
     def visitExpression(self, ctx: CSharpParser.ExpressionContext):
-        return super().visitExpression(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitNon_assignment_expression(self, ctx: CSharpParser.Non_assignment_expressionContext):
-        return super().visitNon_assignment_expression(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitAssignment(self, ctx: CSharpParser.AssignmentContext):
-        return super().visitAssignment(ctx)
+        unary_expression = ctx.unary_expression().accept(self)
+        assignment_operator = ctx.assignment_operator().accept(self)
+        expression = ctx.expression().accept(self)
+
+        if assignment_operator == "=":
+            return ASTAssignmentStatementNode(unary_expression, expression)
+
+        return ASTAugmentedAssignmentStatementNode({
+                                                       "+=": ASTInPlaceOperation.ADD,
+                                                       "-=": ASTInPlaceOperation.SUBTRACT,
+                                                       "*=": ASTInPlaceOperation.MULTIPLY,
+                                                       "/=": ASTInPlaceOperation.DIVIDE,
+                                                       "%=": ASTInPlaceOperation.MODULO,
+                                                       "&=": ASTInPlaceOperation.BITWISE_AND,
+                                                       "|=": ASTInPlaceOperation.BITWISE_OR,
+                                                       "^=": ASTInPlaceOperation.BITWISE_XOR,
+                                                       "<<=": ASTInPlaceOperation.LEFT_SHIFT,
+                                                       ">>=": ASTInPlaceOperation.RIGHT_SHIFT
+                                                   }[assignment_operator], unary_expression, expression)
 
     def visitAssignment_operator(self, ctx: CSharpParser.Assignment_operatorContext):
-        return super().visitAssignment_operator(ctx)
+        return ctx.getChild(0).getText()
 
     def visitConditional_expression(self, ctx: CSharpParser.Conditional_expressionContext):
-        return super().visitConditional_expression(ctx)
+        if ctx.INTERR():
+            return ASTConditionalExpressionNode(ctx.null_coalescing_expression().accept(self),
+                                                ctx.expression(0).accept(self), ctx.expression(1).accept(self))
+
+        return ctx.null_coalescing_expression().accept(self)
 
     def visitNull_coalescing_expression(self, ctx: CSharpParser.Null_coalescing_expressionContext):
-        return super().visitNull_coalescing_expression(ctx)
+        if ctx.OP_COALESCING():
+            return ASTNullCoalescingExpressionNode(ctx.conditional_or_expression().accept(self),
+                                                   ctx.null_coalescing_expression().accept(self))
+
+        return ctx.conditional_or_expression().accept(self)
 
     def visitConditional_or_expression(self, ctx: CSharpParser.Conditional_or_expressionContext):
-        return super().visitConditional_or_expression(ctx)
+        return self.build_bin_op(ASTLogicalOperation.OR, self.visitChildren(ctx))
 
     def visitConditional_and_expression(self, ctx: CSharpParser.Conditional_and_expressionContext):
-        return super().visitConditional_and_expression(ctx)
+        return self.build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
 
     def visitInclusive_or_expression(self, ctx: CSharpParser.Inclusive_or_expressionContext):
-        return super().visitInclusive_or_expression(ctx)
+        return self.build_bin_op(ASTBitwiseOperation.OR, self.visitChildren(ctx))
 
     def visitExclusive_or_expression(self, ctx: CSharpParser.Exclusive_or_expressionContext):
-        return super().visitExclusive_or_expression(ctx)
+        return self.build_bin_op(ASTBitwiseOperation.XOR, self.visitChildren(ctx))
 
     def visitAnd_expression(self, ctx: CSharpParser.And_expressionContext):
-        return super().visitAnd_expression(ctx)
+        return self.build_bin_op(ASTBitwiseOperation.AND, self.visitChildren(ctx))
 
     def visitEquality_expression(self, ctx: CSharpParser.Equality_expressionContext):
-        return super().visitEquality_expression(ctx)
+        operators = {
+            "==": ASTComparisonOperation.EQUAL,
+            "!=": ASTComparisonOperation.NOT_EQUAL
+        }
+
+        return self.build_bin_op_choice(
+            [child.accept(self) if isinstance(child, CSharpParser.Relational_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
 
     def visitRelational_expression(self, ctx: CSharpParser.Relational_expressionContext):
-        return super().visitRelational_expression(ctx)
+        operators = {
+            "<": ASTComparisonOperation.LESS_THAN,
+            ">": ASTComparisonOperation.GREATER_THAN,
+            "<=": ASTComparisonOperation.LESS_THAN_OR_EQUAL,
+            ">=": ASTComparisonOperation.GREATER_THAN_OR_EQUAL
+        }
+
+        return self.build_bin_op_choice(
+            [child.accept(self) if isinstance(child, CSharpParser.Shift_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
 
     def visitShift_expression(self, ctx: CSharpParser.Shift_expressionContext):
-        return super().visitShift_expression(ctx)
+        operators = {
+            "<<": ASTBitwiseOperation.LEFT_SHIFT,
+            ">>": ASTBitwiseOperation.RIGHT_SHIFT
+        }
+
+        return self.build_bin_op_choice([child.accept(self) if isinstance(child, CSharpParser.Additive_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
 
     def visitAdditive_expression(self, ctx: CSharpParser.Additive_expressionContext):
-        return super().visitAdditive_expression(ctx)
+        operators = {
+            "+": ASTArithmeticOperation.ADD,
+            "-": ASTArithmeticOperation.SUBTRACT
+        }
+        return self.build_bin_op_choice([child.accept(self) if isinstance(child, CSharpParser.Multiplicative_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
 
     def visitMultiplicative_expression(self, ctx: CSharpParser.Multiplicative_expressionContext):
-        return super().visitMultiplicative_expression(ctx)
+        operators = {
+            "*": ASTArithmeticOperation.MULTIPLY,
+            "/": ASTArithmeticOperation.DIVIDE,
+            "%": ASTArithmeticOperation.MODULO,
+        }
+
+        return self.build_bin_op_choice([child.accept(self) if isinstance(child, CSharpParser.Unary_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
 
     def visitUnary_expression(self, ctx: CSharpParser.Unary_expressionContext):
-        return super().visitUnary_expression(ctx)
+        primary_expression = ctx.primary_expression()
+        if primary_expression:
+            return primary_expression.accept(self)
+
+        unary_expression = ctx.unary_expression().accept(self)
+
+        if ctx.OPEN_PARENS():
+            return ASTTypeCastNode(ctx.type_().accept(self), unary_expression)
+
+        if ctx.AWAIT():
+            return ASTAwaitNode(unary_expression)
+
+        operators = {
+            "+": ASTUnaryOperation.POSITIVE,
+            "-": ASTUnaryOperation.ARITHMETIC_NEGATION,
+            "!": ASTUnaryOperation.LOGICAL_NEGATION,
+            "~": ASTUnaryOperation.BITWISE_INVERSION,
+            "++": ASTUnaryOperation.INCREMENT,
+            "--": ASTUnaryOperation.DECREMENT,
+            "&": ASTUnaryOperation.ADDRESS,
+            "*": ASTUnaryOperation.POINTER_DEREFERENCE
+        }
+
+        return ASTUnaryOperationNode(operators[ctx.getChild(0).getText()], unary_expression)
 
     def visitPrimary_expression(self, ctx: CSharpParser.Primary_expressionContext):
         return super().visitPrimary_expression(ctx)
 
     def visitLiteralExpression(self, ctx: CSharpParser.LiteralExpressionContext):
-        return super().visitLiteralExpression(ctx)
+        return ctx.literal().accept(self)
 
     def visitSimpleNameExpression(self, ctx: CSharpParser.SimpleNameExpressionContext):
-        return super().visitSimpleNameExpression(ctx)
+        identifier = ctx.identifier().accept(self)
+
+        type_argument_list = ctx.type_argument_list()
+        if type_argument_list:
+            return ASTTypeNode(identifier, type_argument_list.accept(self))
+
+        return identifier
 
     def visitParenthesisExpressions(self, ctx: CSharpParser.ParenthesisExpressionsContext):
-        return super().visitParenthesisExpressions(ctx)
+        return ctx.expression().accept(self)
 
     def visitMemberAccessExpression(self, ctx: CSharpParser.MemberAccessExpressionContext):
         return super().visitMemberAccessExpression(ctx)

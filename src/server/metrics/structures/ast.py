@@ -637,7 +637,7 @@ class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
     def __init__(self, annotation: ASTNode, variables: ASTNode, values: Optional[ASTNode] = None):
         """
         Annotated assignment statement.
-        
+
         :param annotation: The annotation for the variable(s).
         :param variables: The variable(s) being assigned to.
         :param values: The value(s) being assigned.
@@ -658,7 +658,7 @@ class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_annotated_assignment_statement method.
-        
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -673,7 +673,7 @@ class ASTYieldStatementNode(ASTStatementNode):
     def __init__(self, values: Optional[ASTNode] = None):
         """
         Yield statement.
-        
+
         :param values: The value(s) being yielded.
         """
         self.values = values
@@ -688,7 +688,7 @@ class ASTYieldStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_yield_statement method.
-        
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -715,7 +715,7 @@ class ASTPassStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_pass_statement method.
-    
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -768,7 +768,7 @@ class ASTContinueStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_continue_statement method.
-        
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -783,7 +783,7 @@ class ASTReturnStatementNode(ASTStatementNode):
     def __init__(self, values: Optional[ASTNode] = None):
         """
         Return statement.
-    
+
         :param values: The value(s) being returned.
         """
         self.values = values
@@ -812,7 +812,7 @@ class ASTThrowStatementNode(ASTStatementNode):
     def __init__(self, exception: Optional[ASTNode] = None):
         """
         Throw statement.
-        
+
         :param exception: The exception to be thrown.
         """
         self.exception = exception
@@ -827,7 +827,7 @@ class ASTThrowStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_throw_statement method.
-    
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -842,7 +842,7 @@ class ASTImportStatementNode(ASTStatementNode):
     def __init__(self, libraries: ASTNode):
         """
         Import statement.
-    
+
         :param libraries: The libraries to be imported.
         """
         self.libraries = libraries
@@ -857,7 +857,7 @@ class ASTImportStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_import_statement method.
-        
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -867,14 +867,14 @@ class ASTImportStatementNode(ASTStatementNode):
 class ASTGlobalStatementNode(ASTStatementNode):
     """
     Global statement.
-    
+
     Global variable(s) declaration.
     """
 
     def __init__(self, variables: ASTNode):
         """
         Global statement.
-        
+
         :param variables: The global variable(s) being declared.
         """
         self.variables = variables
@@ -899,14 +899,14 @@ class ASTGlobalStatementNode(ASTStatementNode):
 class ASTNonLocalStatementNode(ASTStatementNode):
     """
     Non-local statement.
-        
+
     Non-local variable(s) declaration.
     """
 
     def __init__(self, variables: ASTNode):
         """
         Non-local statement.
-    
+
         :param variables: The nonlocal variable(s) being declared.
         """
         self.variables = variables
@@ -953,7 +953,7 @@ class ASTAssertStatementNode(ASTStatementNode):
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_assert_statement method.
-        
+
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
@@ -968,7 +968,7 @@ class ASTIfStatementNode(ASTStatementNode):
     def __init__(self, condition: ASTNode, body: Optional[ASTNode] = None):
         """
         If statement.
-        
+
         :param condition: The condition to check.
         :param body: The code to execute if the condition is met.
         """
@@ -1386,8 +1386,7 @@ class ASTUnaryOperationNode(ASTNode):
     Unary operation.
     """
 
-    def __init__(self, operation: Union[ASTArithmeticOperation, ASTLogicalOperation, ASTBitwiseOperation],
-                 operand: ASTNode):
+    def __init__(self, operation: ASTUnaryOperation, operand: ASTNode):
         """
         Unary operation.
 
@@ -2303,6 +2302,132 @@ class ASTDecoratorNode(ASTNode):
         return visitor.visit_decorator(self)
 
 
+class ASTConditionalExpressionNode(ASTNode):
+    """
+    Conditional expression.
+    """
+
+    def __init__(self, condition: ASTNode, consequent: ASTNode, alternative: ASTNode):
+        """
+        Conditional expression.
+
+        :param condition: The condition to evaluate.
+        :param consequent: The expression to evaluate if the condition is true.
+        :param alternative: The expression to evaluate if the condition is false.
+        """
+        self.condition = condition
+        self.consequent = consequent
+        self.alternative = alternative
+        super().__init__(self.condition, self.consequent, self.alternative)
+
+    def __str__(self):
+        return f"Conditional expression.\nCondition: {self.condition}\nConsequent: {self.consequent}\nAlternative: {self.alternative}"
+
+    def __repr__(self):
+        return f"ASTConditionalExpressionNode(condition={self.condition}, consequent={self.consequent}, alternative={self.alternative})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_conditional_expression method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_conditional_expression(self)
+
+
+class ASTNullCoalescingExpressionNode(ASTNode):
+    """
+    Null-coalescing expression.
+    """
+
+    def __init__(self, expression: ASTNode, alternative: ASTNode):
+        """
+        Null-coalescing expression.
+
+        :param expression: The expression to evaluate.
+        :param alternative: The expression to evaluate if the expression is null.
+        """
+        self.expression = expression
+        self.alternative = alternative
+        super().__init__(self.expression, self.alternative)
+
+    def __str__(self):
+        return f"Null-coalescing expression.\nExpression: {self.expression}\nAlternative: {self.alternative}"
+
+    def __repr__(self):
+        return f"ASTNullCoalescingExpressionNode(expression={self.expression} alternative={self.alternative})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_null_coalescing_expression method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_null_coalescing_expression(self)
+
+
+class ASTTypeCastNode(ASTNode):
+    """
+    Type cast.
+    """
+
+    def __init__(self, type_, expression):
+        """
+        Type cast.
+
+        :param type_: The type to cast the expression to.
+        :param expression: The expression to cast.
+        """
+        self.type = type_
+        self.expression = expression
+        super().__init__(self.type, self.expression)
+
+    def __str__(self):
+        return f"Type cast.\nType: {self.type}\nExpression: {self.expression}"
+
+    def __repr__(self):
+        return f"ASTTypeCastNode(type={self.type}, expression={self.expression})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_type_cast method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_type_cast(self)
+    
+
+class ASTTypeNode(ASTNode):
+    """
+    Type.
+    """
+    
+    def __init__(self, name, arguments):
+        """
+        Type.
+        
+        :param name: The type's name. 
+        :param arguments: The type's arguments. 
+        """
+        self.name = name
+        self.arguments = arguments
+        super().__init__(self.name, self.arguments)
+
+    def __str__(self):
+        return f"Type.\nName: {self.name}\nArguments: {self.arguments}"
+
+    def __repr__(self):
+        return f"ASTTypeNode(name={self.name}, arguments={self.arguments})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_type method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_type(self)
+
+
 # endregion
 
 # region Enums
@@ -2338,8 +2463,6 @@ class ASTArithmeticOperation(ASTOperation):
     MODULO = "Modulo"
     POWER = "Power"
     MATRIX_MULTIPLY = "Matrix Multiply"
-    POSITIVE = "Positive"
-    NEGATION = "Negation (Arithmetic)"
 
 
 class ASTBitwiseOperation(ASTOperation):
@@ -2348,11 +2471,10 @@ class ASTBitwiseOperation(ASTOperation):
     """
 
     AND = "Bitwise And"
-    BITWISE_OR = "Bitwise Or"
-    BITWISE_XOR = "Bitwise Xor"
+    OR = "Bitwise Or"
+    XOR = "Bitwise Xor"
     LEFT_SHIFT = "Bitwise Left Shift"
     RIGHT_SHIFT = "Bitwise Right Shift"
-    INVERSION = "Bitwise Inversion"
 
 
 class ASTLogicalOperation(ASTOperation):
@@ -2361,7 +2483,6 @@ class ASTLogicalOperation(ASTOperation):
     """
     AND = "Logical And"
     OR = "Logical Or"
-    NOT = "Negation (Logical)"
 
 
 class ASTComparisonOperation(ASTOperation):
@@ -2377,6 +2498,21 @@ class ASTComparisonOperation(ASTOperation):
     GREATER_THAN_OR_EQUAL = "Greater Than Or Equal"
     IN = "In"
     IS = "Is"
+
+
+class ASTUnaryOperation(ASTOperation):
+    """
+    Unary operations enum.
+    """
+    POSITIVE = "Positive"
+    ARITHMETIC_NEGATION = "Negation (Arithmetic)"
+    LOGICAL_NEGATION = "Negation (Logical)"
+    BITWISE_INVERSION = "Bitwise Inversion"
+    INCREMENT = "Increment"
+    DECREMENT = "Decrement"
+    POINTER_DEREFERENCE = "Pointer Dereference"
+    ADDRESS = "Address"
+
 
 
 class ASTInPlaceOperation(ASTOperation):

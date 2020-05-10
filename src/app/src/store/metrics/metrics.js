@@ -24,10 +24,8 @@ export const SET_METRICS = 'SET_METRICS';
 const metricsReducer = (state = initialState, action) => {
     switch(action.type) {
         case SET_METRICS:
-            const metrics = state;
-            metrics.push(action.payload);
             return {
-                ...metrics,
+                ...action.payload,
             }
 
         default:

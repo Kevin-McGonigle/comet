@@ -1,0 +1,27 @@
+
+#box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 200px;
+    color: white;
+    font-family: 'Raleway';
+    font-size: 12px;
+}
+
+.dependencyGraphNode {
+    background: #11182f;
+    position: relative;
+    border-color: white;
+    border-radius: var(3px);
+}
+
+.nodeItem {
+    margin: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    text-align: center;
+}

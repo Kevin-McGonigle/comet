@@ -27,6 +27,18 @@ const data = {
 
 const TreeMapContainer = props => {
     const [menuState, setMenuState] = useState({ selected: null })
+    const options = {
+      "Cyclomatic Complexity": { metricName: "cyclomaticComplexity", valueUnit: "CC"},
+      "Logical Lines of Code": { metricName: "logicalLinesOfCode", valueUnit: "LLOC"},
+      "Afferent Coupling": { metricName: "afferentCoupling", valueUnit: "AC"},
+      "Efferent Coupling": { metricName: "efferentCoupling", valueUnit: "EC"},
+      "Max. Inheritance Depth": { metricName: "maximumInheritanceDepth", valueUnit: "MID"},
+      "Max. Nesting Depth": { metricName: "maximumNestingDepth", valueUnit: "MND"},
+    }
+
+    const onSelectHandler = (item) => {
+      setMenuState({ selected: item.value });
+    }
 
     return (
         <Pane
@@ -39,11 +51,9 @@ const TreeMapContainer = props => {
         >
             <SelectMenu
                 title="Select metric"
-                options={["Cycolmatic Complexity", "Lines of Comment", "Afferent Coupling", 
-                    "Efferent Coupling", "Instability", "Abstractness", 
-                    "Method Cohesion", "Relational Cohesion", "Nesting Depth"].map(label => ({ label, value: label }))}
+                options={Object.keys(options).map(label => ({ label, value: label }))}
                 selected={menuState.selected}
-                onSelect={item => setMenuState({ selected: item.value })}
+                onSelect={onSelectHandler}
             >
                 <Button float="right">{ menuState.selected || "Select metric" }</Button>
             </SelectMenu>

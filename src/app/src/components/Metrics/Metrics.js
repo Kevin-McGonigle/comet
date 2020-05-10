@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import styles from './Metrics.css';
 import classnames from 'classnames';
 import Toolbar from '../general/Toolbar/Toolbar';
-import MetricPaneContainer  from '../general/MetricPane/MetricPaneContainer';
 import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
 import { classDiagramData } from '../general/Charts/configs';
@@ -15,15 +14,13 @@ const cx = args => classnames(styles, args)
 
 const Metrics = props => {
     const { selected, metrics } = props;
-
     const selectedMetrics = Object.values(metrics).filter(value => value.fileName === selected)[0]
 
     const [tabState, setTabState] = useState({
         selectedIndex: 0,
-        tabs: ["TreeMap", "Metrics", "Class Diagram", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
+        tabs: ["TreeMap", "Class Diagram", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
         tabContent: [
-            <TreeMapContainer />,
-            <MetricPaneContainer />, 
+            <TreeMapContainer metrics={selectedMetrics.metrics} />,
             <ForceDirectedGraph
                 title="Class Diagram"
                 data={classDiagramData}
@@ -43,7 +40,7 @@ const Metrics = props => {
             <ForceDirectedGraph 
                 title="Dependency Graph"
                 data={selectedMetrics.structures.dependencyGraph} 
-                graphType="dynamic"         
+                graphType="dependencyGraph"         
             />
         ]
     });

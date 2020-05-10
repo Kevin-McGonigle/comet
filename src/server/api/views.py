@@ -27,24 +27,31 @@ class FileUploadViewset(viewsets.ModelViewSet):
     serializer_class = FileSerializer
 
     def create(self, request, *args, **kwargs):
-        print('REQUEST', request.data, request.FILES)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        return_data = []
+        data_dict = dict(request.data.lists())
+        for i, file in enumerate(data_dict["name"]):
+            data = {
+                "name": file,
+                "size": data_dict["size"][i],
+                "file_type": data_dict["file_type"][i],
+                "file": data_dict["file"][i]
+            }
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
 
-        file_name = str(self.queryset.get(hash=serializer.data['hash']).file)
-        # with open(f'../server/uploads/{file_name}') as f:
-        #    content = f.read()
+            file_name = str(self.queryset.get(hash=serializer.data['hash']).file)
+            # with open(f'../server/uploads/{file_name}') as f:
+            #    content = f.read()
 
-        formatter = Formatter(file_name)
-        data = formatter.generate()
-        print(data)
+            formatter = Formatter(file_name)
+            data = formatter.generate()
+            return_data.append(data)
 
         # Hardcoded for now
         # file_type = calc_args["python3"]
         # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
-
-        return JsonResponse(data, status=status.HTTP_201_CREATED, safe=False)
+        return JsonResponse(return_data, status=status.HTTP_201_CREATED, safe=False)
 
 
 class FileInformationViewset(viewsets.ModelViewSet):

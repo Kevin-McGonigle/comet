@@ -50,7 +50,7 @@ function ClassDiagram(node) {
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
-                    backgroundColor="green"
+                    backgroundColor="#3498db"
                     >
                         { id }
                 </Pane>

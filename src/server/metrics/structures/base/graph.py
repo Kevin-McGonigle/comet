@@ -32,7 +32,7 @@ class Node(object):
         :param children: The child nodes of the node.
         :type children: Node or str
         """
-        self.children = list(children)
+        self.children = list([child for child in children if child is not None])
 
     def __str__(self):
         return f"Generic graph node.\nChildren: {self.children}"

@@ -66,9 +66,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
                     i += 2
 
                 if positional_only:
-                    param = ASTPositionalOnlyParameterNode(**(child.accept(self)), default=default)
+                    param = ASTPositionalOnlyParameterNode(default=default, **(child.accept(self)))
                 elif keyword_only:
-                    param = ASTKeywordOnlyParameterNode(**(child.accept(self)), default=default)
+                    param = ASTKeywordOnlyParameterNode(default=default, **(child.accept(self)))
                 else:
                     param = ASTParameterNode(**(child.accept(self)), default=default)
 
@@ -302,7 +302,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
 
     def visitDotted_name(self, ctx: Python3Parser.Dotted_nameContext):
         names = [ASTIdentifierNode(name.getText()) for name in ctx.NAME()]
-        return self.build_right_associated(names, ASTMemberNode)
+        return self.build_left_associated(names, ASTMemberNode)
 
     def visitGlobal_stmt(self, ctx: Python3Parser.Global_stmtContext):
         return ASTGlobalStatementNode(

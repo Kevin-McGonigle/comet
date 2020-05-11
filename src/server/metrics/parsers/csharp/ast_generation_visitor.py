@@ -1,9 +1,6 @@
 from metrics.parsers.csharp.base.CSharpParser import CSharpParser
 from metrics.parsers.csharp.base.CSharpParserVisitor import CSharpParserVisitor
-from metrics.structures.ast import ASTIdentifierNode, ASTArgumentsNode, ASTInPlaceOperation, ASTAssignmentStatementNode, \
-    ASTAugmentedAssignmentStatementNode, ASTConditionalExpressionNode, ASTNullCoalescingExpressionNode, \
-    ASTLogicalOperation, ASTBitwiseOperation, ASTComparisonOperation, ASTArithmeticOperation, ASTUnaryOperation, \
-    ASTTypeCastNode, ASTAwaitNode, ASTUnaryOperationNode, ASTTypeNode
+from metrics.structures.ast import *
 from metrics.visitors.structures.ast_generation_visitor import ASTGenerationVisitor as BaseASTGenerationVisitor
 
 
@@ -188,7 +185,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         }
 
         return self.build_bin_op_choice(
-            [child.accept(self) if isinstance(child, CSharpParser.Relational_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
+            [child.accept(self) if isinstance(child, CSharpParser.Relational_expressionContext) else operators[
+                child.getText()] for child in ctx.getChildren()])
 
     def visitRelational_expression(self, ctx: CSharpParser.Relational_expressionContext):
         operators = {
@@ -199,7 +197,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         }
 
         return self.build_bin_op_choice(
-            [child.accept(self) if isinstance(child, CSharpParser.Shift_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
+            [child.accept(self) if isinstance(child, CSharpParser.Shift_expressionContext) else operators[
+                child.getText()] for child in ctx.getChildren()])
 
     def visitShift_expression(self, ctx: CSharpParser.Shift_expressionContext):
         operators = {
@@ -207,14 +206,18 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
             ">>": ASTBitwiseOperation.RIGHT_SHIFT
         }
 
-        return self.build_bin_op_choice([child.accept(self) if isinstance(child, CSharpParser.Additive_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
+        return self.build_bin_op_choice([child.accept(self) if isinstance(child,
+                                                                          CSharpParser.Additive_expressionContext) else
+                                         operators[child.getText()] for child in ctx.getChildren()])
 
     def visitAdditive_expression(self, ctx: CSharpParser.Additive_expressionContext):
         operators = {
             "+": ASTArithmeticOperation.ADD,
             "-": ASTArithmeticOperation.SUBTRACT
         }
-        return self.build_bin_op_choice([child.accept(self) if isinstance(child, CSharpParser.Multiplicative_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
+        return self.build_bin_op_choice([child.accept(self) if isinstance(child,
+                                                                          CSharpParser.Multiplicative_expressionContext) else
+                                         operators[child.getText()] for child in ctx.getChildren()])
 
     def visitMultiplicative_expression(self, ctx: CSharpParser.Multiplicative_expressionContext):
         operators = {
@@ -223,7 +226,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
             "%": ASTArithmeticOperation.MODULO,
         }
 
-        return self.build_bin_op_choice([child.accept(self) if isinstance(child, CSharpParser.Unary_expressionContext) else operators[child.getText()] for child in ctx.getChildren()])
+        return self.build_bin_op_choice([child.accept(self) if isinstance(child,
+                                                                          CSharpParser.Unary_expressionContext) else
+                                         operators[child.getText()] for child in ctx.getChildren()])
 
     def visitUnary_expression(self, ctx: CSharpParser.Unary_expressionContext):
         primary_expression = ctx.primary_expression()
@@ -270,172 +275,298 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ctx.expression().accept(self)
 
     def visitMemberAccessExpression(self, ctx: CSharpParser.MemberAccessExpressionContext):
-        return super().visitMemberAccessExpression(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitLiteralAccessExpression(self, ctx: CSharpParser.LiteralAccessExpressionContext):
-        return super().visitLiteralAccessExpression(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     def visitThisReferenceExpression(self, ctx: CSharpParser.ThisReferenceExpressionContext):
-        return super().visitThisReferenceExpression(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     def visitBaseAccessExpression(self, ctx: CSharpParser.BaseAccessExpressionContext):
-        return super().visitBaseAccessExpression(ctx)
+        base = ASTIdentifierNode(ctx.BASE().getText())
+        expression_list = ctx.expression_list()
+        if expression_list:
+            return ASTAccessNode(base, expression_list.accept(self))
+
+        identifier = ctx.identifier().accept(self)
+        type_argument_list = ctx.type_argument_list()
+        if type_argument_list:
+            return ASTMemberNode(base, ASTTypeNode(identifier, type_argument_list.accept(self)))
+
+        return ASTMemberNode(base, identifier)
 
     def visitObjectCreationExpression(self, ctx: CSharpParser.ObjectCreationExpressionContext):
         return super().visitObjectCreationExpression(ctx)
 
     def visitTypeofExpression(self, ctx: CSharpParser.TypeofExpressionContext):
-        return super().visitTypeofExpression(ctx)
+        return ASTCallNode(ASTIdentifierNode(ctx.TYPEOF().getText()), ctx.getChild(2).accept(self))
 
     def visitCheckedExpression(self, ctx: CSharpParser.CheckedExpressionContext):
-        return super().visitCheckedExpression(ctx)
+        return ASTCallNode(ASTIdentifierNode(ctx.CHECKED().getText()), ctx.expression().accept(self))
 
     def visitUncheckedExpression(self, ctx: CSharpParser.UncheckedExpressionContext):
-        return super().visitUncheckedExpression(ctx)
+        return ASTCallNode(ASTIdentifierNode(ctx.UNCHECKED().getText()), ctx.expression().accept(self))
 
     def visitDefaultValueExpression(self, ctx: CSharpParser.DefaultValueExpressionContext):
-        return super().visitDefaultValueExpression(ctx)
+        return ASTCallNode(ASTIdentifierNode(ctx.DEFAULT().getText()), ctx.type_().accept(self))
 
     def visitAnonymousMethodExpression(self, ctx: CSharpParser.AnonymousMethodExpressionContext):
-        return super().visitAnonymousMethodExpression(ctx)
+        async_ = ctx.ASYNC() is not None
+        block = ctx.block().accept(self)
+
+        parameter_list = ctx.explicit_anonymous_function_parameter_list()
+        if parameter_list:
+            anonymous_function_definition = ASTAnonymousFunctionDefinitionNode(block, parameter_list.accept(self))
+            if async_:
+                return ASTAsyncNode(anonymous_function_definition)
+
+            return anonymous_function_definition
+
+        anonymous_function_definition = ASTAnonymousFunctionDefinitionNode(block)
+        if async_:
+            return ASTAsyncNode(anonymous_function_definition)
+
+        return anonymous_function_definition
 
     def visitSizeofExpression(self, ctx: CSharpParser.SizeofExpressionContext):
-        return super().visitSizeofExpression(ctx)
+        return ASTCallNode(ASTIdentifierNode(ctx.SIZEOF().getText()), ctx.type_().accept(self))
 
     def visitNameofExpression(self, ctx: CSharpParser.NameofExpressionContext):
-        return super().visitNameofExpression(ctx)
+        return ASTCallNode(ASTIdentifierNode(ctx.NAMEOF().getText()),
+                           self.build_left_associated([identifier.accept(self) for identifier in ctx.identifier()],
+                                                      ASTMemberNode))
 
     def visitMember_access(self, ctx: CSharpParser.Member_accessContext):
-        return super().visitMember_access(ctx)
+        null_conditional_operator = ctx.INTERR() is not None
+
+        type_argument_list = ctx.type_argument_list()
+        if type_argument_list:
+            return ASTTypeNode(ctx.identifier().accept(self), type_argument_list.accept(self)), null_conditional_operator
+
+        return ctx.identifier().accept(self), null_conditional_operator
 
     def visitBracket_expression(self, ctx: CSharpParser.Bracket_expressionContext):
-        return super().visitBracket_expression(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTSubscriptsNode), (ctx.INTERR() is not None)
 
     def visitIndexer_argument(self, ctx: CSharpParser.Indexer_argumentContext):
-        return super().visitIndexer_argument(ctx)
+        expression = ctx.expression()
+
+        identifier = ctx.identifier()
+        if identifier:
+            return ASTIndexNode(ASTKeywordArgumentNode(identifier.accept(self), expression.accept(self)))
+
+        return ASTIndexNode(expression.accept(self))
 
     def visitPredefined_type(self, ctx: CSharpParser.Predefined_typeContext):
-        return super().visitPredefined_type(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     def visitExpression_list(self, ctx: CSharpParser.Expression_listContext):
-        return super().visitExpression_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitObject_or_collection_initializer(self, ctx: CSharpParser.Object_or_collection_initializerContext):
-        return super().visitObject_or_collection_initializer(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitObject_initializer(self, ctx: CSharpParser.Object_initializerContext):
-        return super().visitObject_initializer(ctx)
+        member_initializer_list = ctx.member_initializer_list()
+        if member_initializer_list:
+            return ASTInitializerNode(member_initializer_list.accept(self))
+
+        return ASTInitializerNode()
 
     def visitMember_initializer_list(self, ctx: CSharpParser.Member_initializer_listContext):
-        return super().visitMember_initializer_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitMember_initializer(self, ctx: CSharpParser.Member_initializerContext):
-        return super().visitMember_initializer(ctx)
+        initializer_value = ctx.initializer_value().accept(self)
+
+        identifier = ctx.identifier()
+        if identifier:
+            return ASTAssignmentStatementNode(identifier.accept(self), initializer_value)
+
+        return ASTAssignmentStatementNode(ASTIndexNode(ctx.expression().accept(self)), initializer_value)
 
     def visitInitializer_value(self, ctx: CSharpParser.Initializer_valueContext):
-        return super().visitInitializer_value(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitCollection_initializer(self, ctx: CSharpParser.Collection_initializerContext):
-        return super().visitCollection_initializer(ctx)
+        return ASTInitializerNode(self.build_multi(self.visitChildren(ctx), ASTElementsNode))
 
     def visitElement_initializer(self, ctx: CSharpParser.Element_initializerContext):
-        return super().visitElement_initializer(ctx)
+        non_assignment_expression = ctx.non_assignment_expression()
+        if non_assignment_expression:
+            return non_assignment_expression.accept(self)
+
+        return ctx.expression_list().accept(self)
 
     def visitAnonymous_object_initializer(self, ctx: CSharpParser.Anonymous_object_initializerContext):
-        return super().visitAnonymous_object_initializer(ctx)
+        member_declarator_list = ctx.member_declarator_list()
+        if member_declarator_list:
+            return ASTInitializerNode(member_declarator_list.accept(self))
+
+        return ASTInitializerNode()
 
     def visitMember_declarator_list(self, ctx: CSharpParser.Member_declarator_listContext):
-        return super().visitMember_declarator_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitMember_declarator(self, ctx: CSharpParser.Member_declaratorContext):
-        return super().visitMember_declarator(ctx)
+        primary_expression = ctx.primary_expression()
+        if primary_expression:
+            return primary_expression.accept(self)
+
+        return ASTAssignmentStatementNode(ctx.identifier().accept(self), ctx.expression().accept(self))
 
     def visitUnbound_type_name(self, ctx: CSharpParser.Unbound_type_nameContext):
-        return super().visitUnbound_type_name(ctx)
+        return self.build_left_associated([identifier.accept(self) for identifier in ctx.identifier()], ASTMemberNode)
 
     def visitGeneric_dimension_specifier(self, ctx: CSharpParser.Generic_dimension_specifierContext):
         return super().visitGeneric_dimension_specifier(ctx)
 
     def visitIsType(self, ctx: CSharpParser.IsTypeContext):
-        return super().visitIsType(ctx)
+        # TODO
+        return ctx.base_type().accept(self)
 
     def visitLambda_expression(self, ctx: CSharpParser.Lambda_expressionContext):
-        return super().visitLambda_expression(ctx)
+        anonymous_function = ASTAnonymousFunctionDefinitionNode(ctx.anonymous_function_body().accept(self), ctx.anonymous_function_signature().accept(self))
+        if ctx.ASYNC():
+            return ASTAsyncNode(anonymous_function)
+
+        return anonymous_function
 
     def visitAnonymous_function_signature(self, ctx: CSharpParser.Anonymous_function_signatureContext):
-        return super().visitAnonymous_function_signature(ctx)
+        identifier = ctx.identifier()
+        if identifier:
+            return identifier.accept(self)
+
+        explicit_anonymous_function_parameter_list = ctx.explicit_anonymous_function_parameter_list()
+        if explicit_anonymous_function_parameter_list:
+            return explicit_anonymous_function_parameter_list.accept(self)
+
+        implicit_anonymous_function_parameter_list = ctx.implicit_anonymous_function_parameter_list()
+        if implicit_anonymous_function_parameter_list:
+            return implicit_anonymous_function_parameter_list.accept(self)
 
     def visitExplicit_anonymous_function_parameter_list(self,
                                                         ctx: CSharpParser.Explicit_anonymous_function_parameter_listContext):
-        return super().visitExplicit_anonymous_function_parameter_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTParametersNode)
 
     def visitExplicit_anonymous_function_parameter(self,
                                                    ctx: CSharpParser.Explicit_anonymous_function_parameterContext):
-        return super().visitExplicit_anonymous_function_parameter(ctx)
+        modifiers = {
+            "out": ASTMiscModifier.OUT,
+            "ref": ASTMiscModifier.REF
+        }
+
+        type_ = ctx.type_().accept(self)
+        identifier = ctx.identifier().accept(self)
+
+        refout = ctx.refout()
+        if refout:
+            return ASTParameterNode(identifier, type_, modifiers=[modifiers[refout.getText()]])
+
+        return ASTParameterNode(identifier, type_)
 
     def visitImplicit_anonymous_function_parameter_list(self,
                                                         ctx: CSharpParser.Implicit_anonymous_function_parameter_listContext):
-        return super().visitImplicit_anonymous_function_parameter_list(ctx)
+        return self.build_multi([ASTParameterNode(identifier) for identifier in self.visitChildren(ctx)], ASTParametersNode)
 
     def visitAnonymous_function_body(self, ctx: CSharpParser.Anonymous_function_bodyContext):
-        return super().visitAnonymous_function_body(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitQuery_expression(self, ctx: CSharpParser.Query_expressionContext):
-        return super().visitQuery_expression(ctx)
+        return ASTQueryNode([ctx.from_clause().accept(self)] + ctx.query_body().accept(self))
 
     def visitFrom_clause(self, ctx: CSharpParser.From_clauseContext):
-        return super().visitFrom_clause(ctx)
+        return ASTFromClauseNode(ctx.identifier().accept(self), ctx.expression().accept(self))
 
     def visitQuery_body(self, ctx: CSharpParser.Query_bodyContext):
-        return super().visitQuery_body(ctx)
+        clauses = []
+
+        for clause in ctx.query_body_clause():
+            visited_clause = clause.accept(self)
+            if isinstance(visited_clause, list):
+                clauses.extend(visited_clause)
+            else:
+                clauses.append(visited_clause)
+
+        clauses.append(ctx.select_or_group_clause().accept(self))
+
+        query_continuation = ctx.query_continuation()
+        if query_continuation:
+            clauses.extend(query_continuation.accept(self))
+
+        return clauses
 
     def visitQuery_body_clause(self, ctx: CSharpParser.Query_body_clauseContext):
-        return super().visitQuery_body_clause(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitLet_clause(self, ctx: CSharpParser.Let_clauseContext):
-        return super().visitLet_clause(ctx)
+        return ASTLetClauseNode(ctx.identifier().accept(self), ctx.expression().accept(self))
 
     def visitWhere_clause(self, ctx: CSharpParser.Where_clauseContext):
-        return super().visitWhere_clause(ctx)
+        return ASTWhereClauseNode(ctx.expression().accept(self))
 
     def visitCombined_join_clause(self, ctx: CSharpParser.Combined_join_clauseContext):
-        return super().visitCombined_join_clause(ctx)
+        target_range_variable = ctx.identifier(0).accept(self)
+        target_source = ctx.expression(0).accept(self)
+        left_key = ctx.expression(1).accept(self)
+        right_key = ctx.expression(2).accept(self)
+
+        if ctx.INTO():
+            return [ASTJoinClauseNode(target_range_variable, target_source, left_key, right_key), ASTIntoClauseNode(ctx.identifier(1).accept(self))]
+
+        return ASTJoinClauseNode(target_range_variable, target_source, left_key, right_key)
 
     def visitOrderby_clause(self, ctx: CSharpParser.Orderby_clauseContext):
-        return super().visitOrderby_clause(ctx)
+        return ASTOrderByClauseNode(self.build_multi(self.visitChildren(ctx), ASTExpressionsNode))
 
     def visitOrdering(self, ctx: CSharpParser.OrderingContext):
-        return super().visitOrdering(ctx)
+        expression = ctx.expression().accept(self)
+
+        direction = ctx.dir_()
+        if direction:
+            return ASTOrderingNode(expression, direction.accept(self))
+
+        return ASTOrderingNode(expression)
 
     def visitSelect_or_group_clause(self, ctx: CSharpParser.Select_or_group_clauseContext):
-        return super().visitSelect_or_group_clause(ctx)
+        if ctx.SELECT():
+            return ASTSelectClauseNode(ctx.expression(0).accept(self))
+
+        return ASTGroupByClauseNode(ctx.expression(0).accept(self), ctx.expression(1).accept(self))
 
     def visitQuery_continuation(self, ctx: CSharpParser.Query_continuationContext):
-        return super().visitQuery_continuation(ctx)
+        return [ASTIntoClauseNode(ctx.identifier().accept(self))] + ctx.query_body().accept(self)
 
     def visitLabeledStatement(self, ctx: CSharpParser.LabeledStatementContext):
-        return super().visitLabeledStatement(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitDeclarationStatement(self, ctx: CSharpParser.DeclarationStatementContext):
-        return super().visitDeclarationStatement(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitEmbeddedStatement(self, ctx: CSharpParser.EmbeddedStatementContext):
-        return super().visitEmbeddedStatement(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitLabeled_Statement(self, ctx: CSharpParser.Labeled_StatementContext):
-        return super().visitLabeled_Statement(ctx)
+        return ASTLabelNode(ctx.identifier().accept(self), ctx.statement().accept(self))
 
     def visitEmbedded_statement(self, ctx: CSharpParser.Embedded_statementContext):
-        return super().visitEmbedded_statement(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitTheEmptyStatement(self, ctx: CSharpParser.TheEmptyStatementContext):
-        return super().visitTheEmptyStatement(ctx)
+        return self.defaultResult()
 
     def visitExpressionStatement(self, ctx: CSharpParser.ExpressionStatementContext):
-        return super().visitExpressionStatement(ctx)
+        return ctx.expression().accept(self)  # TODO: Convert to statement somehow
 
     def visitIfStatement(self, ctx: CSharpParser.IfStatementContext):
-        return super().visitIfStatement(ctx)
+        condition = ctx.expression().accept(self)
+        body = ctx.if_body(0).accept(self)
+
+        if ctx.ELSE():
+            return ASTIfElseStatementNode(condition, body, ctx.if_body(1).accept(self))
+
+        return ASTIfStatementNode(condition, body)
 
     def visitSwitchStatement(self, ctx: CSharpParser.SwitchStatementContext):
         return super().visitSwitchStatement(ctx)

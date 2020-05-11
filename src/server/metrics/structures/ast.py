@@ -527,7 +527,8 @@ class ASTVariableDeclarationNode(ASTStatementNode):
     Declaring one or more variables.
     """
 
-    def __init__(self, variables: ASTNode, type_: ASTNode = None, modifiers: Sequence[ASTModifier] = None):
+    def __init__(self, variables: ASTNode, type_: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Variable declaration.
         :param variables: The variable(s) being declared.
@@ -1516,24 +1517,26 @@ class ASTParameterNode(ASTNode):
     Parameter.
     """
 
-    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None):
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None, modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Parameter.
 
         :param name: The name of the parameter.
         :param type_: The parameter's type.
         :param default: The default value of the parameter.
+        :param modifiers: The modifier(s) applied to the parameter.
         """
         self.name = name
         self.type = type_
         self.default = default
+        self.modifiers = modifiers
         super().__init__(self.name, self.type, self.default)
 
     def __str__(self):
-        return f"Parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}"
+        return f"Parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTParameterNode(name={self.name}, type={self.type}, default={self.default})"
+        return f"ASTParameterNode(name={self.name}, type={self.type}, default={self.default}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1552,21 +1555,23 @@ class ASTPositionalOnlyParameterNode(ASTParameterNode):
     A parameter that may only be fulfilled by a positional argument.
     """
 
-    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None):
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Positional-only parameter.
 
         :param name: The name of the parameter.
         :param type_: The parameter's type.
         :param default: The default value of the parameter.
+        :param modifiers: The modifier(s) applied to the class.
         """
-        super().__init__(name, type_, default)
+        super().__init__(name, type_, default, modifiers)
 
     def __str__(self):
-        return f"Positional-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}"
+        return f"Positional-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTPositionalOnlyParameterNode(name={self.name}, type={self.type}, default={self.default})"
+        return f"ASTPositionalOnlyParameterNode(name={self.name}, type={self.type}, default={self.default}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1585,21 +1590,23 @@ class ASTKeywordOnlyParameterNode(ASTParameterNode):
     A parameter that may only be fulfilled by a keyword argument.
     """
 
-    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None):
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, default: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Keyword-only parameter.
 
         :param name: The name of the parameter.
         :param type_: The parameter's type.
         :param default: The default value of the parameter.
+        :param modifiers: The modifier(s) applied to the class.
         """
-        super().__init__(name, type_, default)
+        super().__init__(name, type_, default, modifiers)
 
     def __str__(self):
-        return f"Keyword-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}"
+        return f"Keyword-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTKeywordOnlyParameterNode(name={self.name}, type={self.type}, default={self.default})"
+        return f"ASTKeywordOnlyParameterNode(name={self.name}, type={self.type}, default={self.default}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1834,22 +1841,22 @@ class ASTAccessNode(ASTNode):
     Sequence element(s) access.
     """
 
-    def __init__(self, sequence: ASTNode, subscripts: ASTNode):
+    def __init__(self, sequence: ASTNode, expressions: ASTNode):
         """
         Access.
 
         :param sequence: The sequence to access.
-        :param subscripts: The subscript(s) defining which elements to access.
+        :param expressions: The expression(s) defining which elements to access.
         """
         self.sequence = sequence
-        self.subscripts = subscripts
-        super().__init__(self.sequence, self.subscripts)
+        self.expressions = expressions
+        super().__init__(self.sequence, self.expressions)
 
     def __str__(self):
-        return f"Sequence element(s) access.\nSequence: {self.sequence}\nSubscripts: {self.subscripts}"
+        return f"Sequence element(s) access.\nSequence: {self.sequence}\nExpressions: {self.expressions}"
 
     def __repr__(self):
-        return f"ASTAccessNode(sequence={self.sequence}, subscripts={self.subscripts})"
+        return f"ASTAccessNode(sequence={self.sequence}, expressions={self.expressions})"
 
     def accept(self, visitor):
         """
@@ -2371,7 +2378,7 @@ class ASTTypeCastNode(ASTNode):
     Type cast.
     """
 
-    def __init__(self, type_, expression):
+    def __init__(self, type_: ASTNode, expression: ASTNode):
         """
         Type cast.
 
@@ -2395,14 +2402,14 @@ class ASTTypeCastNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_type_cast(self)
-    
+
 
 class ASTTypeNode(ASTNode):
     """
     Type.
     """
-    
-    def __init__(self, name, arguments):
+
+    def __init__(self, name: ASTNode, arguments: ASTNode):
         """
         Type.
         
@@ -2426,6 +2433,426 @@ class ASTTypeNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_type(self)
+
+
+class ASTObjectCreationNode(ASTNode):
+    """
+    Object creation.
+    """
+
+    def __init__(self, type_: ASTNode, expression: ASTNode):
+        """
+        Object creation.
+
+        :param type_: The type of the object being created.
+        :param expression: The expression dictating information about the object being created.
+        """
+        self.type = type_
+        self.expression = expression
+        super().__init__(self.type, self.expression)
+
+    def __str__(self):
+        return f"Object creation.\nType: {self.type}\nExpression: {self.expression}"
+
+    def __repr__(self):
+        return f"ASTObjectCreationNode(type={self.type}, expression={self.expression})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_object_creation method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_object_creation(self)
+
+
+class ASTNullConditionalOperatorNode(ASTNode):
+    """
+    Null-conditional operator.
+    """
+
+    def __init__(self, operand: Optional[ASTNode] = None, consequent: Optional[ASTNode] = None):
+        """
+        Null-conditional operator.
+
+        :param operand: The expression to evaluate.
+        :param consequent: The access expression to evaluate if the operand does not evaluate to null.
+        """
+        self.operand = operand
+        self.consequent = consequent
+        super().__init__(self.operand, self.consequent)
+
+    def __str__(self):
+        return f"Null-conditional operator.\nOperand: {self.operand}\nConsequent: {self.consequent}"
+
+    def __repr__(self):
+        return f"ASTNullConditionalOperatorNode(operand={self.operand}, consequent: {self.consequent})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_null_conditional_operator method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_null_conditional_operator(self)
+
+
+class ASTInitializerNode(ASTNode):
+    """
+    Initializer.
+    """
+
+    def __init__(self, expressions: Optional[ASTNode] = None):
+        """
+        Initializer.
+
+        :param expressions: The expressions contained within the initializer.
+        """
+        self.expressions = expressions
+        super().__init__(self.expressions)
+
+    def __str__(self):
+        return f"Initializer.\nExpressions: {self.expressions}"
+
+    def __repr__(self):
+        return f"ASTInitializerNode(expressions={self.expressions})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_initializer method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_initializer(self)
+
+
+class ASTQueryNode(ASTNode):
+    """
+    Query.
+    """
+
+    def __init__(self, clauses: ASTNode):
+        """
+        Query.
+
+        :param clauses: The clauses that make up the query.
+        """
+        self.clauses = clauses
+        super().__init__(self.clauses)
+
+    def __str__(self):
+        return f"Query.\nClauses: {self.clauses}"
+
+    def __repr__(self):
+        return f"ASTQueryNode(clauses={self.clauses})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_query method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_query(self)
+
+
+class ASTFromClauseNode(ASTNode):
+    """
+    From clause.
+    """
+
+    def __init__(self, range_variable: ASTNode, source: ASTNode):
+        """
+        From clause.
+        
+        :param range_variable: The variable representing each element in the source.
+        :param source: The data source on which a query is being run.
+        """
+        self.range_variable = range_variable
+        self.source = source
+        super().__init__(self.range_variable, self.source)
+
+    def __str__(self):
+        return f"From clause.\nRange variable: {self.range_variable}\nSource: {self.source}"
+
+    def __repr__(self):
+        return f"ASTFromClauseNode(range_variable={self.range_variable}, source={self.source})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_from_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_from_clause(self)
+
+
+class ASTLetClauseNode(ASTNode):
+    """
+    Let clause.
+    """
+
+    def __init__(self, name: ASTNode, value: ASTNode):
+        """
+        Let clause.
+
+        :param name: The variable to assign a value to.
+        :param value: The value to be assigned..
+        """
+        self.name = name
+        self.value = value
+        super().__init__(self.name, self.value)
+
+    def __str__(self):
+        return f"Let clause.\nName: {self.name}\nValue: {self.value}"
+
+    def __repr__(self):
+        return f"ASTLetClauseNode(name={self.name}, value={self.value})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_let_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_let_clause(self)
+    
+    
+class ASTWhereClauseNode(ASTNode):
+    """
+    Where clause.
+    """
+
+    def __init__(self, predicate: ASTNode):
+        """
+        Where clause.
+
+        :param predicate: The boolean predicate to apply to each source element.
+        """
+        self.predicate = predicate
+        super().__init__(self.predicate)
+
+    def __str__(self):
+        return f"Where clause.\nPredicate: {self.predicate}"
+
+    def __repr__(self):
+        return f"ASTWhereClauseNode(predicate={self.predicate})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_where_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_where_clause(self)
+    
+    
+class ASTJoinClauseNode(ASTNode):
+    """
+    Join clause.
+    """
+
+    def __init__(self, target_range_variable: ASTNode, target_source: ASTNode, left_key, right_key):
+        """
+        Join clause.
+
+        :param target_range_variable: The variable representing each element in the target source.
+        :param target_source: The target data source on which the join is being performed.
+        :param left_key: The left-hand key being checked for equality.
+        :param right_key: The right-hand key being checked for equality.
+        """
+        self.target_range_variable = target_range_variable
+        self.target_source = target_source
+        self.left_key = left_key
+        self.right_key = right_key
+        super().__init__(self.target_range_variable, self.target_source, self.left_key, self.right_key)
+
+    def __str__(self):
+        return f"Join clause.\nTarget range variable: {self.target_range_variable}\nTarget source: {self.target_source}\nLeft key: {self.left_key}\nRight key: {self.right_key}"
+
+    def __repr__(self):
+        return f"ASTJoinClauseNode(target_range_variable={self.target_range_variable}, target_source={self.target_source}, left_key={self.left_key}, right_key={self.right_key})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_join_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_join_clause(self)
+    
+    
+class ASTOrderByClauseNode(ASTNode):
+    """
+    Order-by clause.
+    """
+
+    def __init__(self, orderings: ASTNode):
+        """
+        Order-by clause.
+
+        :param orderings: The variable representing each element in the target source.
+        """
+        self.orderings = orderings
+        super().__init__(self.orderings)
+
+    def __str__(self):
+        return f"Order-by clause.\nOrderings: {self.orderings}"
+
+    def __repr__(self):
+        return f"ASTOrderByClauseNode(orderings={self.orderings})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_order_by_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_order_by_clause(self)
+
+
+class ASTOrderingNode(ASTNode):
+    """
+    Ordering.
+    """
+
+    def __init__(self, key:ASTNode, direction:ASTNode=None):
+        """
+        Ordering.
+
+        :param key: The key specifying what to order by.
+        :param direction: The direction in which to order.
+        """
+        self.key = key
+        self.direction = direction
+        super().__init__(self.key, self.direction)
+
+    def __str__(self):
+        return f"Ordering.\nKey: {self.key}\nDirection: {self.direction}"
+
+    def __repr__(self):
+        return f"ASTOrderingNode(key={self.key}, direction={self.direction})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_ordering method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_ordering(self)
+
+
+class ASTSelectClauseNode(ASTNode):
+    """
+    Select clause.
+    """
+
+    def __init__(self, expression: ASTNode):
+        """
+        Select clause.
+
+        :param expression: The expression specifying the type of values produced by the query.
+        """
+        self.expression = expression
+        super().__init__(self.expression)
+
+    def __str__(self):
+        return f"Select clause.\nExpression: {self.expression}"
+
+    def __repr__(self):
+        return f"ASTSelectClauseNode(expression={self.expression})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_select_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_select_clause(self)
+    
+
+class ASTGroupByClauseNode(ASTNode):
+    """
+    Group-by clause.
+    """
+
+    def __init__(self, range_variable: ASTNode, key: ASTNode):
+        """
+        Group-by clause.
+
+        :param range_variable: The variable representing each element in the target source.
+        :param key: The key specifying how values are to be grouped.
+        """
+        self.range_variable = range_variable
+        self.key = key
+        super().__init__(self.range_variable)
+
+    def __str__(self):
+        return f"Group-by clause.\nRange variable: {self.range_variable}\nKey: {self.key}"
+
+    def __repr__(self):
+        return f"ASTGroupByClauseNode(range_variable={self.range_variable}, key={self.key})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_group_by_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_group_by_clause(self)
+
+
+class ASTIntoClauseNode(ASTNode):
+    """
+    Into clause.
+    """
+
+    def __init__(self, identifier: ASTNode):
+        """
+        Into clause.
+
+        :param identifier: The identifier to store the results of the previous clause against.
+        """
+        self.identifier = identifier
+        super().__init__(self.identifier)
+
+    def __str__(self):
+        return f"Into clause.\nIdentifier: {self.identifier}"
+
+    def __repr__(self):
+        return f"ASTIntoClauseNode(identifier={self.identifier})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_into_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_into_clause(self)
+
+
+class ASTLabelNode(ASTNode):
+    """
+    Label.
+    """
+
+    def __init__(self, name: ASTNode, target: ASTNode):
+        self.name = name
+        self.target = target
+        super().__init__(self.name, self.target)
+
+    def __str__(self):
+        return f"Label.\nName: {self.name}\nTarget: {self.target}"
+
+    def __repr__(self):
+        return f"ASTLabelNode(name={self.name}, target={self.target})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_label method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_label(self)
 
 
 # endregion
@@ -2514,7 +2941,6 @@ class ASTUnaryOperation(ASTOperation):
     ADDRESS = "Address"
 
 
-
 class ASTInPlaceOperation(ASTOperation):
     """
     In-place operations enum.
@@ -2572,10 +2998,13 @@ class ASTMiscModifier(ASTModifier):
     EVENT = "Event"
     CONST = "Const"
     EXTERN = "Extern"
+    IN = "In"
     NEW = "New"
     OVERRIDE = "Override"
+    OUT = "Out"
     PARTIAL = "Partial"
     READONLY = "Read-only"
+    REF = "Ref"
     SEALED = "Sealed"
     STATIC = "Static"
     UNSAFE = "Unsafe"
@@ -2595,6 +3024,5 @@ class ASTLiteralType(ASTEnum):
     BOOLEAN = "Boolean"
     NULL = "Null"
     ELLIPSIS = "Ellipsis"
-
 
 # endregion

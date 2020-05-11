@@ -708,7 +708,7 @@ accessor_modifier
 	| INTERNAL
 	| PRIVATE
 	| PROTECTED INTERNAL
-	| INTERNAL PROTECTED
+	| PRIVATE PROTECTED
 	;
 
 accessor_body

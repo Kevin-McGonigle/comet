@@ -999,20 +999,21 @@ class ASTImportStatementNode(ASTStatementNode):
     Import statement.
     """
 
-    def __init__(self, libraries: ASTNode):
+    def __init__(self, libraries: ASTNode, modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Import statement.
 
         :param libraries: The libraries to be imported.
         """
         self.libraries = libraries
+        self.modifiers = modifiers
         super().__init__(self.libraries)
 
     def __str__(self):
-        return f"Import statement.\nLibraries: {self.libraries}"
+        return f"Import statement.\nLibraries: {self.libraries}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTImportStatementNode(libraries={self.libraries})"
+        return f"ASTImportStatementNode(libraries={self.libraries}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1297,22 +1298,24 @@ class ASTCatchNode(ASTNode):
     Catch clause.
     """
 
-    def __init__(self, exceptions: Optional[ASTNode] = None, body: Optional[ASTNode] = None):
+    def __init__(self, exceptions: Optional[ASTNode] = None, condition: Optional[ASTNode] = None, body: Optional[ASTNode] = None):
         """
         Catch clause.
 
         :param exceptions: The exception(s) to catch.
+        :param condition: The exception filter condition that dictates whether or not to catch the exception.
         :param body: The code to execute if the specified exception(s) are thrown in the corresponding try block.
         """
         self.exceptions = exceptions
+        self.condition = condition
         self.body = body
-        super().__init__(self.exceptions, self.body)
+        super().__init__(self.exceptions, self.condition, self.body)
 
     def __str__(self):
-        return f"Catch clause.\nExceptions: {self.exceptions}\n Body: {self.body}"
+        return f"Catch clause.\nExceptions: {self.exceptions}\nCondition: {self.condition}\nBody: {self.body}"
 
     def __repr__(self):
-        return f"ASTCatchNode(exceptions={self.exceptions}, body={self.body})"
+        return f"ASTCatchNode(exceptions={self.exceptions}, condition={self.condition}, body={self.body})"
 
     def accept(self, visitor):
         """
@@ -1426,6 +1429,32 @@ class ASTFunctionDefinitionNode(ASTStatementNode):
         :return: The result of the visit.
         """
         return visitor.visit_function_definition(self)
+
+
+class ASTNamespaceDeclarationNode(ASTStatementNode):
+    """
+    Namespace declaration.
+    """
+
+    def __init__(self, name: ASTNode, body: ASTNode):
+        self.name = name
+        self.body = body
+        super().__init__(self.name, self.body)
+
+    def __str__(self):
+        return f"Namespace declaration.\nName: {self.name}\nBody: {self.body}"
+
+    def __repr__(self):
+        return f"ASTNamespaceDeclarationNode(name={self.name}, body={self.body})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_namespace_declaration method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_namespace_declaration(self)
 
 
 class ASTClassDefinitionNode(ASTStatementNode):
@@ -3316,10 +3345,12 @@ class ASTVisibilityModifier(ASTModifier):
     Access modifiers enum.
     """
 
-    PRIVATE = "Private"
-    INTERNAL = "Internal"
-    PROTECTED = "Protected"
     PUBLIC = "Public"
+    PROTECTED = "Protected"
+    INTERNAL = "Internal"
+    PRIVATE = "Private"
+    PROTECTED_INTERNAL = "Protected Internal"
+    PRIVATE_PROTECTED = "Private Protected"
 
 
 class ASTMiscModifier(ASTModifier):
@@ -3340,6 +3371,7 @@ class ASTMiscModifier(ASTModifier):
     REF = "Ref"
     SEALED = "Sealed"
     STATIC = "Static"
+    THIS = "This"
     UNSAFE = "Unsafe"
     VIRTUAL = "Virtual"
     VOLATILE = "Volatile"
@@ -3353,6 +3385,7 @@ class ASTLiteralType(ASTEnum):
     """
 
     NUMBER = "Number"
+    CHAR = "Char"
     STRING = "String"
     BOOLEAN = "Boolean"
     NULL = "Null"

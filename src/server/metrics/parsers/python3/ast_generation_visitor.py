@@ -373,7 +373,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
                 else:
                     finally_body = children[i + 1].accept(self)
             else:
-                catches.append(ASTCatchNode(children[i].accept(self), children[i + 1].accept(self)))
+                catches.append(ASTCatchNode(children[i].accept(self), body=children[i + 1].accept(self)))
 
         return ASTTryStatementNode(body, self.build_multi(catches, ASTCatchesNode), else_body, finally_body)
 

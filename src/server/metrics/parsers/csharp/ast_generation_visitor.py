@@ -28,6 +28,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         if namespace_member_declarations:
             namespace_member_declarations = namespace_member_declarations.accept(self)
 
+        # TODO
+
     def visitNamespace_or_type_name(self, ctx: CSharpParser.Namespace_or_type_nameContext):
         qualified_alias_member = ctx.qualified_alias_member()
         if qualified_alias_member:
@@ -36,13 +38,16 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         children = ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
                                                                    CSharpParser.Type_argument_listContext))
 
+        # TODO
+
     def visitType_(self, ctx: CSharpParser.Type_Context):
         base_type = ctx.base_type().accept(self)
 
         children = ctx.getChildren(
             lambda child: self.filter_child(child, CSharpParser.INTERR, CSharpParser.Rank_specifierContext,
                                             CSharpParser.STAR))
-        return super().visitType_(ctx)
+
+        # TODO
 
     def visitBase_type(self, ctx: CSharpParser.Base_typeContext):
         simple_type = ctx.simple_type()
@@ -738,120 +743,194 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ASTDefaultLabelNode()
 
     def visitStatement_list(self, ctx: CSharpParser.Statement_listContext):
-        return super().visitStatement_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitFor_initializer(self, ctx: CSharpParser.For_initializerContext):
-        return super().visitFor_initializer(ctx)
+        if ctx.expression():
+            return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
+
+        return ctx.local_variable_declaration().accept(self)
 
     def visitFor_iterator(self, ctx: CSharpParser.For_iteratorContext):
-        return super().visitFor_iterator(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitCatch_clauses(self, ctx: CSharpParser.Catch_clausesContext):
-        return super().visitCatch_clauses(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTCatchesNode)
 
     def visitSpecific_catch_clause(self, ctx: CSharpParser.Specific_catch_clauseContext):
-        return super().visitSpecific_catch_clause(ctx)
+        type_ = ctx.class_type().accept(self)
+
+        identifier = ctx.identifier()
+        if identifier:
+            identifier = identifier.accept(self)
+
+        condition = ctx.exception_filter()
+        if condition:
+            condition = condition.accept(self)
+
+        body = ctx.block().accept(self)
+
+        if identifier:
+            return ASTCatchNode(ASTAliasNode(type_, identifier), condition, body)
+
+        return ASTCatchNode(type_, condition, body)
 
     def visitGeneral_catch_clause(self, ctx: CSharpParser.General_catch_clauseContext):
-        return super().visitGeneral_catch_clause(ctx)
+        body = ctx.block().accept(self)
+
+        condition = ctx.exception_filter()
+        if condition:
+            return ASTCatchNode(condition=condition.accept(self), body=body)
+
+        return ASTCatchNode(body=body)
 
     def visitException_filter(self, ctx: CSharpParser.Exception_filterContext):
-        return super().visitException_filter(ctx)
+        return ctx.expression().accept(self)
 
     def visitFinally_clause(self, ctx: CSharpParser.Finally_clauseContext):
-        return super().visitFinally_clause(ctx)
+        return ASTFinallyNode(ctx.block().accept(self))
 
     def visitResource_acquisition(self, ctx: CSharpParser.Resource_acquisitionContext):
-        return super().visitResource_acquisition(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitNamespace_declaration(self, ctx: CSharpParser.Namespace_declarationContext):
-        return super().visitNamespace_declaration(ctx)
+        return ASTNamespaceDeclarationNode(ctx.qualified_identifier().accept(self), ctx.namespace_body().accept(self))
 
     def visitQualified_identifier(self, ctx: CSharpParser.Qualified_identifierContext):
-        return super().visitQualified_identifier(ctx)
+        return self.build_left_associated(self.visitChildren(ctx), ASTMemberNode)
 
     def visitNamespace_body(self, ctx: CSharpParser.Namespace_bodyContext):
-        return super().visitNamespace_body(ctx)
+        extern_alias_directives = ctx.extern_alias_directives()
+        if extern_alias_directives:
+            extern_alias_directives = extern_alias_directives.accept(self)
+
+        using_directives = ctx.using_directives()
+        if using_directives:
+            using_directives = using_directives.accept(self)
+
+        namespace_member_declarations = ctx.namespace_member_declarations()
+        if namespace_member_declarations:
+            namespace_member_declarations.accept(self)
+
+        # TODO
 
     def visitExtern_alias_directives(self, ctx: CSharpParser.Extern_alias_directivesContext):
-        return super().visitExtern_alias_directives(ctx)
+        # TODO
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitExtern_alias_directive(self, ctx: CSharpParser.Extern_alias_directiveContext):
+        # TODO
         return super().visitExtern_alias_directive(ctx)
 
     def visitUsing_directives(self, ctx: CSharpParser.Using_directivesContext):
-        return super().visitUsing_directives(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitUsingAliasDirective(self, ctx: CSharpParser.UsingAliasDirectiveContext):
-        return super().visitUsingAliasDirective(ctx)
+        return ASTImportStatementNode(ASTAliasNode(ctx.namespace_or_type_name().accept(self), ctx.identifier().accept(self)))
 
     def visitUsingNamespaceDirective(self, ctx: CSharpParser.UsingNamespaceDirectiveContext):
-        return super().visitUsingNamespaceDirective(ctx)
+        return ASTImportStatementNode(ctx.namespace_or_type_name().accept(self))
 
     def visitUsingStaticDirective(self, ctx: CSharpParser.UsingStaticDirectiveContext):
-        return super().visitUsingStaticDirective(ctx)
+        return ASTImportStatementNode(ctx.namespace_or_type_name().accept(self), [ASTMiscModifier.STATIC])
 
     def visitNamespace_member_declarations(self, ctx: CSharpParser.Namespace_member_declarationsContext):
-        return super().visitNamespace_member_declarations(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitNamespace_member_declaration(self, ctx: CSharpParser.Namespace_member_declarationContext):
-        return super().visitNamespace_member_declaration(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitType_declaration(self, ctx: CSharpParser.Type_declarationContext):
+        # TODO
         return super().visitType_declaration(ctx)
 
     def visitQualified_alias_member(self, ctx: CSharpParser.Qualified_alias_memberContext):
-        return super().visitQualified_alias_member(ctx)
+        alias = ctx.identifier(0).accept(self)
+        member = ctx.identifier(1).accept(self)
+
+        type_arguments = ctx.type_argument_list()
+        if type_arguments:
+            return ASTMemberNode(alias, ASTTypeNode(member, type_arguments))
+
+        return ASTMemberNode(alias, member)
 
     def visitType_parameter_list(self, ctx: CSharpParser.Type_parameter_listContext):
-        return super().visitType_parameter_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTParametersNode)
 
     def visitType_parameter(self, ctx: CSharpParser.Type_parameterContext):
+        # TODO
         return super().visitType_parameter(ctx)
 
     def visitClass_base(self, ctx: CSharpParser.Class_baseContext):
-        return super().visitClass_base(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
 
     def visitInterface_type_list(self, ctx: CSharpParser.Interface_type_listContext):
-        return super().visitInterface_type_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
 
     def visitType_parameter_constraints_clauses(self, ctx: CSharpParser.Type_parameter_constraints_clausesContext):
+        # TODO
         return super().visitType_parameter_constraints_clauses(ctx)
 
     def visitType_parameter_constraints_clause(self, ctx: CSharpParser.Type_parameter_constraints_clauseContext):
+        # TODO
         return super().visitType_parameter_constraints_clause(ctx)
 
     def visitType_parameter_constraints(self, ctx: CSharpParser.Type_parameter_constraintsContext):
+        # TODO
         return super().visitType_parameter_constraints(ctx)
 
     def visitPrimary_constraint(self, ctx: CSharpParser.Primary_constraintContext):
-        return super().visitPrimary_constraint(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitSecondary_constraints(self, ctx: CSharpParser.Secondary_constraintsContext):
+        # TODO
         return super().visitSecondary_constraints(ctx)
 
     def visitConstructor_constraint(self, ctx: CSharpParser.Constructor_constraintContext):
+        # TODO
         return super().visitConstructor_constraint(ctx)
 
     def visitClass_body(self, ctx: CSharpParser.Class_bodyContext):
-        return super().visitClass_body(ctx)
+        body = ctx.class_member_declarations()
+        if body:
+            return body.accept(self)
 
     def visitClass_member_declarations(self, ctx: CSharpParser.Class_member_declarationsContext):
-        return super().visitClass_member_declarations(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitClass_member_declaration(self, ctx: CSharpParser.Class_member_declarationContext):
+        # TODO
         return super().visitClass_member_declaration(ctx)
 
     def visitAll_member_modifiers(self, ctx: CSharpParser.All_member_modifiersContext):
-        return super().visitAll_member_modifiers(ctx)
+        return self.visitChildren(ctx)
 
     def visitAll_member_modifier(self, ctx: CSharpParser.All_member_modifierContext):
-        return super().visitAll_member_modifier(ctx)
+        return {
+            "new": ASTMiscModifier.NEW,
+            "public": ASTVisibilityModifier.PUBLIC,
+            "protected": ASTVisibilityModifier.PROTECTED,
+            "internal": ASTVisibilityModifier.INTERNAL,
+            "private": ASTVisibilityModifier.PRIVATE,
+            "readonly": ASTMiscModifier.READONLY,
+            "volatile": ASTMiscModifier.VOLATILE,
+            "virtual": ASTMiscModifier.VIRTUAL,
+            "sealed": ASTMiscModifier.SEALED,
+            "override": ASTMiscModifier.OVERRIDE,
+            "abstract": ASTMiscModifier.ABSTRACT,
+            "static": ASTMiscModifier.STATIC,
+            "unsafe": ASTMiscModifier.UNSAFE,
+            "extern": ASTMiscModifier.EXTERN,
+            "partial": ASTMiscModifier.PARTIAL,
+            "async": ASTMiscModifier.ASYNC
+        }[ctx.getText()]
 
     def visitCommon_member_declaration(self, ctx: CSharpParser.Common_member_declarationContext):
+        # TODO
         return super().visitCommon_member_declaration(ctx)
 
     def visitTyped_member_declaration(self, ctx: CSharpParser.Typed_member_declarationContext):
+        # TODO
         return super().visitTyped_member_declaration(ctx)
 
     def visitConstant_declarators(self, ctx: CSharpParser.Constant_declaratorsContext):
@@ -864,186 +943,293 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         }
 
     def visitVariable_declarators(self, ctx: CSharpParser.Variable_declaratorsContext):
-        return super().visitVariable_declarators(ctx)
+        return self.visitChildren(ctx)
 
     def visitVariable_declarator(self, ctx: CSharpParser.Variable_declaratorContext):
-        return super().visitVariable_declarator(ctx)
+        identifier = ctx.identifier().accept(self)
+
+        local_variable_initializer = ctx.variable_initializer()
+        if local_variable_initializer:
+            return {
+                "name": identifier,
+                "initial_value": local_variable_initializer.accept(self)
+            }
+
+        return {
+            "variable": identifier
+        }
 
     def visitVariable_initializer(self, ctx: CSharpParser.Variable_initializerContext):
-        return super().visitVariable_initializer(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitReturn_type(self, ctx: CSharpParser.Return_typeContext):
-        return super().visitReturn_type(ctx)
+        if ctx.VOID():
+            return ASTIdentifierNode(ctx.getText())
+
+        return ctx.type_().accept(self)
 
     def visitMember_name(self, ctx: CSharpParser.Member_nameContext):
-        return super().visitMember_name(ctx)
+        return ctx.namespace_or_type_name().accept(self)
 
     def visitMethod_body(self, ctx: CSharpParser.Method_bodyContext):
-        return super().visitMethod_body(ctx)
+        block = ctx.block()
+        if block:
+            return block.accept(self)
 
     def visitFormal_parameter_list(self, ctx: CSharpParser.Formal_parameter_listContext):
-        return super().visitFormal_parameter_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTParametersNode)
 
     def visitFixed_parameters(self, ctx: CSharpParser.Fixed_parametersContext):
-        return super().visitFixed_parameters(ctx)
+        return self.visitChildren(ctx)
 
     def visitFixed_parameter(self, ctx: CSharpParser.Fixed_parameterContext):
-        return super().visitFixed_parameter(ctx)
+        if ctx.ARGLIST():
+            return ASTIdentifierNode(ctx.getText())
+
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes.accept(self)
+
+        modifier = ctx.parameter_modifier()
+        if modifier:
+            modifier = modifier.accept(self)
+
+        arg_declaration = ctx.arg_declaration().accept(self)
+
+        # TODO
+        return ASTParameterNode()
 
     def visitParameter_modifier(self, ctx: CSharpParser.Parameter_modifierContext):
-        return super().visitParameter_modifier(ctx)
+        return {
+            "ref": ASTMiscModifier.REF,
+            "out": ASTMiscModifier.OUT,
+            "this": ASTMiscModifier.THIS
+        }[ctx.getText()]
 
     def visitParameter_array(self, ctx: CSharpParser.Parameter_arrayContext):
-        return super().visitParameter_array(ctx)
+        # TODO
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes.accept(self)
+
+        return ASTPositionalArgumentsParameterNode(ctx.identifier().accept(self), ctx.array_type().accept(self))
 
     def visitAccessor_declarations(self, ctx: CSharpParser.Accessor_declarationsContext):
+        # TODO
         return super().visitAccessor_declarations(ctx)
 
     def visitGet_accessor_declaration(self, ctx: CSharpParser.Get_accessor_declarationContext):
+        # TODO
         return super().visitGet_accessor_declaration(ctx)
 
     def visitSet_accessor_declaration(self, ctx: CSharpParser.Set_accessor_declarationContext):
+        # TODO
         return super().visitSet_accessor_declaration(ctx)
 
     def visitAccessor_modifier(self, ctx: CSharpParser.Accessor_modifierContext):
-        return super().visitAccessor_modifier(ctx)
+        return {
+            "protected": ASTVisibilityModifier.PROTECTED,
+            "internal": ASTVisibilityModifier.INTERNAL,
+            "private": ASTVisibilityModifier.PRIVATE,
+            "protected internal": ASTVisibilityModifier.PROTECTED_INTERNAL,
+            "private protected": ASTVisibilityModifier.PRIVATE_PROTECTED
+        }[ctx.getText() if ctx.getChildCount() == 1 else ctx.getChild(0).getText() + " " + ctx.getChild(1).getText()]
 
     def visitAccessor_body(self, ctx: CSharpParser.Accessor_bodyContext):
-        return super().visitAccessor_body(ctx)
+        block = ctx.block()
+        if block:
+            return block.accept(self)
 
     def visitEvent_accessor_declarations(self, ctx: CSharpParser.Event_accessor_declarationsContext):
+        # TODO
         return super().visitEvent_accessor_declarations(ctx)
 
     def visitAdd_accessor_declaration(self, ctx: CSharpParser.Add_accessor_declarationContext):
+        # TODO
         return super().visitAdd_accessor_declaration(ctx)
 
     def visitRemove_accessor_declaration(self, ctx: CSharpParser.Remove_accessor_declarationContext):
+        # TODO
         return super().visitRemove_accessor_declaration(ctx)
 
     def visitOverloadable_operator(self, ctx: CSharpParser.Overloadable_operatorContext):
+        # TODO
         return super().visitOverloadable_operator(ctx)
 
     def visitConversion_operator_declarator(self, ctx: CSharpParser.Conversion_operator_declaratorContext):
+        # TODO
         return super().visitConversion_operator_declarator(ctx)
 
     def visitConstructor_initializer(self, ctx: CSharpParser.Constructor_initializerContext):
+        # TODO
         return super().visitConstructor_initializer(ctx)
 
     def visitBody(self, ctx: CSharpParser.BodyContext):
-        return super().visitBody(ctx)
+        block = ctx.block()
+        if block:
+            return block.accept(self)
 
     def visitStruct_interfaces(self, ctx: CSharpParser.Struct_interfacesContext):
-        return super().visitStruct_interfaces(ctx)
+        interface_type_list = ctx.interface_type_list()
+        if interface_type_list:
+            return interface_type_list.accept(self)
 
     def visitStruct_body(self, ctx: CSharpParser.Struct_bodyContext):
-        return super().visitStruct_body(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitStruct_member_declaration(self, ctx: CSharpParser.Struct_member_declarationContext):
+        # TODO
         return super().visitStruct_member_declaration(ctx)
 
     def visitArray_type(self, ctx: CSharpParser.Array_typeContext):
-        return super().visitArray_type(ctx)
+        # TODO workout what to do with rank specfiier, pointer, nullable
+
+        return ctx.base_type().accept(self)
 
     def visitRank_specifier(self, ctx: CSharpParser.Rank_specifierContext):
         return super().visitRank_specifier(ctx)
 
     def visitArray_initializer(self, ctx: CSharpParser.Array_initializerContext):
-        return super().visitArray_initializer(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
 
     def visitVariant_type_parameter_list(self, ctx: CSharpParser.Variant_type_parameter_listContext):
-        return super().visitVariant_type_parameter_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTParametersNode)
 
     def visitVariant_type_parameter(self, ctx: CSharpParser.Variant_type_parameterContext):
+        # TODO
         return super().visitVariant_type_parameter(ctx)
 
     def visitVariance_annotation(self, ctx: CSharpParser.Variance_annotationContext):
-        return super().visitVariance_annotation(ctx)
+        return {
+            "in": ASTMiscModifier.IN,
+            "out": ASTMiscModifier.OUT
+        }[ctx.getText()]
 
     def visitInterface_base(self, ctx: CSharpParser.Interface_baseContext):
-        return super().visitInterface_base(ctx)
+        return ctx.interface_type_list().accept(self)
 
     def visitInterface_body(self, ctx: CSharpParser.Interface_bodyContext):
-        return super().visitInterface_body(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitInterface_member_declaration(self, ctx: CSharpParser.Interface_member_declarationContext):
+        # TODO
         return super().visitInterface_member_declaration(ctx)
 
     def visitInterface_accessors(self, ctx: CSharpParser.Interface_accessorsContext):
+        # TODO
         return super().visitInterface_accessors(ctx)
 
     def visitEnum_base(self, ctx: CSharpParser.Enum_baseContext):
-        return super().visitEnum_base(ctx)
+        return ctx.type_().accept(self)
 
     def visitEnum_body(self, ctx: CSharpParser.Enum_bodyContext):
-        return super().visitEnum_body(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitEnum_member_declaration(self, ctx: CSharpParser.Enum_member_declarationContext):
+        # TODO
         return super().visitEnum_member_declaration(ctx)
 
     def visitGlobal_attribute_section(self, ctx: CSharpParser.Global_attribute_sectionContext):
+        # TODO
         return super().visitGlobal_attribute_section(ctx)
 
     def visitGlobal_attribute_target(self, ctx: CSharpParser.Global_attribute_targetContext):
-        return super().visitGlobal_attribute_target(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitAttributes(self, ctx: CSharpParser.AttributesContext):
+        # TODO
         return super().visitAttributes(ctx)
 
     def visitAttribute_section(self, ctx: CSharpParser.Attribute_sectionContext):
+        # TODO
         return super().visitAttribute_section(ctx)
 
     def visitAttribute_target(self, ctx: CSharpParser.Attribute_targetContext):
-        return super().visitAttribute_target(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitAttribute_list(self, ctx: CSharpParser.Attribute_listContext):
+        # TODO
         return super().visitAttribute_list(ctx)
 
     def visitAttribute(self, ctx: CSharpParser.AttributeContext):
+        # TODO
         return super().visitAttribute(ctx)
 
     def visitAttribute_argument(self, ctx: CSharpParser.Attribute_argumentContext):
+        # TODO
         return super().visitAttribute_argument(ctx)
 
     def visitPointer_type(self, ctx: CSharpParser.Pointer_typeContext):
+        # TODO
         return super().visitPointer_type(ctx)
 
     def visitFixed_pointer_declarators(self, ctx: CSharpParser.Fixed_pointer_declaratorsContext):
-        return super().visitFixed_pointer_declarators(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitFixed_pointer_declarator(self, ctx: CSharpParser.Fixed_pointer_declaratorContext):
-        return super().visitFixed_pointer_declarator(ctx)
+        name = ctx.identifier().accept(self)
+
+        initial_value = ctx.fixed_pointer_initializer()
+        if initial_value:
+            return {
+                "name": name,
+                "intial_value": initial_value.accept(self)
+            }
+
+        return {
+            "name": name
+        }
 
     def visitFixed_pointer_initializer(self, ctx: CSharpParser.Fixed_pointer_initializerContext):
+        # TODO
         return super().visitFixed_pointer_initializer(ctx)
 
     def visitFixed_size_buffer_declarator(self, ctx: CSharpParser.Fixed_size_buffer_declaratorContext):
+        # TODO
         return super().visitFixed_size_buffer_declarator(ctx)
 
     def visitLocal_variable_initializer_unsafe(self, ctx: CSharpParser.Local_variable_initializer_unsafeContext):
+        # TODO
         return super().visitLocal_variable_initializer_unsafe(ctx)
 
     def visitRight_arrow(self, ctx: CSharpParser.Right_arrowContext):
-        return super().visitRight_arrow(ctx)
+        return ctx.getText()
 
     def visitRight_shift(self, ctx: CSharpParser.Right_shiftContext):
-        return super().visitRight_shift(ctx)
+        return ctx.getText()
 
     def visitRight_shift_assignment(self, ctx: CSharpParser.Right_shift_assignmentContext):
-        return super().visitRight_shift_assignment(ctx)
+        return ctx.getText()
 
     def visitLiteral(self, ctx: CSharpParser.LiteralContext):
-        return super().visitLiteral(ctx)
+        literal = ctx.boolean_literal()
+        if literal:
+            return literal.accept(self)
+
+        literal = ctx.string_literal()
+        if literal:
+            return literal.accept(self)
+
+        if ctx.NULL():
+            return ASTLiteralNode(ASTLiteralType.NULL)
+
+        if ctx.CHARACTER_LITERAL():
+            return ASTLiteralNode(ASTLiteralType.CHAR, ctx.getText())
+
+        return ASTLiteralNode(ASTLiteralType.NUMBER, ctx.getText())
 
     def visitBoolean_literal(self, ctx: CSharpParser.Boolean_literalContext):
-        return super().visitBoolean_literal(ctx)
+        return ASTLiteralNode(ASTLiteralType.BOOLEAN, ctx.getText())
 
     def visitString_literal(self, ctx: CSharpParser.String_literalContext):
-        return super().visitString_literal(ctx)
+        return ASTLiteralNode(ASTLiteralType.STRING, ctx.getText())
 
     def visitInterpolated_regular_string(self, ctx: CSharpParser.Interpolated_regular_stringContext):
+        # TODO
         return super().visitInterpolated_regular_string(ctx)
 
     def visitInterpolated_verbatium_string(self, ctx: CSharpParser.Interpolated_verbatium_stringContext):
+        # TODO
         return super().visitInterpolated_verbatium_string(ctx)
 
     def visitInterpolated_regular_string_part(self, ctx: CSharpParser.Interpolated_regular_string_partContext):
@@ -1056,7 +1242,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitInterpolated_string_expression(ctx)
 
     def visitKeyword(self, ctx: CSharpParser.KeywordContext):
-        return super().visitKeyword(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     def visitClass_definition(self, ctx: CSharpParser.Class_definitionContext):
         return super().visitClass_definition(ctx)
@@ -1077,7 +1263,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitEvent_declaration(ctx)
 
     def visitField_declaration(self, ctx: CSharpParser.Field_declarationContext):
-        return super().visitField_declaration(ctx)
+        return ctx.variable_declarators().accept(self)
 
     def visitProperty_declaration(self, ctx: CSharpParser.Property_declarationContext):
         return super().visitProperty_declaration(ctx)
@@ -1104,15 +1290,24 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitOperator_declaration(ctx)
 
     def visitArg_declaration(self, ctx: CSharpParser.Arg_declarationContext):
-        return super().visitArg_declaration(ctx)
+        name = ctx.identifier().accept(self)
+        type_ = ctx.type_().accept(self)
+
+        default = ctx.expression()
+        if default:
+            return ASTParameterNode(name, type_, default)
+
+        return ASTParameterNode(name, type_)
 
     def visitMethod_invocation(self, ctx: CSharpParser.Method_invocationContext):
-        return super().visitMethod_invocation(ctx)
+        argument_list = ctx.argument_list()
+        if argument_list:
+            return argument_list.accept(self)
 
     def visitObject_creation_expression(self, ctx: CSharpParser.Object_creation_expressionContext):
         return super().visitObject_creation_expression(ctx)
 
     def visitIdentifier(self, ctx: CSharpParser.IdentifierContext):
-        return super().visitIdentifier(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     # endregion

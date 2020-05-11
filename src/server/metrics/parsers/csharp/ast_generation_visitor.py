@@ -342,7 +342,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         type_argument_list = ctx.type_argument_list()
         if type_argument_list:
-            return ASTTypeNode(ctx.identifier().accept(self), type_argument_list.accept(self)), null_conditional_operator
+            return ASTTypeNode(ctx.identifier().accept(self),
+                               type_argument_list.accept(self)), null_conditional_operator
 
         return ctx.identifier().accept(self), null_conditional_operator
 
@@ -427,7 +428,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ctx.base_type().accept(self)
 
     def visitLambda_expression(self, ctx: CSharpParser.Lambda_expressionContext):
-        anonymous_function = ASTAnonymousFunctionDefinitionNode(ctx.anonymous_function_body().accept(self), ctx.anonymous_function_signature().accept(self))
+        anonymous_function = ASTAnonymousFunctionDefinitionNode(ctx.anonymous_function_body().accept(self),
+                                                                ctx.anonymous_function_signature().accept(self))
         if ctx.ASYNC():
             return ASTAsyncNode(anonymous_function)
 
@@ -468,7 +470,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
     def visitImplicit_anonymous_function_parameter_list(self,
                                                         ctx: CSharpParser.Implicit_anonymous_function_parameter_listContext):
-        return self.build_multi([ASTParameterNode(identifier) for identifier in self.visitChildren(ctx)], ASTParametersNode)
+        return self.build_multi([ASTParameterNode(identifier) for identifier in self.visitChildren(ctx)],
+                                ASTParametersNode)
 
     def visitAnonymous_function_body(self, ctx: CSharpParser.Anonymous_function_bodyContext):
         return ctx.getChild(0).accept(self)
@@ -513,7 +516,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         right_key = ctx.expression(2).accept(self)
 
         if ctx.INTO():
-            return [ASTJoinClauseNode(target_range_variable, target_source, left_key, right_key), ASTIntoClauseNode(ctx.identifier(1).accept(self))]
+            return [ASTJoinClauseNode(target_range_variable, target_source, left_key, right_key),
+                    ASTIntoClauseNode(ctx.identifier(1).accept(self))]
 
         return ASTJoinClauseNode(target_range_variable, target_source, left_key, right_key)
 
@@ -569,85 +573,169 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ASTIfStatementNode(condition, body)
 
     def visitSwitchStatement(self, ctx: CSharpParser.SwitchStatementContext):
-        return super().visitSwitchStatement(ctx)
+        return ASTSwitchStatementNode(ctx.expression().accept(self), self.build_multi(
+            [switch_section.accept(self) for switch_section in ctx.switch_section()], ASTSwitchSectionsNode))
 
     def visitWhileStatement(self, ctx: CSharpParser.WhileStatementContext):
-        return super().visitWhileStatement(ctx)
+        return ASTLoopStatementNode(ctx.expression().accept(self), ctx.embedded_statement().accept(self))
 
     def visitDoStatement(self, ctx: CSharpParser.DoStatementContext):
-        return super().visitDoStatement(ctx)
+        return ASTLoopStatementNode(ctx.expression().accept(self), ctx.embedded_statement().accept(self))
 
     def visitForStatement(self, ctx: CSharpParser.ForStatementContext):
-        return super().visitForStatement(ctx)
+        initializer = ctx.for_initializer()
+        if initializer:
+            initializer = initializer.accept(self)
+
+        condition = ctx.expression()
+        if condition:
+            condition = condition.accept(self)
+
+        iterator = ctx.for_iterator()
+        if iterator:
+            iterator = iterator.accept(self)
+
+        body = ctx.embedded_statement().accept(self)
+
+        if iterator:
+            if isinstance(body, ASTStatementsNode):
+                body.add_child(iterator)
+            else:
+                body = ASTStatementsNode([body, iterator])
+
+        loop = ASTLoopStatementNode(condition, body)
+
+        if initializer:
+            return ASTStatementsNode([initializer, loop])
+
+        return loop
 
     def visitForeachStatement(self, ctx: CSharpParser.ForeachStatementContext):
-        return super().visitForeachStatement(ctx)
+        condition = ASTBinaryOperationNode(ASTComparisonOperation.IN,
+                                           ASTVariableDeclarationNode(ctx.identifier().accept(self),
+                                                                      ctx.local_variable_type().accept(self)),
+                                           ctx.expression().accept(self))
+        return ASTLoopStatementNode(condition, ctx.embedded_statement().accept(self))
 
     def visitBreakStatement(self, ctx: CSharpParser.BreakStatementContext):
-        return super().visitBreakStatement(ctx)
+        return ASTBreakStatementNode()
 
     def visitContinueStatement(self, ctx: CSharpParser.ContinueStatementContext):
-        return super().visitContinueStatement(ctx)
+        return ASTContinueStatementNode()
 
     def visitGotoStatement(self, ctx: CSharpParser.GotoStatementContext):
-        return super().visitGotoStatement(ctx)
+        identifier = ctx.identifier()
+        if identifier:
+            return ASTJumpStatementNode(identifier.accept(self))
+
+        if ctx.CASE():
+            return ASTJumpStatementNode(ASTCaseLabelNode(ctx.expression().accept(self)))
+
+        return ASTJumpStatementNode(ASTDefaultLabelNode())
 
     def visitReturnStatement(self, ctx: CSharpParser.ReturnStatementContext):
-        return super().visitReturnStatement(ctx)
+        expression = ctx.expression()
+        if expression:
+            return ASTReturnStatementNode(expression.accept(self))
+
+        return ASTReturnStatementNode()
 
     def visitThrowStatement(self, ctx: CSharpParser.ThrowStatementContext):
-        return super().visitThrowStatement(ctx)
+        expression = ctx.expression()
+        if expression:
+            return ASTThrowStatementNode(expression.accept(self))
+
+        return ASTThrowStatementNode()
 
     def visitTryStatement(self, ctx: CSharpParser.TryStatementContext):
-        return super().visitTryStatement(ctx)
+        catches = ctx.catch_clauses()
+        if catches:
+            catches = catches.accept(self)
+
+        finally_ = ctx.finally_clause()
+        if finally_:
+            finally_ = finally_.accept(self)
+
+        return ASTTryStatementNode(ctx.block().accept(self), catches, finally_=finally_)
 
     def visitCheckedStatement(self, ctx: CSharpParser.CheckedStatementContext):
-        return super().visitCheckedStatement(ctx)
+        return ctx.block().accept(self)
 
     def visitUncheckedStatement(self, ctx: CSharpParser.UncheckedStatementContext):
-        return super().visitUncheckedStatement(ctx)
+        return ctx.block().accept(self)
 
     def visitLockStatement(self, ctx: CSharpParser.LockStatementContext):
-        return super().visitLockStatement(ctx)
+        return ASTLockStatementNode(ctx.expression().accept(self), ctx.embedded_statement().accept(self))
 
     def visitUsingStatement(self, ctx: CSharpParser.UsingStatementContext):
-        return super().visitUsingStatement(ctx)
+        return ASTWithStatementNode(ctx.resource_acquisition().accept(self), ctx.embedded_statement().accept(self))
 
     def visitYieldStatement(self, ctx: CSharpParser.YieldStatementContext):
-        return super().visitYieldStatement(ctx)
+        if ctx.BREAK():
+            return ASTYieldStatementNode(ASTBreakStatementNode())
+
+        return ASTYieldStatementNode(ASTReturnStatementNode(ctx.expression().accept(self)))
 
     def visitUnsafeStatement(self, ctx: CSharpParser.UnsafeStatementContext):
-        return super().visitUnsafeStatement(ctx)
+        return ctx.block().accept(self)
 
     def visitFixedStatement(self, ctx: CSharpParser.FixedStatementContext):
-        return super().visitFixedStatement(ctx)
+        return ctx.embedded_statement().accept(self)
 
     def visitBlock(self, ctx: CSharpParser.BlockContext):
-        return super().visitBlock(ctx)
+        return ctx.statement_list().accept(self)
 
     def visitLocal_variable_declaration(self, ctx: CSharpParser.Local_variable_declarationContext):
-        return super().visitLocal_variable_declaration(ctx)
+        type_ = ctx.local_variable_type()
+        if type_:
+            type_ = type_.accept(self)
+
+        return self.build_multi([ASTVariableDeclarationNode(type_=type_, **(declarator.accept(self))) for declarator in
+                                 ctx.local_variable_declarator()], ASTVariableDeclarationsNode)
 
     def visitLocal_variable_type(self, ctx: CSharpParser.Local_variable_typeContext):
-        return super().visitLocal_variable_type(ctx)
+        var = ctx.VAR()
+        if var:
+            return ASTIdentifierNode(var.getText())
+
+        return ctx.type_().accept(self)
 
     def visitLocal_variable_declarator(self, ctx: CSharpParser.Local_variable_declaratorContext):
-        return super().visitLocal_variable_declarator(ctx)
+        identifier = ctx.identifier().accept(self)
+
+        local_variable_initializer = ctx.local_variable_initializer()
+        if local_variable_initializer:
+            return {
+                "name": identifier,
+                "initial_value": local_variable_initializer.accept(self)
+            }
+
+        return {
+            "variable": identifier
+        }
 
     def visitLocal_variable_initializer(self, ctx: CSharpParser.Local_variable_initializerContext):
-        return super().visitLocal_variable_initializer(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitLocal_constant_declaration(self, ctx: CSharpParser.Local_constant_declarationContext):
-        return super().visitLocal_constant_declaration(ctx)
+        type_ = ctx.type_().accept(self)
+
+        return self.build_multi([ASTConstantDeclarationNode(type_=type_, **(declarator.accept(self))) for declarator in
+                                 ctx.constant_declarators().accept(self)], ASTConstantDeclarationsNode)
 
     def visitIf_body(self, ctx: CSharpParser.If_bodyContext):
-        return super().visitIf_body(ctx)
+        return ctx.getChild(0).accept(self)
 
     def visitSwitch_section(self, ctx: CSharpParser.Switch_sectionContext):
-        return super().visitSwitch_section(ctx)
+        return ASTSwitchSectionNode(
+            self.build_multi([label.accept(self) for label in ctx.switch_label()], ASTSwitchLabelsNode),
+            ctx.statement_list().accept(self))
 
     def visitSwitch_label(self, ctx: CSharpParser.Switch_labelContext):
-        return super().visitSwitch_label(ctx)
+        if ctx.CASE():
+            return ASTCaseLabelNode(ctx.expression().accept(self))
+
+        return ASTDefaultLabelNode()
 
     def visitStatement_list(self, ctx: CSharpParser.Statement_listContext):
         return super().visitStatement_list(ctx)
@@ -767,10 +855,13 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitTyped_member_declaration(ctx)
 
     def visitConstant_declarators(self, ctx: CSharpParser.Constant_declaratorsContext):
-        return super().visitConstant_declarators(ctx)
+        return self.visitChildren(ctx)
 
     def visitConstant_declarator(self, ctx: CSharpParser.Constant_declaratorContext):
-        return super().visitConstant_declarator(ctx)
+        return {
+            "name": ctx.identifier().accept(self),
+            "initial_value": ctx.expression().accept(self)
+        }
 
     def visitVariable_declarators(self, ctx: CSharpParser.Variable_declaratorsContext):
         return super().visitVariable_declarators(ctx)

@@ -172,7 +172,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
                 static = True
 
         attributes = []
-        for variable in node.variables.accept(self):
+        for variable in node.name.accept(self):
             attributes.append(Attribute(variable, visibility, type_, None, static))
 
         return attributes if attributes else None

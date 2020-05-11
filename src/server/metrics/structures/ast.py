@@ -455,6 +455,130 @@ class ASTDecoratorsNode(ASTMultiplesNode):
         return visitor.visit_decorators(self)
 
 
+class ASTSwitchSectionsNode(ASTMultiplesNode):
+    """
+    Switch sections.
+
+    Representation of multiple, consecutive switch sections.
+    """
+
+    def __init__(self, switch_sections: Sequence[ASTNode]):
+        """
+        Switch sections.
+
+        :param switch_sections: The switch sections (in order) to be represented.
+        """
+        super().__init__(switch_sections)
+
+    def __str__(self):
+        return f"Multiple, consecutive switch sections.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTSwitchSectionsNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_switch_sections method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_switch_sections(self)
+
+
+class ASTSwitchLabelsNode(ASTMultiplesNode):
+    """
+        Switch labels.
+
+        Representation of multiple, consecutive switch labels.
+        """
+
+    def __init__(self, switch_labels: Sequence[ASTNode]):
+        """
+        Switch labels.
+
+        :param switch_labels: The switch labels (in order) to be represented.
+        """
+        super().__init__(switch_labels)
+
+    def __str__(self):
+        return f"Multiple, consecutive switch labels.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTSwitchLabelsNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_switch_labels method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_switch_labels(self)
+    
+
+class ASTVariableDeclarationsNode(ASTMultiplesNode):
+    """
+    Variable declarations.
+
+    Representation of multiple, consecutive variable declarations.
+    """
+
+    def __init__(self, variable_declarations: Sequence[ASTNode]):
+        """
+        Variable declarations.
+
+        :param variable_declarations: The variable declarations (in order) to be represented.
+        """
+        super().__init__(variable_declarations)
+
+    def __str__(self):
+        return f"Multiple, consecutive variable declarations.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTVariableDeclarationsNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_variable_declarations method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_variable_declarations(self)
+    
+    
+class ASTConstantDeclarationsNode(ASTMultiplesNode):
+    """
+    Constant declarations.
+
+    Representation of multiple, consecutive constant declarations.
+    """
+
+    def __init__(self, constant_declarations: Sequence[ASTNode]):
+        """
+        Constant declarations.
+
+        :param constant_declarations: The constant declarations (in order) to be represented.
+        """
+        super().__init__(constant_declarations)
+
+    def __str__(self):
+        return f"Multiple, consecutive constant declarations.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTConstantDeclarationsNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_constant_declarations method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_constant_declarations(self)
+
+
 # endregion
 
 # region Statements
@@ -523,28 +647,28 @@ class ASTDelStatementNode(ASTStatementNode):
 class ASTVariableDeclarationNode(ASTStatementNode):
     """
     Variable declaration.
-
-    Declaring one or more variables.
     """
 
-    def __init__(self, variables: ASTNode, type_: Optional[ASTNode] = None,
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, initial_value: Optional[ASTNode]=None,
                  modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Variable declaration.
-        :param variables: The variable(s) being declared.
-        :param type_: The type of the variable(s) being declared.
-        :param modifiers: The modifier(s) applied to the variable(s).
+        :param name: The variable being declared.
+        :param type_: The type of the variable being declared.
+        :param initial_value: The initial value assigned to the variable.
+        :param modifiers: The modifier applied to the variable.
         """
-        self.variables = variables
+        self.name = name
         self.type = type_
+        self.initial_value = initial_value
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.variables, self.type)
+        super().__init__(self.name, self.type)
 
     def __str__(self):
-        return f"Variable declaration.\nVariable(s): {self.variables}\nType: {self.type}\nModifiers: {self.modifiers}"
+        return f"Variable declaration.\nName: {self.name}\nType: {self.type}\nInitial value: {self.initial_value}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTVariableDeclaration(variables={self.variables}, type={self.type}, modifiers={self.modifiers})"
+        return f"ASTVariableDeclaration(name={self.name}, type={self.type}, initial_value={self.initial_value}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -554,6 +678,41 @@ class ASTVariableDeclarationNode(ASTStatementNode):
         :return: The result of the visit.
         """
         return visitor.visit_variable_declaration(self)
+    
+    
+class ASTConstantDeclarationNode(ASTStatementNode):
+    """
+    Constant declaration.
+    """
+
+    def __init__(self, name: ASTNode, type_: ASTNode, initial_value: ASTNode, modifiers: Optional[Sequence[ASTModifier]] = None):
+        """
+        Constant declaration.
+        :param name: The constant being declared.
+        :param type_: The type of the constant being declared.
+        :param initial_value: The initial value assigned to the constant.
+        :param modifiers: The modifier applied to the constant.
+        """
+        self.name = name
+        self.type = type_
+        self.initial_value = initial_value
+        self.modifiers = modifiers if modifiers is not None else []
+        super().__init__(self.name, self.type)
+
+    def __str__(self):
+        return f"Constant declaration.\nName: {self.name}\nType: {self.type}\nInitial value: {self.initial_value}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTConstantDeclaration(name={self.name}, type={self.type}, initial_value={self.initial_value}, modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_constant_declaration method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_constant_declaration(self)
 
 
 class ASTAssignmentStatementNode(ASTStatementNode):
@@ -1308,6 +1467,98 @@ class ASTClassDefinitionNode(ASTStatementNode):
         :return: The result of the visit.
         """
         return visitor.visit_class_definition(self)
+
+
+class ASTSwitchStatementNode(ASTStatementNode):
+    """
+    Switch statement.
+    """
+
+    def __init__(self, match_expression: ASTNode, sections: Optional[ASTNode] = None):
+        """
+        Switch statement.
+
+        :param match_expression: The expression to match against the case label patterns.
+        :param sections: The switch sections contained within the switch statement.
+        """
+        self.match_expression = match_expression
+        self.sections = sections
+        super().__init__(self.match_expression, self.sections)
+
+    def __str__(self):
+        return f"Switch statement.\nMatch expression: {self.match_expression}\nSections: {self.sections}"
+
+    def __repr__(self):
+        return f"ASTSwitchStatementNode(match_expression={self.match_expression}, sections={self.sections})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_switch_statement method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_switch_statement(self)
+    
+    
+class ASTJumpStatementNode(ASTStatementNode):
+    """
+    Jump.
+    """
+
+    def __init__(self, target: ASTNode):
+        """
+        Jump.
+        
+        :param target: The target of the jump.
+        """
+        self.target = target
+        super().__init__(target)
+
+    def __str__(self):
+        return f"Jump.\nTarget: {self.target}"
+
+    def __repr__(self):
+        return f"ASTJumpStatementNode(target={self.target})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_jump_statement method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_jump_statement(self)
+
+
+class ASTLockStatementNode(ASTStatementNode):
+    """
+    Lock.
+    """
+
+    def __init__(self, lock_object: ASTNode, body: ASTNode):
+        """
+        Lock.
+
+        :param lock_object: The object to acquire a lock on.
+        :param body: The code to be executed with the lock acquired.
+        """
+        self.lock_object = lock_object
+        self.body = body
+
+        super().__init__(self.lock_object, self.body)
+
+    def __str__(self):
+        return f"Lock.\nLock object: {self.lock_object}\nBody: {self.body}"
+
+    def __repr__(self):
+        return f"ASTLockStatementNode(lock_object={self.lock_object}, body={self.body})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_lock_statement method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_lock_statement(self)
 
 
 # endregion
@@ -2853,6 +3104,88 @@ class ASTLabelNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_label(self)
+
+
+class ASTSwitchSectionNode(ASTNode):
+    """
+    Switch section.
+    """
+
+    def __init__(self, labels: ASTNode, body: ASTNode):
+        """
+        Switch section.
+
+        :param labels: The labels contained within the switch section.
+        :param body: The code to execute if the match expressions matches with one of the label patterns.
+        """
+        self.labels = labels
+        self.body = body
+        super().__init__(self.labels, self.body)
+
+    def __str__(self):
+        return f"Switch section.\nLabels: {self.labels}\nBody: {self.body}"
+
+    def __repr__(self):
+        return f"ASTSwitchStatementNode(labels={self.labels}, body={self.body})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_switch_statement method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_switch_section(self)
+
+
+class ASTCaseLabelNode(ASTNode):
+    """
+    Case label.
+    """
+    def __init__(self, pattern: ASTNode):
+        """
+        Case label.
+
+        :param pattern: The pattern for the case label.
+        """
+        self.pattern = pattern
+        super().__init__(self.pattern)
+
+    def __str__(self):
+        return f"Case label.\nPattern: {self.pattern}"
+
+    def __repr__(self):
+        return f"ASTCaseLabelNode(pattern={self.pattern})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_case_label method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_case_label(self)
+
+
+class ASTDefaultLabelNode(ASTNode):
+    """
+    Default label.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def __str__(self):
+        return f"Default label."
+
+    def __repr__(self):
+        return f"ASTDefaultLabelNode()"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_default_label method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_default_label(self)
 
 
 # endregion

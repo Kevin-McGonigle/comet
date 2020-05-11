@@ -1,11 +1,8 @@
 import React from 'react';
-import styles from './Menu.css';
-import classnames from 'classnames';
 import { Menu, Popover, Button, Position } from 'evergreen-ui';
 
 const ToolbarMenu  = props => {
     const {
-        metricInfo,
     } = props;
 
     return (
@@ -14,11 +11,8 @@ const ToolbarMenu  = props => {
         content={
           <Menu>
             <Menu.Group title="Actions">
-              <Menu.Item icon="people">Share...</Menu.Item>
-              <Menu.Item icon="circle-arrow-right">Move...</Menu.Item>
-              <Menu.Item icon="edit" secondaryText="⌘R">
-                Rename...
-              </Menu.Item>
+              <Menu.Item icon="people">Create</Menu.Item>
+              <Menu.Item icon="circle-arrow-right">Upload</Menu.Item>
             </Menu.Group>
             <Menu.Divider />
             <Menu.Group title="destructive">

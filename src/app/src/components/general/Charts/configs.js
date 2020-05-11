@@ -346,7 +346,6 @@ export const classDiagramData = {
     ],
     links: [
         {source: "A", target: "B", label: "test", value: 1},
- 
     ]
 }
 

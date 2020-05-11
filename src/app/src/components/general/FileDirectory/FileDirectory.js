@@ -8,6 +8,7 @@ const cx = args => classnames(styles, args)
 
 const FileDirectory = props => {
     const {
+        selectedFile,
         fileNames,
         setSelectedFile,
     } = props;
@@ -42,10 +43,10 @@ const FileDirectory = props => {
                                         isSelected
                                         width="250px"
                                         textAlign="center"
-                                        isHighlighted={true}
+                                        isHighlighted={selectedFile === file}
                                         onClick={e => setSelectedFileHandler(e)}
                                     >
-                                        <Table.TextCell id={file}>{file}</Table.TextCell>
+                                        <Table.TextCell backgroundColor={selectedFile !== file && "grey"} id={file}>{file}</Table.TextCell>
                                     </Table.Row>
                                 )
                             })}

@@ -1,25 +1,9 @@
 const initialState = [
-    {
-        "fileName": null,
-        "structures": {
-            "controlFlowGraph": null,
-            "classDiagram": null,
-            "inheritanceTree": null,
-            "abstractSyntaxTree": null,
-        },
-        "metrics": {
-            "dependencyGraph": null,
-            "afferentCoupling": null,
-            "efferentCoupling": null,
-            "logicalLinesOfCode": null,
-            "cyclomaticComplexity": null,
-            "maximumInheritanceDepth": null,
-            "maximumNestingDepth": null,
-        }
-    }
+  
 ];
 
 export const SET_METRICS = 'SET_METRICS';
+export const ADD_TO_METRICS = 'ADD_TO_METRICS';
 
 const metricsReducer = (state = initialState, action) => {
     switch(action.type) {
@@ -39,7 +23,7 @@ export const actions = {
             type: SET_METRICS,
             payload: data
         }
-    }
+    },
 };
 
 export default metricsReducer;

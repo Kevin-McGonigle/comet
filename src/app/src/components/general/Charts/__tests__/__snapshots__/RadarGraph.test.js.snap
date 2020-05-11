@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`should render RadarGraph as expected 1`] = `"<canvas height=\\"150\\" width=\\"150\\"></canvas>"`;

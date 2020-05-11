@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render DependencyGraphNode as expected 1`] = `"<div role=\\"button\\" aria-haspopup=\\"true\\" class=\\"css-nil 📦w_50px 📦h_50px 📦dspl_flex 📦algn-itms_center 📦just-cnt_center 📦bg-clr_3498db 📦box-szg_border-box\\">file</div>"`;

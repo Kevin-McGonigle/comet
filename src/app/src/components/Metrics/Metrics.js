@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import styles from './Metrics.css';
 import classnames from 'classnames';
 import Toolbar from '../general/Toolbar/Toolbar';
@@ -13,7 +11,7 @@ import TreeMapContainer from '../general/TreeMap/TreeMapContainer';
 const cx = args => classnames(styles, args)
 
 const Metrics = props => {
-    const { selected, metrics } = props;
+    const {fileDirectory, selected, metrics } = props;
     const selectedMetrics = Object.values(metrics).filter(value => value.fileName === selected)[0]
 
     const [tabState, setTabState] = useState({
@@ -47,7 +45,7 @@ const Metrics = props => {
 
     return (
         <>
-            <FileDirectoryContainer />
+            { fileDirectory && <FileDirectoryContainer /> }
             <div className={cx("metricContainer")}>
                 <Toolbar tabState={tabState} setTabState={setTabState} />
                 <div className={cx("metricTabContainer")}>
@@ -58,6 +56,4 @@ const Metrics = props => {
     )
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
-
-export default connect(null, mapDispatchToProps)(Metrics);
+export default Metrics;

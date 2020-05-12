@@ -1,3 +1,6 @@
+from antlr4 import ParserRuleContext
+from antlr4.tree.Tree import TerminalNodeImpl
+
 from metrics.parsers.csharp.base.CSharpParser import CSharpParser
 from metrics.parsers.csharp.base.CSharpParserVisitor import CSharpParserVisitor
 from metrics.structures.ast import *
@@ -7,47 +10,84 @@ from metrics.visitors.structures.ast_generation_visitor import ASTGenerationVisi
 class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
     # region Helpers
 
+    def build_type(self, base_type: ASTNode,
+                   extensions: Optional[Sequence[Union[TerminalNodeImpl, ParserRuleContext]]] = None) -> ASTNode:
+        if not extensions:
+            return base_type
+
+        extension = extensions[-1]
+        if isinstance(extension, TerminalNodeImpl):
+            if extension.getSymbol() == CSharpParser.INTERR:
+                return ASTNullableTypeNode(self.build_type(base_type, extensions[:-1]))
+
+            if extension.getSymbol() == CSharpParser.STAR:
+                return ASTPointerTypeNode(self.build_type(base_type, extensions[:-1]))
+
+        if isinstance(extension, CSharpParser.Rank_specifierContext):
+            return ASTArrayTypeNode(self.build_type(base_type, extensions[:-1]), extension.accept(self))
+
+    @staticmethod
+    def add_to_multi(multi: ASTMultiplesNode, child: ASTNode):
+        if isinstance(child, ASTMultiplesNode):
+            for child in child.children:
+                multi.add_child(child)
+        elif child:
+            multi.add_child(child)
+
+
     # endregion
 
     # region Visits
 
     def visitCompilation_unit(self, ctx: CSharpParser.Compilation_unitContext):
+        statements = ASTStatementsNode([])
+
         extern_alias_directives = ctx.extern_alias_directives()
         if extern_alias_directives:
-            extern_alias_directives = extern_alias_directives.accept(self)
+            self.add_to_multi(statements, extern_alias_directives.accept(self))
 
         using_directives = ctx.using_directives()
         if using_directives:
-            using_directives = using_directives.accept(self)
+            self.add_to_multi(statements, using_directives.accept(self))
 
-        global_attribute_section = ctx.global_attribute_section()
-        if global_attribute_section:
-            global_attribute_section = [gas.accept(self) for gas in global_attribute_section]
+        global_attribute_sections = ctx.global_attribute_section()
+        if global_attribute_sections:
+            self.add_to_multi(statements, self.build_multi([gas.accept(self) for gas in global_attribute_sections],
+                                                           ASTStatementsNode))
 
         namespace_member_declarations = ctx.namespace_member_declarations()
         if namespace_member_declarations:
-            namespace_member_declarations = namespace_member_declarations.accept(self)
+            self.add_to_multi(statements, namespace_member_declarations.accept(self))
 
-        # TODO
+        return statements
 
     def visitNamespace_or_type_name(self, ctx: CSharpParser.Namespace_or_type_nameContext):
-        qualified_alias_member = ctx.qualified_alias_member()
-        if qualified_alias_member:
-            qualified_alias_member = qualified_alias_member.accept(self)
-
         children = ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
                                                                    CSharpParser.Type_argument_listContext))
 
-        # TODO
+        members = []
+        i = 0
+        while i < len(children):
+            if isinstance(children[i], CSharpParser.IdentifierContext):
+                if isinstance(children[i + 1], CSharpParser.Type_argument_listContext):
+                    members.append(ASTTypeNode(children[i].accept(self), children[i + 1].accept(self)))
+                    i += 1
+                else:
+                    members.append(children[i].accept(self))
+            i += 1
+
+        qualified_alias_member = ctx.qualified_alias_member()
+        if qualified_alias_member:
+            members = [(qualified_alias_member.accept(self))] + [members]
+
+        return self.build_left_associated(members, ASTMemberNode)
 
     def visitType_(self, ctx: CSharpParser.Type_Context):
-        base_type = ctx.base_type().accept(self)
-
-        children = ctx.getChildren(
+        base = ctx.base_type().accept(self)
+        extensions = ctx.getChildren(
             lambda child: self.filter_child(child, CSharpParser.INTERR, CSharpParser.Rank_specifierContext,
                                             CSharpParser.STAR))
-
-        # TODO
+        return self.build_type(base, extensions)
 
     def visitBase_type(self, ctx: CSharpParser.Base_typeContext):
         simple_type = ctx.simple_type()
@@ -58,7 +98,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         if class_type:
             return class_type.accept(self)
 
-        # TODO: return unknown pointer
+        return ASTPointerTypeNode(ctx.VOID().getText())
 
     def visitSimple_type(self, ctx: CSharpParser.Simple_typeContext):
         numeric_type = ctx.numeric_type()
@@ -100,29 +140,22 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(argument, ASTArgumentsNode)
 
     def visitArgument(self, ctx: CSharpParser.ArgumentContext):
-        expression = ctx.expression()
+        value = ctx.expression().accept(self)
 
-        identifier = ctx.identifier()
-        if identifier:
-            identifier = identifier.accept(self)
-
-        if ctx.REF():
-            pass
-            # TODO: add support for reference arguments (maybe by adding a modifiers attribute to ASTArgumentNode)
-
-        if ctx.OUT():
-            pass
-            # TODO: add support for output arguments
+        modifiers = ctx.refout()
+        if modifiers:
+            modifiers = [modifiers.getText()]
 
         if ctx.VAR():
-            pass
-            # TODO: handle variable declaration arguments
+            value = ASTVariableDeclarationNode(value, ASTIdentifierNode(ctx.VAR().getText()))
+        elif ctx.type_():
+            value = ASTVariableDeclarationNode(value, ASTIdentifierNode(ctx.type_().accept(self)))
 
-        if ctx.type_():
-            pass
-            # TODO: handle variable declaration arguments
+        parameter = ctx.identifier()
+        if parameter:
+            return ASTKeywordArgumentNode(parameter.accept(self), value, modifiers)
 
-        return expression.accept(self)
+        return ASTArgumentNode(value, modifiers)
 
     def visitExpression(self, ctx: CSharpParser.ExpressionContext):
         return ctx.getChild(0).accept(self)
@@ -220,9 +253,10 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
             "+": ASTArithmeticOperation.ADD,
             "-": ASTArithmeticOperation.SUBTRACT
         }
-        return self.build_bin_op_choice([child.accept(self) if isinstance(child,
-                                                                          CSharpParser.Multiplicative_expressionContext) else
-                                         operators[child.getText()] for child in ctx.getChildren()])
+        children = [
+            child.accept(self) if isinstance(child, CSharpParser.Multiplicative_expressionContext) else operators[
+                child.getText()] for child in ctx.getChildren()]
+        return self.build_bin_op_choice(children)
 
     def visitMultiplicative_expression(self, ctx: CSharpParser.Multiplicative_expressionContext):
         operators = {
@@ -429,8 +463,11 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitGeneric_dimension_specifier(ctx)
 
     def visitIsType(self, ctx: CSharpParser.IsTypeContext):
-        # TODO
-        return ctx.base_type().accept(self)
+        base = ctx.base_type().accept(self)
+        extensions = ctx.getChildren(
+            lambda child: self.filter_child(child, CSharpParser.INTERR, CSharpParser.Rank_specifierContext,
+                                            CSharpParser.STAR))
+        return self.build_type(base, extensions)
 
     def visitLambda_expression(self, ctx: CSharpParser.Lambda_expressionContext):
         anonymous_function = ASTAnonymousFunctionDefinitionNode(ctx.anonymous_function_body().accept(self),
@@ -566,7 +603,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.defaultResult()
 
     def visitExpressionStatement(self, ctx: CSharpParser.ExpressionStatementContext):
-        return ctx.expression().accept(self)  # TODO: Convert to statement somehow
+        return ctx.expression().accept(self)
 
     def visitIfStatement(self, ctx: CSharpParser.IfStatementContext):
         condition = ctx.expression().accept(self)
@@ -800,33 +837,34 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_left_associated(self.visitChildren(ctx), ASTMemberNode)
 
     def visitNamespace_body(self, ctx: CSharpParser.Namespace_bodyContext):
+        statements = ASTStatementsNode([])
+
         extern_alias_directives = ctx.extern_alias_directives()
         if extern_alias_directives:
-            extern_alias_directives = extern_alias_directives.accept(self)
+            self.add_to_multi(statements, extern_alias_directives.accept(self))
 
         using_directives = ctx.using_directives()
         if using_directives:
-            using_directives = using_directives.accept(self)
+            self.add_to_multi(statements, using_directives.accept(self))
 
         namespace_member_declarations = ctx.namespace_member_declarations()
         if namespace_member_declarations:
-            namespace_member_declarations.accept(self)
+            self.add_to_multi(statements, namespace_member_declarations.accept(self))
 
-        # TODO
+        return statements
 
     def visitExtern_alias_directives(self, ctx: CSharpParser.Extern_alias_directivesContext):
-        # TODO
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitExtern_alias_directive(self, ctx: CSharpParser.Extern_alias_directiveContext):
-        # TODO
-        return super().visitExtern_alias_directive(ctx)
+        return ASTExternAliasDirectiveNode(ctx.identifier().accept(self))
 
     def visitUsing_directives(self, ctx: CSharpParser.Using_directivesContext):
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitUsingAliasDirective(self, ctx: CSharpParser.UsingAliasDirectiveContext):
-        return ASTImportStatementNode(ASTAliasNode(ctx.namespace_or_type_name().accept(self), ctx.identifier().accept(self)))
+        return ASTImportStatementNode(
+            ASTAliasNode(ctx.namespace_or_type_name().accept(self), ctx.identifier().accept(self)))
 
     def visitUsingNamespaceDirective(self, ctx: CSharpParser.UsingNamespaceDirectiveContext):
         return ASTImportStatementNode(ctx.namespace_or_type_name().accept(self))
@@ -1130,34 +1168,42 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitEnum_member_declaration(ctx)
 
     def visitGlobal_attribute_section(self, ctx: CSharpParser.Global_attribute_sectionContext):
-        # TODO
-        return super().visitGlobal_attribute_section(ctx)
+        return ASTAttributeSectionNode(ctx.global_attribute_target().accept(self), ctx.attribute_list().accept(self))
 
     def visitGlobal_attribute_target(self, ctx: CSharpParser.Global_attribute_targetContext):
         return ctx.getChild(0).accept(self)
 
     def visitAttributes(self, ctx: CSharpParser.AttributesContext):
-        # TODO
-        return super().visitAttributes(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitAttribute_section(self, ctx: CSharpParser.Attribute_sectionContext):
-        # TODO
-        return super().visitAttribute_section(ctx)
+        attributes = ctx.attribute_list().accept(self)
+
+        target = ctx.attribute_target()
+        if target:
+            return ASTAttributeSectionNode(attributes, target)
+
+        return ASTAttributeSectionNode(attributes)
 
     def visitAttribute_target(self, ctx: CSharpParser.Attribute_targetContext):
         return ctx.getChild(0).accept(self)
 
     def visitAttribute_list(self, ctx: CSharpParser.Attribute_listContext):
-        # TODO
-        return super().visitAttribute_list(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTAttributesNode)
 
     def visitAttribute(self, ctx: CSharpParser.AttributeContext):
-        # TODO
-        return super().visitAttribute(ctx)
+        return ASTAttributeNode(ctx.namespace_or_type_name().accept(self),
+                                self.build_multi([argument.accept(self) for argument in ctx.attribute_argument()],
+                                                 ASTArgumentsNode))
 
     def visitAttribute_argument(self, ctx: CSharpParser.Attribute_argumentContext):
-        # TODO
-        return super().visitAttribute_argument(ctx)
+        value = ctx.expression().accept(self)
+
+        name = ctx.identifier()
+        if name:
+            return ASTKeywordArgumentNode(name.accept(self), value)
+
+        return ASTArgumentNode(value)
 
     def visitPointer_type(self, ctx: CSharpParser.Pointer_typeContext):
         # TODO

@@ -102,23 +102,4 @@ class ASTGenerationVisitor(ParseTreeVisitor):
 
         return False
 
-    @staticmethod
-    def get_visibility(name: str) -> ASTVisibilityModifier:
-        """
-        Get the corresponding visibility modifier for the member's name; with one leading underscore indicating a
-        protected member and two indicating a private member
-        (according to the PEP 8 style guide
-        https://www.python.org/dev/peps/pep-0008/#method-names-and-instance-variables).
-
-        :param name: The member's name/identifier.
-        :return: The corresponding visibility/access modifier.
-        """
-        if name.startswith("__"):
-            return ASTVisibilityModifier.PRIVATE
-
-        if name.startswith("_"):
-            return ASTVisibilityModifier.PROTECTED
-
-        return ASTVisibilityModifier.PUBLIC
-
     # endregion

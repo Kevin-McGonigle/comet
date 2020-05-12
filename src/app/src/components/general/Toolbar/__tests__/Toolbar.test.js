@@ -1,6 +1,6 @@
 import React from 'react';
 import Toolbar from '../Toolbar';
-import { shallow } from 'enzyme';
+import { shallow, mount } from 'enzyme';
 import "../../../../setupTests";
 
 test('should render Toolbar succesfully', () => { 
@@ -12,4 +12,20 @@ test('should render Toolbar succesfully', () => {
     const setTabState = jest.fn();
     const component = shallow(<Toolbar tabState={tabState} setTabState={setTabState}/>);
     expect(component.html()).toMatchSnapshot();
+});
+
+
+test('should change to new tab on tab click succesfully', () => { 
+    const tabState = {
+        selectedIndex: 0,
+        tabs: ["Tab", "Tab2"],
+        tabContent: []
+    };
+    const setTabState = jest.fn();
+    const component = mount(<Toolbar tabState={tabState} setTabState={setTabState}/>);
+    const tabButton = component.find("#Tab2").first();
+    tabButton.simulate('click');
+    expect(setTabState).toHaveBeenCalled();
+    expect(tabState.selectedIndex == 1);
+
 });

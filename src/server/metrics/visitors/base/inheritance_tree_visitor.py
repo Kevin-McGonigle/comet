@@ -29,7 +29,7 @@ class InheritanceTreeVisitor(GraphVisitor):
 
     def visit_children(self, cls):
         """
-        "Visit" each of the class's
+        Visit each of the class' subclasses.
         :param cls: The parent class whose subclasses to visit.
         :type cls: Class
         :return: Mapping of each subclass to their visit result.

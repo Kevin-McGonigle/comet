@@ -11,7 +11,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setInheritanceTree: (inheritanceTree) => dispatch(metricsActions.setInheritanceTree(inheritanceTree)),
+        setMetrics: (metrics) => dispatch(metricsActions.setMetrics(metrics)),
         setFileData: (data) => dispatch(fileDataActions.setFileData(data)),
         setAlertSuccess: (text) => dispatch(alertActions.setAlertSuccess(text)),
         setAlertDanger: (text) => dispatch(alertActions.setAlertDanger(text)),

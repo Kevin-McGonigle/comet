@@ -28,7 +28,7 @@ const UploadModal = props => {
         setAlertSuccess,
         setAlertDanger,
         setFileData,
-        setInheritanceTree,
+        setMetrics,
     } = props;
 
     const fileItemDeleteOnClickHandler = (name) => {
@@ -73,7 +73,7 @@ const UploadModal = props => {
             if (data) {
                 const shapedData = shapeFileData(fileData);
                 setFileData(shapedData);
-                setInheritanceTree(data);
+                setMetrics(data);
                 setAlertSuccess("Uploaded succesfully!")
                 history.push('/metrics');
             } else {

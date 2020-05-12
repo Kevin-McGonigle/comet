@@ -1,6 +1,6 @@
 import React from 'react';
 import { Graph } from 'react-d3-graph';
-import { Pane, Popover } from 'evergreen-ui';
+import { Pane } from 'evergreen-ui';
 import { configMapping } from './configs';
 import styles from './ForceDirectedGraph.css';
 import classnames from 'classnames';
@@ -15,7 +15,7 @@ const ForceDirectedGraph = (props) => {
     } = props;
 
     const windowHeight = window.screen.height - 200;
-    const windowWidth = window.screen.width - 800;
+    const windowWidth = window.screen.width - 350;
     const config = configMapping[graphType];
     config.height = windowHeight;
     config.width = windowWidth;

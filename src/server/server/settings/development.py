@@ -1,3 +1,3 @@
-from .default import *
+from server.settings.default import *
 
 DEBUG = True

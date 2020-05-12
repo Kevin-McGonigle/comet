@@ -1,18 +1,15 @@
-const initialState = {
-    hash: {},
-    inheritanceTree: {},
-};
+const initialState = [
+  
+];
 
-export const SET_INHERITANCE_TREE = 'SET_INHERITANCE_TREE';
+export const SET_METRICS = 'SET_METRICS';
+export const ADD_TO_METRICS = 'ADD_TO_METRICS';
 
 const metricsReducer = (state = initialState, action) => {
     switch(action.type) {
-        case SET_INHERITANCE_TREE:
-            const { hash, inheritance_tree } = action.payload;
+        case SET_METRICS:
             return {
-                inheritance_tree,
-                hash,
-                ...state.metrics,
+                ...action.payload,
             }
 
         default:
@@ -21,12 +18,12 @@ const metricsReducer = (state = initialState, action) => {
 };
 
 export const actions = {
-    setInheritanceTree: (data) => {
+    setMetrics: (data) => {
         return {
-            type: SET_INHERITANCE_TREE,
+            type: SET_METRICS,
             payload: data
         }
-    }
+    },
 };
 
 export default metricsReducer;

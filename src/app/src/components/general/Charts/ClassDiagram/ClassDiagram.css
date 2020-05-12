@@ -1,0 +1,42 @@
+
+#box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 200px;
+    color: white;
+    font-family: 'Raleway';
+    font-size: 12px;
+}
+
+.hrLine {
+    width: 380px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.classDiagramTable {
+    --borderWidth: 3px;
+    background: #1D1F20;
+    position: relative;
+    border-radius: var(--borderWidth);
+}
+
+.className {
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    text-align: center;
+}
+
+.classParent {
+    text-align: center;
+}
+
+.classArgs {
+}
+
+.classFunctions {
+}

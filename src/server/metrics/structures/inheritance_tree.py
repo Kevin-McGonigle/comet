@@ -84,7 +84,7 @@ class Class(Node):
         return f"Class.\nName: {self.name}\nSubclasses: {self.subclasses}"
 
     def __repr__(self):
-        return f"Class(name={self.name}, dependencies={self.subclasses})"
+        return f"Class(name={self.name}, subclasses={self.subclasses})"
 
     @property
     def subclasses(self):

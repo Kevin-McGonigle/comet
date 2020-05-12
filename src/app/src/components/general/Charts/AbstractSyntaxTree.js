@@ -1,12 +1,10 @@
 import React from 'react';
-import { TreeGraphContainer } from '../TreeGraph/TreeGraphContainer';
-import styles from './AbstractSyntaxTree.css';
-import classnames from 'classnames';
+import TreeGraph from '../TreeGraph/TreeGraph';
 import { Pane } from 'evergreen-ui';
 
-const cx = args => classnames(styles, args)
-
 const AbstractSyntaxTree = props => {
+    const { data } = props;
+    
     return (
         <Pane
             display="flex"
@@ -16,7 +14,7 @@ const AbstractSyntaxTree = props => {
             background="tint2"
             elevation={4}   
         >
-           <TreeGraphContainer />
+           <TreeGraph tree={data}/>
         </Pane>
     )
 };

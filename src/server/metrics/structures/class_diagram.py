@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import IntEnum, unique, Enum
+from enum import unique, Enum
 from typing import List, Any, Optional
 
 DEFAULT_RETURN_TYPE = "void"
@@ -241,7 +241,7 @@ class Visibility(ClassDiagramEnum):
 
 
 @unique
-class RelationshipType(IntEnum):
+class RelationshipType(ClassDiagramEnum):
     """
     Relationship type.
     """

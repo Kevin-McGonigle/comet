@@ -3,7 +3,19 @@ from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
-# from metrics.managers.manager import Manager
+from metrics.formatter import Formatter
+from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
+from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
+from metrics.parsers.python3.base.Python3Parser import Python3Parser
+
+
+calc_args = {
+    "python3": {
+        "parser": Python3Parser,
+        "lexer": Python3Lexer,
+        "visitor": ASTGenerationVisitor,
+    }
+}
 
 
 class FileUploadViewset(viewsets.ModelViewSet):
@@ -15,18 +27,31 @@ class FileUploadViewset(viewsets.ModelViewSet):
     serializer_class = FileSerializer
 
     def create(self, request, *args, **kwargs):
-        print('REQUEST', request.data, request.FILES)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        return_data = []
+        data_dict = dict(request.data.lists())
+        for i, file in enumerate(data_dict["name"]):
+            data = {
+                "name": file,
+                "size": data_dict["size"][i],
+                "file_type": data_dict["file_type"][i],
+                "file": data_dict["file"][i]
+            }
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
 
-        # TODO: Change to use new "Calculator" at src\server\metrics\calculator.py
-        # file_manager = Manager(self.queryset.get(hash=serializer.data['hash']).file)
-        # comet_result = file_manager.generate_comet_result()
-        # print(comet_result.inheritance_tree.get_json())
-        # return JsonResponse(
-        #     {'hash': serializer.data['hash'], 'inheritance_tree': comet_result.inheritance_tree.get_json()},
-        #     status=status.HTTP_201_CREATED, safe=False)
+            file_name = str(self.queryset.get(hash=serializer.data['hash']).file)
+            # with open(f'../server/uploads/{file_name}') as f:
+            #    content = f.read()
+
+            formatter = Formatter(file_name)
+            data = formatter.generate()
+            return_data.append(data)
+
+        # Hardcoded for now
+        # file_type = calc_args["python3"]
+        # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
+        return JsonResponse(return_data, status=status.HTTP_201_CREATED, safe=False)
 
 
 class FileInformationViewset(viewsets.ModelViewSet):

@@ -9,7 +9,7 @@ test('should render ForceDirectedGraph as expected', () => {
         <ForceDirectedGraph 
             title="Dependency Graph"
             data={dependencyGraphData} 
-            graphType="controlFlow"         
+            graphType="dynamic"         
         />
     );
     expect(component.html()).toMatchSnapshot();

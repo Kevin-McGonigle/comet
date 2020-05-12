@@ -1,6 +1,7 @@
 from typing import Type, List
 
-from antlr4.tree.Tree import TerminalNodeImpl, ParserRuleContext
+from antlr4 import ParserRuleContext
+from antlr4.tree.Tree import TerminalNodeImpl
 
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 from metrics.parsers.python3.base.Python3Visitor import Python3Visitor

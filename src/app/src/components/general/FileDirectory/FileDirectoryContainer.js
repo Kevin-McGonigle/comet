@@ -4,7 +4,8 @@ import FileDirectory from './FileDirectory';
 import { actions as fileActions } from '../../../store/fileData/fileData';
 
 const mapStateToProps = state => ({
-    fileNames: state.fileData.files.map(file => file.name),
+    fileNames: console.log(state) || state.fileData.files.map(file => file.name),
+    selectedFile: state.fileData.selected,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators(fileActions, dispatch);

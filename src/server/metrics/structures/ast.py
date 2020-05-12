@@ -69,6 +69,9 @@ class ASTNode(Node):
     def __contains__(self, item):
         return item in self.children
 
+    def values(self):
+        return list(self.children.values())
+
     def accept(self, visitor: ASTVisitor):
         """
         Accept an AST visitor.
@@ -615,8 +618,8 @@ class ASTAttributesNode(ASTMultiplesNode):
         :return: The result of the visit.
         """
         return visitor.visit_attributes(self)
-        
-        
+
+
 class ASTAttributeSectionsNode(ASTMultiplesNode):
     """
     Attribute sections.
@@ -997,14 +1000,13 @@ class ASTReturnStatementNode(ASTStatementNode):
 
         :param values: The value(s) being returned.
         """
-        self.values = values
-        super().__init__(self.values)
+        super().__init__({"values": values})
 
     def __str__(self):
-        return f"Return statement.\nValues: {self.values}"
+        return f"Return statement.\nValues: {self['values']}"
 
     def __repr__(self):
-        return f"ASTReturnStatementNode(values={self.values})"
+        return f"ASTReturnStatementNode(values={self['values']})"
 
     def accept(self, visitor):
         """
@@ -1026,14 +1028,13 @@ class ASTThrowStatementNode(ASTStatementNode):
 
         :param exception: The exception to be thrown.
         """
-        self.exception = exception
-        super().__init__(self.exception)
+        super().__init__({"exception": exception})
 
     def __str__(self):
-        return f"Throw statement.\nException: {self.exception}"
+        return f"Throw statement.\nException: {self['exception']}"
 
     def __repr__(self):
-        return f"ASTThrowStatementNode(exception={self.exception})"
+        return f"ASTThrowStatementNode(exception={self['exception']})"
 
     def accept(self, visitor):
         """
@@ -1056,15 +1057,14 @@ class ASTImportStatementNode(ASTStatementNode):
 
         :param libraries: The libraries to be imported.
         """
-        self.libraries = libraries
         self.modifiers = modifiers
-        super().__init__(self.libraries)
+        super().__init__({"libraries": libraries})
 
     def __str__(self):
-        return f"Import statement.\nLibraries: {self.libraries}\nModifiers: {self.modifiers}"
+        return f"Import statement.\nLibraries: {self['libraries']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTImportStatementNode(libraries={self.libraries}, modifiers={self.modifiers})"
+        return f"ASTImportStatementNode(libraries={self['libraries']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1089,14 +1089,13 @@ class ASTGlobalStatementNode(ASTStatementNode):
 
         :param variables: The global variable(s) being declared.
         """
-        self.variables = variables
-        super().__init__(self.variables)
+        super().__init__({"variables": variables})
 
     def __str__(self):
-        return f"Global variable(s) declaration.\nVariables: {self.variables}"
+        return f"Global variable(s) declaration.\nVariables: {self['variables']}"
 
     def __repr__(self):
-        return f"ASTGlobalStatementNode(variables={self.variables})"
+        return f"ASTGlobalStatementNode(variables={self['variables']})"
 
     def accept(self, visitor):
         """
@@ -1121,14 +1120,13 @@ class ASTNonLocalStatementNode(ASTStatementNode):
 
         :param variables: The nonlocal variable(s) being declared.
         """
-        self.variables = variables
-        super().__init__(self.variables)
+        super().__init__({"variables": variables})
 
     def __str__(self):
-        return f"Non-local variable(s) declaration.\nVariables: {self.variables}"
+        return f"Non-local variable(s) declaration.\nVariables: {self['variables']}"
 
     def __repr__(self):
-        return f"ASTNonLocalStatementNode(variable={self.variables})"
+        return f"ASTNonLocalStatementNode(variable={self['variables']})"
 
     def accept(self, visitor):
         """
@@ -1152,15 +1150,13 @@ class ASTAssertStatementNode(ASTStatementNode):
         :param condition: The condition to assert.
         :param message: The message for the error raised should the assertion fail.
         """
-        self.condition = condition
-        self.message = message
-        super().__init__(self.condition, self.message)
+        super().__init__({"condition": condition, "message": message})
 
     def __str__(self):
-        return f"Assert statement.\nCondition: {self.condition}\nMessage: {self.message}"
+        return f"Assert statement.\nCondition: {self['condition']}\nMessage: {self['message']}"
 
     def __repr__(self):
-        return f"ASTAssertStatementNode(condition={self.condition}, message={self.message})"
+        return f"ASTAssertStatementNode(condition={self['condition']}, message={self['message']})"
 
     def accept(self, visitor):
         """
@@ -1177,22 +1173,21 @@ class ASTIfStatementNode(ASTStatementNode):
     If statement.
     """
 
-    def __init__(self, condition: ASTNode, body: Optional[ASTNode] = None):
+    def __init__(self, condition: ASTNode, body: Optional[ASTNode] = None, else_body: Optional[ASTNode] = None):
         """
         If statement.
 
         :param condition: The condition to check.
         :param body: The code to execute if the condition is met.
+        :param else_body: The code to execute if the condition is not met.
         """
-        self.condition = condition
-        self.body = body
-        super().__init__(self.condition, self.body)
+        super().__init__({"condition": condition, "body": body, "else_body": else_body})
 
     def __str__(self):
-        return f"If statement.\nCondition: {self.condition}\nBody: {self.body}"
+        return f"If statement.\nCondition: {self['condition']}\nBody: {self['body']}, Else body: {self['else_body']}"
 
     def __repr__(self):
-        return f"ASTIfStatementNode(condition={self.condition}, body={self.body})"
+        return f"ASTIfStatementNode(condition={self['condition']}, body={self['body']}, else_body={self['else_body']})"
 
     def accept(self, visitor):
         """
@@ -1204,61 +1199,26 @@ class ASTIfStatementNode(ASTStatementNode):
         return visitor.visit_if_statement(self)
 
 
-class ASTIfElseStatementNode(ASTStatementNode):
-    """
-    If-else statement.
-    """
-
-    def __init__(self, condition: ASTNode, body: ASTNode, else_body: ASTNode):
-        """
-        If-else statement.
-
-        :param condition: The condition to check.
-        :param body: The code to execute if the condition is met.
-        :param else_body: The code to execute if the condition is not met.
-        """
-        self.condition = condition
-        self.body = body
-        self.else_body = else_body
-        super().__init__(self.condition, self.body, self.else_body)
-
-    def __str__(self):
-        return f"If-else statement.\nCondition: {self.condition}\nBody: {self.body}, Else body: {self.else_body}"
-
-    def __repr__(self):
-        return f"ASTIfElseStatementNode(condition={self.condition}, body={self.body}, else_body={self.else_body})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_if_else_statement method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_if_else_statement(self)
-
-
 class ASTLoopStatementNode(ASTStatementNode):
     """
     Loop statement.
     """
 
-    def __init__(self, condition: ASTNode, body: Optional[ASTNode] = None):
+    def __init__(self, condition: ASTNode, body: Optional[ASTNode] = None, else_body: Optional[ASTNode] = None):
         """
         Loop statement.
 
         :param condition: The condition to check.
         :param body: The code to execute while the condition is met.
+        :param else_body: The code to execute when the condition is not met.
         """
-        self.condition = condition
-        self.body = body
-        super().__init__(self.condition, self.body)
+        super().__init__({"condition": condition, "body": body, "else_body": else_body})
 
     def __str__(self):
-        return f"Loop statement.\nCondition: {self.condition}\nBody: {self.body}"
+        return f"Loop statement.\nCondition: {self['condition']}\nBody: {self['body']}\nElse body: {self['else_body']}"
 
     def __repr__(self):
-        return f"ASTLoopStatementNode(condition={self.condition}, body={self.body})"
+        return f"ASTLoopStatementNode(condition={self['condition']}, body={self['body']}, else_body={self['else_body']})"
 
     def accept(self, visitor):
         """
@@ -1268,40 +1228,6 @@ class ASTLoopStatementNode(ASTStatementNode):
         :return: The result of the visit.
         """
         return visitor.visit_loop_statement(self)
-
-
-class ASTLoopElseStatementNode(ASTStatementNode):
-    """
-    Loop-else statement.
-    """
-
-    def __init__(self, condition: ASTNode, body: ASTNode, else_body: ASTNode):
-        """
-        Loop-else statement.
-
-        :param condition: The condition to check.
-        :param body: The code to execute while the condition is met.
-        :param else_body: The code to execute when the condition is not met.
-        """
-        self.condition = condition
-        self.body = body
-        self.else_body = else_body
-        super().__init__(self.condition, self.body, self.else_body)
-
-    def __str__(self):
-        return f"Loop-else statement.\nCondition: {self.condition}\nBody: {self.body}\nElse body: {self.else_body}"
-
-    def __repr__(self):
-        return f"ASTLoopElseStatementNode(condition={self.condition}, body={self.body}, else_body={self.else_body})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_loop_else_statement method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_loop_else_statement(self)
 
 
 class ASTTryStatementNode(ASTStatementNode):
@@ -1320,19 +1246,15 @@ class ASTTryStatementNode(ASTStatementNode):
         return, continue, or break statement was executed.
         :param finally_: The finally clause.
         """
-        self.body = body
-        self.catches = catches
-        self.else_body = else_body
-        self.finally_ = finally_
-        super().__init__(self.body, self.catches, self.else_body, self.finally_)
+        super().__init__({"body": body, "catches": catches, "else_body": else_body, "finally": finally_})
 
     def __str__(self):
-        return f"Try statement.\nBody: {self.body}\nCatches: {self.catches}\nElse body: {self.else_body}" \
-               f"\nFinally: {self.finally_}"
+        return f"Try statement.\nBody: {self['body']}\nCatches: {self['catches']}\nElse body: {self['else_body']}" \
+               f"\nFinally: {self['finally']}"
 
     def __repr__(self):
-        return f"ASTTryStatementNode(body={self.body}, catches={self.catches}, else_body={self.else_body}, " \
-               f"finally_={self.finally_})"
+        return f"ASTTryStatementNode(body={self['body']}, catches={self['catches']}, else_body={self['else_body']}, " \
+               f"finally={self['finally']})"
 
     def accept(self, visitor):
         """

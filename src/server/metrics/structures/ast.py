@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Sequence, Union, Dict, Any
 
 from metrics.structures.base.graph import *
 
@@ -48,19 +48,26 @@ class ASTNode(Node):
     Generic abstract syntax tree node.
     """
 
-    def __init__(self, *children: ASTNode):
+    def __init__(self, children: Optional[Dict[Any, ASTNode]] = None):
         """
         Node.
 
         :param children: The child nodes of the node.
         """
-        super().__init__(*children)
+        super().__init__()
+        self.children: Dict[Any, ASTNode] = children if children is not None else {}
 
     def __str__(self):
         return f"Generic abstract syntax tree node.\nChildren: {self.children}"
 
     def __repr__(self):
         return f"ASTNode(children={self.children})"
+
+    def __getitem__(self, item):
+        return self.children[item]
+
+    def __contains__(self, item):
+        return item in self.children
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -159,10 +166,10 @@ class ASTMultiplesNode(ASTNode):
         """
         if children is None:
             children = []
-        super().__init__(*children)
+        super().__init__(dict(enumerate(children)))
 
     def __str__(self):
-        return f"Multiple, consecutive nodes (generic).\nChildren: {self.children}"
+        return f"Multiple, consecutive nodes (generic).\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTMultiplesNode(children={self.children})"
@@ -193,7 +200,7 @@ class ASTStatementsNode(ASTMultiplesNode):
         super().__init__(statements)
 
     def __str__(self):
-        return f"Multiple, consecutive statements.\nChildren: {self.children}"
+        return f"Multiple, consecutive statements.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTStatementsNode(children={self.children})"
@@ -224,7 +231,7 @@ class ASTExpressionsNode(ASTMultiplesNode):
         super().__init__(expressions)
 
     def __str__(self):
-        return f"Multiple, consecutive expressions.\nChildren: {self.children}"
+        return f"Multiple, consecutive expressions.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTExpressionsNode(children={self.children})"
@@ -255,7 +262,7 @@ class ASTVariablesNode(ASTMultiplesNode):
         super().__init__(variables)
 
     def __str__(self):
-        return f"Multiple, consecutive variables.\nChildren: {self.children}"
+        return f"Multiple, consecutive variables.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTVariablesNode(children={self.children})"
@@ -285,7 +292,7 @@ class ASTElementsNode(ASTMultiplesNode):
         super().__init__(elements)
 
     def __str__(self):
-        return f"Multiple, consecutive list, map or set elements.\nChildren: {self.children}"
+        return f"Multiple, consecutive list, map or set elements.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTElementsNode(children={self.children})"
@@ -316,7 +323,7 @@ class ASTParametersNode(ASTMultiplesNode):
         super().__init__(parameters)
 
     def __str__(self):
-        return f"Multiple, consecutive parameters.\nChildren: {self.children}"
+        return f"Multiple, consecutive parameters.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTParametersNode(children={self.children})"
@@ -347,7 +354,7 @@ class ASTArgumentsNode(ASTMultiplesNode):
         super().__init__(arguments)
 
     def __str__(self):
-        return f"Multiple, consecutive arguments.\nChildren: {self.children}"
+        return f"Multiple, consecutive arguments.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTArgumentsNode(children={self.children})"
@@ -378,7 +385,7 @@ class ASTSubscriptsNode(ASTMultiplesNode):
         super().__init__(subscripts)
 
     def __str__(self):
-        return f"Multiple, consecutive subscripts.\nChildren: {self.children}"
+        return f"Multiple, consecutive subscripts.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTSubscriptsNode(children={self.children})"
@@ -409,7 +416,7 @@ class ASTCatchesNode(ASTMultiplesNode):
         super().__init__(catches)
 
     def __str__(self):
-        return f"Multiple, consecutive catches.\nChildren: {self.children}"
+        return f"Multiple, consecutive catches.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTCatchesNode(children={self.children})"
@@ -440,7 +447,7 @@ class ASTDecoratorsNode(ASTMultiplesNode):
         super().__init__(decorators)
 
     def __str__(self):
-        return f"Multiple, consecutive decorators.\nChildren: {self.children}"
+        return f"Multiple, consecutive decorators.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTDecoratorsNode(children={self.children})"
@@ -471,7 +478,7 @@ class ASTSwitchSectionsNode(ASTMultiplesNode):
         super().__init__(switch_sections)
 
     def __str__(self):
-        return f"Multiple, consecutive switch sections.\nChildren: {self.children}"
+        return f"Multiple, consecutive switch sections.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTSwitchSectionsNode(children={self.children})"
@@ -502,7 +509,7 @@ class ASTSwitchLabelsNode(ASTMultiplesNode):
         super().__init__(switch_labels)
 
     def __str__(self):
-        return f"Multiple, consecutive switch labels.\nChildren: {self.children}"
+        return f"Multiple, consecutive switch labels.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTSwitchLabelsNode(children={self.children})"
@@ -533,7 +540,7 @@ class ASTVariableDeclarationsNode(ASTMultiplesNode):
         super().__init__(variable_declarations)
 
     def __str__(self):
-        return f"Multiple, consecutive variable declarations.\nChildren: {self.children}"
+        return f"Multiple, consecutive variable declarations.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTVariableDeclarationsNode(children={self.children})"
@@ -564,7 +571,7 @@ class ASTConstantDeclarationsNode(ASTMultiplesNode):
         super().__init__(constant_declarations)
 
     def __str__(self):
-        return f"Multiple, consecutive constant declarations.\nChildren: {self.children}"
+        return f"Multiple, consecutive constant declarations.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTConstantDeclarationsNode(children={self.children})"
@@ -595,7 +602,7 @@ class ASTAttributesNode(ASTMultiplesNode):
         super().__init__(attributes)
 
     def __str__(self):
-        return f"Multiple, consecutive attributes.\nChildren: {self.children}"
+        return f"Multiple, consecutive attributes.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTAttributesNode(children={self.children})"
@@ -626,7 +633,7 @@ class ASTAttributeSectionsNode(ASTMultiplesNode):
         super().__init__(attribute_sections)
 
     def __str__(self):
-        return f"Multiple, consecutive attribute sections.\nChildren: {self.children}"
+        return f"Multiple, consecutive attribute sections.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTAttributeSectionsNode(children={self.children})"
@@ -657,7 +664,7 @@ class ASTConstraintsClausesNode(ASTMultiplesNode):
         super().__init__(constraints_clauses)
 
     def __str__(self):
-        return f"Multiple, consecutive constraints clauses.\nChildren: {self.children}"
+        return f"Multiple, consecutive constraints clauses.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTConstraintsClausesNode(children={self.children})"
@@ -688,7 +695,7 @@ class ASTConstraintsNode(ASTMultiplesNode):
         super().__init__(constraints)
 
     def __str__(self):
-        return f"Multiple, consecutive constraints.\nChildren: {self.children}"
+        return f"Multiple, consecutive constraints.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTConstraintsNode(children={self.children})"
@@ -714,16 +721,16 @@ class ASTStatementNode(ASTNode):
     Base class for representing a statement.
     """
 
-    def __init__(self, *children: ASTNode):
+    def __init__(self, children: Optional[Dict[Any, ASTNode]] = None):
         """
         Statement.
 
         :param children: The child nodes of the statement node.
         """
-        super().__init__(*children)
+        super().__init__(**children if children is not None else {})
 
     def __str__(self):
-        return f"Generic statement.\nChildren: {self.children}"
+        return f"Generic statement.\nChildren: {list(self.children.values())}"
 
     def __repr__(self):
         return f"ASTStatementNode(children={self.children})"
@@ -749,14 +756,13 @@ class ASTDelStatementNode(ASTStatementNode):
 
         :param target: Expression(s) determining what is to be deleted.
         """
-        self.target = target
-        super().__init__(self.target)
+        super().__init__({"target": target})
 
     def __str__(self):
-        return f"Delete statement.\nTarget: {self.target}"
+        return f"Delete statement.\nTarget: {self['target']}"
 
     def __repr__(self):
-        return f"ASTDelStatementNode(target={self.target})"
+        return f"ASTDelStatementNode(target={self['target']})"
 
     def accept(self, visitor):
         """
@@ -782,15 +788,13 @@ class ASTAssignmentStatementNode(ASTStatementNode):
         :param variables: The variable(s) to be assigned to.
         :param values: The value(s) to assign.
         """
-        self.variables = variables
-        self.values = values
-        super().__init__(self.variables, self.values)
+        super().__init__({"variables": variables, "values": values})
 
     def __str__(self):
-        return f"Standard variable assignment statement.\nVariable(s): {self.variables}\nValue(s): {self.values}"
+        return f"Standard variable assignment statement.\nVariable(s): {self['variables']}\nValue(s): {self['values']}"
 
     def __repr__(self):
-        return f"ASTAssignmentStatementNode(variables={self.variables}, values={self.values}"
+        return f"ASTAssignmentStatementNode(variables={self['variables']}, values={self['values']}"
 
     def accept(self, visitor):
         """
@@ -818,17 +822,15 @@ class ASTAugmentedAssignmentStatementNode(ASTStatementNode):
         :param values: The value(s) being assigned.
         """
         self.operation = operation
-        self.variables = variables
-        self.values = values
-        super().__init__(self.variables, self.values)
+        super().__init__({"variables": variables, "values": values})
 
     def __str__(self):
-        return f"Augmented assignment statement.\nOperation: {self.operation}\nVariables: {self.variables}" \
-               f"\nValues: {self.values}"
+        return f"Augmented assignment statement.\nOperation: {self.operation}\nVariables: {self['variables']}" \
+               f"\nValues: {self['values']}"
 
     def __repr__(self):
-        return f"ASTAugmentedAssignmentStatementNode(operation={self.operation}, variables={self.variables}, " \
-               f"values={self.values})"
+        return f"ASTAugmentedAssignmentStatementNode(operation={self.operation}, variables={self['variables']}, " \
+               f"values={self['values']})"
 
     def accept(self, visitor):
         """
@@ -855,18 +857,15 @@ class ASTAnnotatedAssignmentStatementNode(ASTStatementNode):
         :param variables: The variable(s) being assigned to.
         :param values: The value(s) being assigned.
         """
-        self.annotation = annotation
-        self.variables = variables
-        self.values = values
-        super().__init__(self.variables, self.annotation, self.values)
+        super().__init__({"variables": variables, "annotation": annotation, "values": values})
 
     def __str__(self):
-        return f"Annotated assignment statement.\nAnnotation: {self.annotation}\nVariables: {self.variables}" \
-               f"\nValues: {self.values}"
+        return f"Annotated assignment statement.\nAnnotation: {self['annotation']}\nVariables: {self['variables']}" \
+               f"\nValues: {self['values']}"
 
     def __repr__(self):
-        return f"ASTAnnotatedAssignmentStatementNode(annotation={self.annotation}, variables={self.variables}, " \
-               f"values={self.values})"
+        return f"ASTAnnotatedAssignmentStatementNode(annotation={self['annotation']}, variables={self['variables']}, " \
+               f"values={self['values']})"
 
     def accept(self, visitor):
         """
@@ -889,14 +888,13 @@ class ASTYieldStatementNode(ASTStatementNode):
 
         :param values: The value(s) being yielded.
         """
-        self.values = values
-        super().__init__(self.values)
+        super().__init__({"values": values})
 
     def __str__(self):
-        return f"Yield statement.\nValues: {self.values}"
+        return f"Yield statement.\nValues: {self['values']}"
 
     def __repr__(self):
-        return f"ASTYieldStatementNode(values={self.values})"
+        return f"ASTYieldStatementNode(values={self['values']})"
 
     def accept(self, visitor):
         """
@@ -1830,7 +1828,8 @@ class ASTConversionOperatorDefinitionNode(ASTDefinitionNode):
     """
 
     def __init__(self, target_type: ASTNode, conversion_type: ASTConversionType, parameter: ASTNode,
-                 attributes: Optional[ASTNode] = None, modifiers: Optional[Sequence[ASTModifier]] = None):
+                 body: Optional[ASTNode] = None, attributes: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Conversion operator definition.
         :param target_type: The type to convert to.
@@ -1841,16 +1840,18 @@ class ASTConversionOperatorDefinitionNode(ASTDefinitionNode):
         """
         self.conversion_type = conversion_type
         self.parameter = parameter
-        super().__init__(target_type, self.parameter, attributes=attributes, modifiers=modifiers)
+        self.body = body
+        super().__init__(target_type, self.parameter, self.body, attributes=attributes, modifiers=modifiers)
 
     def __str__(self):
         return f"Conversion operator definition.\nName (Target type): {self.name}\n" \
-               f"Conversion type: {self.conversion_type}\nParameter: {self.parameter}" \
-               f"\nAttributes: {self.attributes}\nModifiers: {self.modifiers}"
+               f"Conversion type: {self.conversion_type}\nParameter: {self.parameter}\nBody: {self.body}\n" \
+               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
         return f"ASTConversionOperatorDefinitionNode(name={self.name}, conversion_type={self.conversion_type}, " \
-               f"parameter={self.parameter}, attributes={self.attributes}, modifiers={self.modifiers})"
+               f"parameter={self.parameter}, body={self.body}, attributes={self.attributes}, " \
+               f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """

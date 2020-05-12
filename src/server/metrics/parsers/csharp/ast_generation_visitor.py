@@ -988,8 +988,12 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         if ctx.VOID():
             return ctx.method_declaration().accept(self)
 
-        # TODO
-        return super().visitCommon_member_declaration(ctx)
+        conversion_operator_declarator = ctx.conversion_operator_declarator()
+        if conversion_operator_declarator:
+            if ctx.getChildCount() == 2:
+                return ASTConversionOperatorDefinitionNode(**(conversion_operator_declarator.accept(self)), body=ctx.getChild(1).accept(self))
+            return ASTConversionOperatorDefinitionNode()
+        return ctx.getChild(0).accept(self)
 
     def visitTyped_member_declaration(self, ctx: CSharpParser.Typed_member_declarationContext):
         # TODO

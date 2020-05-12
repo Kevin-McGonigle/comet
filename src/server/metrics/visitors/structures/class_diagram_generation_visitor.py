@@ -18,7 +18,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def __create_relationships(self) -> None:
         """
         Iterate over the classes and store corresponding relationships based on attributes, method parameters and
-        return types, superclasses, etc.
+        return types, bases, etc.
         """
         for cls in self.classes.values():
             # Implementation
@@ -125,7 +125,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def visit_class_definition(self, node):
         name = node.name.accept(self)
 
-        superclasses = node.superclasses.accept(self) if node.superclasses else None
+        superclasses = node.bases.accept(self) if node.bases else None
         interfaces = node.interfaces.accept(self) if node.interfaces else None
 
         if node.body:

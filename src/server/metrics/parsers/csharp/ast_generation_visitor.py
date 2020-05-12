@@ -886,7 +886,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         attributes = ctx.attributes()
         if attributes:
-            return ASTStatementsNode([attributes.accept(self), declared_type])
+            declared_type.attributes = attributes.accept(self)
 
         return declared_type
 
@@ -908,9 +908,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         attributes = ctx.attributes()
         if attributes:
-            return ASTExpressionsNode([attributes.accept(self), identifier])
+            return ASTParameterNode(identifier, attributes=attributes.accept(self))
 
-        return identifier
+        return ASTParameterNode(identifier)
 
     def visitClass_base(self, ctx: CSharpParser.Class_baseContext):
         return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
@@ -957,7 +957,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         attributes = ctx.attributes()
         if attributes:
-            return ASTStatementsNode([attributes.accept(self), class_member])
+            class_member.attributes = attributes.accept(self)
 
         return class_member
 
@@ -985,6 +985,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         }[ctx.getText()]
 
     def visitCommon_member_declaration(self, ctx: CSharpParser.Common_member_declarationContext):
+        if ctx.VOID():
+            return ctx.method_declaration().accept(self)
+
         # TODO
         return super().visitCommon_member_declaration(ctx)
 
@@ -1053,10 +1056,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         if modifier:
             modifier = modifier.accept(self)
 
-        arg_declaration = ctx.arg_declaration().accept(self)
-
-        # TODO
-        return ASTParameterNode()
+        return ASTParameterNode(attributes=attributes, modifiers=modifier, **ctx.arg_declaration().accept(self))
 
     def visitParameter_modifier(self, ctx: CSharpParser.Parameter_modifierContext):
         return {
@@ -1066,10 +1066,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         }[ctx.getText()]
 
     def visitParameter_array(self, ctx: CSharpParser.Parameter_arrayContext):
-        # TODO
         attributes = ctx.attributes()
         if attributes:
-            attributes = attributes.accept(self)
+            return ASTPositionalArgumentsParameterNode(ctx.identifier().accept(self), ctx.array_type().accept(self), attributes.accept(self))
 
         return ASTPositionalArgumentsParameterNode(ctx.identifier().accept(self), ctx.array_type().accept(self))
 
@@ -1195,7 +1194,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ctx.getChild(0).accept(self)
 
     def visitAttributes(self, ctx: CSharpParser.AttributesContext):
-        return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
+        return self.build_multi(self.visitChildren(ctx), ASTAttributeSectionsNode)
 
     def visitAttribute_section(self, ctx: CSharpParser.Attribute_sectionContext):
         attributes = ctx.attribute_list().accept(self)
@@ -1362,9 +1361,16 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         default = ctx.expression()
         if default:
-            return ASTParameterNode(name, type_, default)
+            return {
+                "name": name,
+                "type_": type_,
+                "default": default
+            }
 
-        return ASTParameterNode(name, type_)
+        return {
+            "name": name,
+            "type_": type_
+        }
 
     def visitMethod_invocation(self, ctx: CSharpParser.Method_invocationContext):
         argument_list = ctx.argument_list()

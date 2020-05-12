@@ -93,9 +93,9 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         if self.scope:
             name = self.scope + "." + name
 
-        # Class superclasses
-        if node.superclasses:
-            superclasses = node.superclasses.accept(self)
+        # Class bases
+        if node.bases:
+            superclasses = node.bases.accept(self)
         else:
             superclasses = [self.base]
 
@@ -110,7 +110,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         # Create class
         cls = KnownClass(name, methods=methods)
 
-        # Add as a subclass to superclasses
+        # Add as a subclass to bases
         for superclass in superclasses:
             cls.add_superclass(superclass)
 

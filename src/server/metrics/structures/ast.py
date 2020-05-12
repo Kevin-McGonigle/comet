@@ -1278,15 +1278,13 @@ class ASTWithStatementNode(ASTStatementNode):
         :param expressions: The expression(s) to evaluate to create a context manager.
         :param body: The code to execute within the established runtime context.
         """
-        self.expressions = expressions
-        self.body = body
-        super().__init__(self.expressions, self.body)
+        super().__init__({"expressions": expressions, "body": body})
 
     def __str__(self):
-        return f"With statement.\nExpressions: {self.expressions}\nBody: {self.body}"
+        return f"With statement.\nExpressions: {self['expressions']}\nBody: {self['body']}"
 
     def __repr__(self):
-        return f"ASTWithStatementNode(expressions={self.expressions}, body={self.body})"
+        return f"ASTWithStatementNode(expressions={self['expressions']}, body={self['body']})"
 
     def accept(self, visitor):
         """
@@ -1314,20 +1312,16 @@ class ASTFunctionDefinitionNode(ASTStatementNode):
         :param body: The body of the function.
         :param modifiers: The modifier(s) applied to the function.
         """
-        self.name = name
-        self.parameters = parameters
-        self.return_type = return_type
-        self.body = body
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, self.parameters, self.return_type, self.body)
+        super().__init__({"name": name, "parameters": parameters, "return_type": return_type, "body": body})
 
     def __str__(self):
-        return f"Function definition.\nName: {self.name}\nParameters: {self.parameters}\n" \
-               f"Return type: {self.return_type}\nBody: {self.body}\nModifiers: {self.modifiers}"
+        return f"Function definition.\nName: {self['name']}\nParameters: {self['parameters']}\n" \
+               f"Return type: {self['return_type']}\nBody: {self['body']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTFunctionDefinitionNode(name={self.name}, parameters={self.parameters}, " \
-               f"return_type={self.return_type}, body={self.body}, modifiers={self.modifiers})"
+        return f"ASTFunctionDefinitionNode(name={self['name']}, parameters={self['parameters']}, " \
+               f"return_type={self['return_type']}, body={self['body']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1345,15 +1339,19 @@ class ASTNamespaceDeclarationNode(ASTStatementNode):
     """
 
     def __init__(self, name: ASTNode, body: ASTNode):
-        self.name = name
-        self.body = body
-        super().__init__(self.name, self.body)
+        """
+        Namespace declaration.
+        
+        :param name: The name of the namespace.
+        :param body: The body of the namespace.
+        """
+        super().__init__({"name": name, "body": body})
 
     def __str__(self):
-        return f"Namespace declaration.\nName: {self.name}\nBody: {self.body}"
+        return f"Namespace declaration.\nName: {self['name']}\nBody: {self['body']}"
 
     def __repr__(self):
-        return f"ASTNamespaceDeclarationNode(name={self.name}, body={self.body})"
+        return f"ASTNamespaceDeclarationNode(name={self['name']}, body={self['body']})"
 
     def accept(self, visitor):
         """
@@ -1377,15 +1375,13 @@ class ASTSwitchStatementNode(ASTStatementNode):
         :param match_expression: The expression to match against the case label patterns.
         :param sections: The switch sections contained within the switch statement.
         """
-        self.match_expression = match_expression
-        self.sections = sections
-        super().__init__(self.match_expression, self.sections)
+        super().__init__({"match_expression": match_expression, "sections": sections})
 
     def __str__(self):
-        return f"Switch statement.\nMatch expression: {self.match_expression}\nSections: {self.sections}"
+        return f"Switch statement.\nMatch expression: {self['match_expression']}\nSections: {self['sections']}"
 
     def __repr__(self):
-        return f"ASTSwitchStatementNode(match_expression={self.match_expression}, sections={self.sections})"
+        return f"ASTSwitchStatementNode(match_expression={self['match_expression']}, sections={self['sections']})"
 
     def accept(self, visitor):
         """
@@ -1407,14 +1403,13 @@ class ASTJumpStatementNode(ASTStatementNode):
         
         :param target: The target of the jump.
         """
-        self.target = target
-        super().__init__(target)
+        super().__init__({"target": target})
 
     def __str__(self):
-        return f"Jump.\nTarget: {self.target}"
+        return f"Jump.\nTarget: {self['target']}"
 
     def __repr__(self):
-        return f"ASTJumpStatementNode(target={self.target})"
+        return f"ASTJumpStatementNode(target={self['target']})"
 
     def accept(self, visitor):
         """
@@ -1437,48 +1432,13 @@ class ASTLockStatementNode(ASTStatementNode):
         :param lock_object: The object to acquire a lock on.
         :param body: The code to be executed with the lock acquired.
         """
-        self.lock_object = lock_object
-        self.body = body
-
-        super().__init__(self.lock_object, self.body)
+        super().__init__({"lock_object": lock_object, "body": body})
 
     def __str__(self):
-        return f"Lock.\nLock object: {self.lock_object}\nBody: {self.body}"
+        return f"Lock.\nLock object: {self['lock_object']}\nBody: {self['body']}"
 
     def __repr__(self):
-        return f"ASTLockStatementNode(lock_object={self.lock_object}, body={self.body})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_lock_statement method.
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_lock_statement(self)
-
-
-class ASTLockStatementNode(ASTStatementNode):
-    """
-    Lock.
-    """
-
-    def __init__(self, lock_object: ASTNode, body: ASTNode):
-        """
-        Lock.
-
-        :param lock_object: The object to acquire a lock on.
-        :param body: The code to be executed with the lock acquired.
-        """
-        self.lock_object = lock_object
-        self.body = body
-
-        super().__init__(self.lock_object, self.body)
-
-    def __str__(self):
-        return f"Lock.\nLock object: {self.lock_object}\nBody: {self.body}"
-
-    def __repr__(self):
-        return f"ASTLockStatementNode(lock_object={self.lock_object}, body={self.body})"
+        return f"ASTLockStatementNode(lock_object={self['lock_object']}, body={self['body']})"
 
     def accept(self, visitor):
         """
@@ -1500,14 +1460,13 @@ class ASTExternAliasDirectiveNode(ASTStatementNode):
 
         :param alias: The alias being referenced.
         """
-        self.alias = alias
-        super().__init__(self.alias)
+        super().__init__({"alias": alias})
 
     def __str__(self):
-        return f"Extern alias directive.\nAlias: {self.alias}"
+        return f"Extern alias directive.\nAlias: {self['alias']}"
 
     def __repr__(self):
-        return f"ASTExternAliasDirectiveNode(alias={self.alias})"
+        return f"ASTExternAliasDirectiveNode(alias={self['alias']})"
 
     def accept(self, visitor):
         """
@@ -1533,36 +1492,16 @@ class ASTVariableDeclarationNode(ASTStatementNode):
         :param attributes: The attribute(s) applied to the variable.
         :param modifiers: The modifier(s) applied to the variable.
         """
-        self.name = name
-        self.type = type_
-        self.initial_value = initial_value
-        self.__attributes = attributes
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, self.type, self.initial_value, self.attributes)
+        super().__init__({"name": name, "type": type_, "initial_value": initial_value, "attributes": attributes})
 
     def __str__(self):
-        return f"Variable declaration.\nName: {self.name}\nType: {self.type}\nInitial value: {self.initial_value}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Variable declaration.\nName: {self['name']}\nType: {self['type']}\nInitial value: {self['initial_value']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTVariableDeclaration(name={self.name}, type={self.type}, initial_value={self.initial_value}, " \
-               f"attributes={self.attributes}, modifiers={self.modifiers})"
-
-    @property
-    def attributes(self):
-        return self.__attributes
-
-    @attributes.setter
-    def attributes(self, new_attributes):
-        if self.attributes and self.attributes in self.children:
-            self.children.remove(self.attributes)
-
-        self.__attributes = new_attributes
-        self.children.append(self.attributes)
-
-    @attributes.deleter
-    def attributes(self):
-        del self.__attributes
+        return f"ASTVariableDeclaration(name={self['name']}, type={self['type']}, initial_value={self['initial_value']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1588,17 +1527,14 @@ class ASTConstantDeclarationNode(ASTStatementNode):
         :param initial_value: The initial value assigned to the constant.
         :param modifiers: The modifier applied to the constant.
         """
-        self.name = name
-        self.type = type_
-        self.initial_value = initial_value
+        super().__init__({"name": name, "type": type_, "initial_value": initial_value})
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, self.type)
 
     def __str__(self):
-        return f"Constant declaration.\nName: {self.name}\nType: {self.type}\nInitial value: {self.initial_value}\nModifiers: {self.modifiers}"
+        return f"Constant declaration.\nName: {self['name']}\nType: {self['type']}\nInitial value: {self['initial_value']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTConstantDeclaration(name={self.name}, type={self.type}, initial_value={self.initial_value}, modifiers={self.modifiers})"
+        return f"ASTConstantDeclaration(name={self['name']}, type={self['type']}, initial_value={self['initial_value']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1619,42 +1555,26 @@ class ASTDefinitionNode(ASTStatementNode):
     Base class for different kinds of definitions.
     """
 
-    def __init__(self, name: ASTNode, *children: ASTNode, attributes: Optional[ASTNode] = None,
-                 modifiers: Optional[Sequence[ASTModifier]] = None):
+    def __init__(self, name: ASTNode, attributes: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None, children: Optional[Dict[Any, ASTNode]] = None):
         """
         Definition.
 
         :param name: The name of the definition.
-        :param children: The child nodes of the definition node.
         :param attributes: The attribute(s) being applied to the definition.
         :param modifiers: The modifier(s) being applied to the definition.
+        :param children: The child nodes of the definition node.
         """
-        self.name = name
-        self.__attributes = attributes
+        super().__init__({"name": name, "attributes": attributes, **(children if children is not None else {})})
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, *children, self.attributes)
 
     def __str__(self):
-        return f"Definition.\nName: {self.name}\nAttributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Definition.\nName: {self['name']}\nAttributes: {self['attributes']}\nModifiers: {self.modifiers}\n" \
+               f"Children: {list(self.children.values())}"
 
     def __repr__(self):
-        return f"ASTDefinitionNode(name={self.name}, attributes={self.attributes}, modifiers= {self.modifiers})"
-
-    @property
-    def attributes(self):
-        return self.__attributes
-
-    @attributes.setter
-    def attributes(self, new_attributes):
-        if self.attributes and self.attributes in self.children:
-            self.children.remove(self.attributes)
-
-        self.__attributes = new_attributes
-        self.children.append(self.attributes)
-
-    @attributes.deleter
-    def attributes(self):
-        del self.__attributes
+        return f"ASTDefinitionNode(name={self['name']}, attributes={self['attributes']}, modifiers={self.modifiers}, " \
+               f"children={self.children})"
 
     def accept(self, visitor):
         """
@@ -1684,20 +1604,17 @@ class ASTClassDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the class.
         :param modifiers: The modifier(s) being applied to the class.
         """
-        self.body = body
-        self.bases = bases
-        self.constraints_clauses = constraints_clauses
-        super().__init__(name, self.bases, self.constraints_clauses, self.body, attributes=attributes,
-                         modifiers=modifiers)
+        super().__init__(name, attributes, modifiers,
+                         {"body": body, "bases": bases, "constraints_clauses": constraints_clauses})
 
     def __str__(self):
-        return f"Class definition.\nName: {self.name}\nBody: {self.body}\nBases: {self.bases}\n" \
-               f"Constraints clauses: {self.constraints_clauses}\nAttributes: {self.attributes}\n" \
+        return f"Class definition.\nName: {self['name']}\nBody: {self['body']}\nBases: {self['bases']}\n" \
+               f"Constraints clauses: {self['constraints_clauses']}\nAttributes: {self['attributes']}\n" \
                f"Modifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTClassDefinitionNode(name={self.name}, body={self.body}, bases={self.bases}, " \
-               f"constraints_clauses={self.constraints_clauses}, attributes={self.attributes}" \
+        return f"ASTClassDefinitionNode(name={self['name']}, body={self['body']}, bases={self['bases']}, " \
+               f"constraints_clauses={self['constraints_clauses']}, attributes={self['attributes']}" \
                f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
@@ -1724,15 +1641,15 @@ class ASTEventDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the event.
         :param modifiers: The modifier(s) being applied to the event.
         """
-        self.type = type_
-        self.body = body
-        super().__init__(name, self.type, attributes=attributes, modifiers=modifiers)
+        super().__init__(name, attributes, modifiers, {"type": type_, "body": body})
 
     def __str__(self):
-        return f"Event definition.\nName: {self.name}\nType: {self.type}\nBody: {self.body}\nAttributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Event definition.\nName: {self['name']}\nType: {self['type']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTEventDefinitionNode(name={self.name}, type={self.type}, body={self.body}, attributes={self.attributes}, modifiers={self.modifiers})"
+        return f"ASTEventDefinitionNode(name={self['name']}, type={self['type']}, body={self['body']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1754,25 +1671,25 @@ class ASTConversionOperatorDefinitionNode(ASTDefinitionNode):
                  modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Conversion operator definition.
+
         :param target_type: The type to convert to.
         :param conversion_type: The type of conversion (implicit or explicit).
         :param parameter: The parameter, the corresponding argument of which to convert.
+        :param body: The body of the conversion operator.
         :param attributes: The attribute(s) being applied to the conversion operator.
-        :param modifiers: The modifier(s) being applided to the conversion operator.
+        :param modifiers: The modifier(s) being applied to the conversion operator.
         """
+        super().__init__(target_type, attributes, modifiers, {"parameter": parameter, "body": body})
         self.conversion_type = conversion_type
-        self.parameter = parameter
-        self.body = body
-        super().__init__(target_type, self.parameter, self.body, attributes=attributes, modifiers=modifiers)
 
     def __str__(self):
-        return f"Conversion operator definition.\nName (Target type): {self.name}\n" \
-               f"Conversion type: {self.conversion_type}\nParameter: {self.parameter}\nBody: {self.body}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Conversion operator definition.\nName (Target type): {self['name']}\n" \
+               f"Conversion type: {self.conversion_type}\nParameter: {self['parameter']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTConversionOperatorDefinitionNode(name={self.name}, conversion_type={self.conversion_type}, " \
-               f"parameter={self.parameter}, body={self.body}, attributes={self.attributes}, " \
+        return f"ASTConversionOperatorDefinitionNode(name={self['name']}, conversion_type={self.conversion_type}, " \
+               f"parameter={self['parameter']}, body={self['body']}, attributes={self['attributes']}, " \
                f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
@@ -1802,19 +1719,17 @@ class ASTConstructorDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the constructor.
         :param modifiers: The modifier(s) being applied to the constructor.
         """
-        self.parameters = parameters
-        self.initializer = initializer
-        self.body = body
-        super().__init__(name, self.parameters, self.initializer, self.body, attributes=attributes, modifiers=modifiers)
+        super().__init__(name, attributes, modifiers,
+                         {"parameters": parameters, "initializer": initializer, "body": body})
 
     def __str__(self):
-        return f"Constructor definition.\nName: {self.name}\nParameters: {self.parameters}\n" \
-               f"Initializer: {self.initializer}\nBody: {self.body}\nAttributes: {self.attributes}\n" \
+        return f"Constructor definition.\nName: {self['name']}\nParameters: {self['parameters']}\n" \
+               f"Initializer: {self['initializer']}\nBody: {self['body']}\nAttributes: {self['attributes']}\n" \
                f"Modifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTConstructorDefinitionNode(name={self.name}, parameters={self.parameters}, " \
-               f"initializer={self.initializer} body={self.body}, attributes={self.attributes}, " \
+        return f"ASTConstructorDefinitionNode(name={self['name']}, parameters={self['parameters']}, " \
+               f"initializer={self['initializer']} body={self['body']}, attributes={self['attributes']}, " \
                f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
@@ -1841,16 +1756,15 @@ class ASTDestructorDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the destructor.
         :param modifiers: The modifier(s) being applied to the destructor.
         """
-        self.body = body
-        super().__init__(name, self.body, attributes=attributes, modifiers=modifiers)
+        super().__init__(name, attributes, modifiers, {"body": body})
 
     def __str__(self):
-        return f"Destructor definition.\nName: {self.name}\nBody: {self.body}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Destructor definition.\nName: {self['name']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTDestructorDefinitionNode(name={self.name}, body={self.body}, " \
-               f"attributes={self.attributes}, modifiers={self.modifiers})"
+        return f"ASTDestructorDefinitionNode(name={self['name']}, body={self['body']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1871,6 +1785,7 @@ class ASTStructDefinitionNode(ASTDefinitionNode):
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Struct definition.
+        
         :param name: The name of the struct.
         :param interfaces: The interfaces implemented by the struct.
         :param constraints_clauses: The constraint(s) being applied to the struct's type parameters.
@@ -1878,21 +1793,18 @@ class ASTStructDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the struct.
         :param modifiers: The modifier(s) being applied to the struct.
         """
-        self.interfaces = interfaces
-        self.constraints_clauses = constraints_clauses
-        self.body = body
-        super().__init__(name, self.interfaces, self.constraints_clauses, self.body, attributes=attributes,
-                         modifiers=modifiers)
+        super().__init__(name, attributes, modifiers,
+                         {"interfaces": interfaces, "constraints_clauses": constraints_clauses, "body": body})
 
     def __str__(self):
-        return f"Struct definition.\nName: {self.name}\nInterfaces: {self.interfaces}\n" \
-               f"Constraints clauses: {self.constraints_clauses}\nBody: {self.body}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Struct definition.\nName: {self['name']}\nInterfaces: {self['interfaces']}\n" \
+               f"Constraints clauses: {self['constraints_clauses']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTStructDefinitionNode(name={self.name}, interfaces={self.interfaces}, " \
-               f"constraints_clauses={self.constraints_clauses}, body={self.body}, " \
-               f"attributes={self.attributes}, modifiers={self.modifiers})"
+        return f"ASTStructDefinitionNode(name={self['name']}, interfaces={self['interfaces']}, " \
+               f"constraints_clauses={self['constraints_clauses']}, body={self['body']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1913,6 +1825,7 @@ class ASTInterfaceDefinitionNode(ASTDefinitionNode):
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Interface definition.
+        
         :param name: The name of the interface.
         :param bases: The base interfaces inherited by the interface.
         :param constraints_clauses: The constraint(s) being applied to the interface's type parameters.
@@ -1920,21 +1833,18 @@ class ASTInterfaceDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the interface.
         :param modifiers: The modifier(s) being applied to the interface.
         """
-        self.bases = bases
-        self.constraints_clauses = constraints_clauses
-        self.body = body
-        super().__init__(name, self.bases, self.constraints_clauses, self.body, attributes=attributes,
-                         modifiers=modifiers)
+        super().__init__(name, attributes, modifiers,
+                         {"bases": bases, "constraints_clauses": constraints_clauses, "body": body})
 
     def __str__(self):
-        return f"Interface definition.\nName: {self.name}\nBases: {self.bases}\n" \
-               f"Constraints clauses: {self.constraints_clauses}\nBody: {self.body}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Interface definition.\nName: {self['name']}\nBases: {self['bases']}\n" \
+               f"Constraints clauses: {self['constraints_clauses']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTInterfaceDefinitionNode(name={self.name}, bases={self.bases}, " \
-               f"constraints_clauses={self.constraints_clauses}, body={self.body}, " \
-               f"attributes={self.attributes}, modifiers={self.modifiers})"
+        return f"ASTInterfaceDefinitionNode(name={self['name']}, bases={self['bases']}, " \
+               f"constraints_clauses={self['constraints_clauses']}, body={self['body']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1955,23 +1865,22 @@ class ASTEnumDefinitionNode(ASTDefinitionNode):
                  modifiers=None):
         """
         Enum definition.
+        
         :param name: The name of the enum.
         :param underlying_type: The underlying type of the enum.
         :param body: The body of the enum.
         :param attributes: The attribute(s) being applied to the enum.
         :param modifiers: The modifier(s) being applied to the enum.
         """
-        self.underlying_type = underlying_type
-        self.body = body
-        super().__init__(name, self.underlying_type, self.body, attributes=attributes, modifiers=modifiers)
+        super().__init__(name, attributes, modifiers, {"underlying_type": underlying_type, "body": body})
 
     def __str__(self):
-        return f"Enum definition.\nName: {self.name}\nUnderlying type: {self.underlying_type}\n" \
-               f"Body: {self.body}\nAttributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Enum definition.\nName: {self['name']}\nUnderlying type: {self['underlying_type']}\n" \
+               f"Body: {self['body']}\nAttributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTEnumDefinitionNode(name={self.name}, underlying_type={self.underlying_type}, " \
-               f"body={self.body}, attributes={self.attributes}, modifiers={self.modifiers})"
+        return f"ASTEnumDefinitionNode(name={self['name']}, underlying_type={self['underlying_type']}, " \
+               f"body={self['body']}, attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1992,6 +1901,7 @@ class ASTDelegateDefinitionNode(ASTDefinitionNode):
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Delegate definition.
+        
         :param name: The name of the delegate.
         :param return_type: The return type of the delegate.
         :param constraints_clauses: The constraint(s) being applied to the delegate's type parameters.
@@ -1999,21 +1909,18 @@ class ASTDelegateDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the delegate.
         :param modifiers: The modifier(s) being applied to the delegate.
         """
-        self.return_type = return_type
-        self.constraints_clauses = constraints_clauses
-        self.body = body
-        super().__init__(name, self.return_type, self.constraints_clauses, self.body, attributes=attributes,
-                         modifiers=modifiers)
+        super().__init__(name, attributes, modifiers,
+                         {"return_type": return_type, "constraints_clauses": constraints_clauses, "body": body})
 
     def __str__(self):
-        return f"Delegate definition.\nName: {self.name}\nReturn type: {self.return_type}\n" \
-               f"Constraints clauses: {self.constraints_clauses}\nBody: {self.body}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Delegate definition.\nName: {self['name']}\nReturn type: {self['return_type']}\n" \
+               f"Constraints clauses: {self['constraints_clauses']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTDelegateDefinitionNode(name={self.name}, return_type={self.return_type}, " \
-               f"constraints_clauses={self.constraints_clauses}, body={self.body}, " \
-               f"attributes={self.attributes}, modifiers={self.modifiers})"
+        return f"ASTDelegateDefinitionNode(name={self['name']}, return_type={self['return_type']}, " \
+               f"constraints_clauses={self['constraints_clauses']}, body={self['body']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -2034,6 +1941,7 @@ class ASTIndexerDefinitionNode(ASTDefinitionNode):
                  attributes=None, modifiers=None):
         """
         Indexer definition.
+        
         :param name: The name of the indexer.
         :param return_type: The return type of the indexer.
         :param parameters: The parameter(s) of the indexer.
@@ -2041,20 +1949,17 @@ class ASTIndexerDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) being applied to the indexer.
         :param modifiers: The modifier(s) being applied to the indexer.
         """
-        self.return_type = return_type
-        self.parameters = parameters
-        self.body = body
-        super().__init__(name, self.return_type, self.parameters, self.body, attributes=attributes,
-                         modifiers=modifiers)
+        super().__init__(name, attributes, modifiers,
+                         {"return_type": return_type, "parameters": parameters, "body": body})
 
     def __str__(self):
-        return f"Indexer definition.\nName: {self.name}\nReturn type: {self.return_type}\n" \
-               f"Parameters: {self.parameters}\nBody: {self.body}\nAttributes: {self.attributes}\n" \
+        return f"Indexer definition.\nName: {self['name']}\nReturn type: {self['return_type']}\n" \
+               f"Parameters: {self['parameters']}\nBody: {self['body']}\nAttributes: {self['attributes']}\n" \
                f"Modifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTIndexerDefinitionNode(name={self.name}, return_type={self.return_type}, " \
-               f"parameters={self.parameters}, body={self.body}, attributes={self.attributes}, " \
+        return f"ASTIndexerDefinitionNode(name={self['name']}, return_type={self['return_type']}, " \
+               f"parameters={self['parameters']}, body={self['body']}, attributes={self['attributes']}, " \
                f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
@@ -2076,6 +1981,7 @@ class ASTOperatorOverloadDefinitionNode(ASTDefinitionNode):
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Operator overload definition.
+        
         :param operator: The operator being overloaded.
         :param return_type: The base operator_overloads inherited by the operator overload.
         :param parameters: The constraint(s) being applied to the operator overload's type parameters.
@@ -2083,20 +1989,17 @@ class ASTOperatorOverloadDefinitionNode(ASTDefinitionNode):
         :param attributes: The attributes being applied to the operator overload.
         :param modifiers: The modifiers being applied to the operator overload.
         """
-        self.return_type = return_type
-        self.parameters = parameters
-        self.body = body
-        super().__init__(operator, self.return_type, self.parameters, self.body, attributes=attributes,
-                         modifiers=modifiers)
+        super().__init__(operator, attributes, modifiers,
+                         {"return_type": return_type, "parameters": parameters, "body": body})
 
     def __str__(self):
-        return f"Operator overload definition.\nName (Operator): {self.name}\nReturn type: {self.return_type}\n" \
-               f"Parameters: {self.parameters}\nBody: {self.body}\nAttributes: {self.attributes}\n" \
+        return f"Operator overload definition.\nName (Operator): {self['name']}\nReturn type: {self['return_type']}\n" \
+               f"Parameters: {self['parameters']}\nBody: {self['body']}\nAttributes: {self['attributes']}\n" \
                f"Modifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTOperatorOverloadDefinitionNode(name={self.name}, return_type={self.return_type}, " \
-               f"parameters={self.parameters}, body={self.body}, attributes={self.attributes}, " \
+        return f"ASTOperatorOverloadDefinitionNode(name={self['name']}, return_type={self['return_type']}, " \
+               f"parameters={self['parameters']}, body={self['body']}, attributes={self['attributes']}, " \
                f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
@@ -2130,16 +2033,13 @@ class ASTCatchNode(ASTNode):
         :param condition: The exception filter condition that dictates whether or not to catch the exception.
         :param body: The code to execute if the specified exception(s) are thrown in the corresponding try block.
         """
-        self.exceptions = exceptions
-        self.condition = condition
-        self.body = body
-        super().__init__(self.exceptions, self.condition, self.body)
+        super().__init__({"exceptions": exceptions, "condition": condition, "body": body})
 
     def __str__(self):
-        return f"Catch clause.\nExceptions: {self.exceptions}\nCondition: {self.condition}\nBody: {self.body}"
+        return f"Catch clause.\nExceptions: {self['exceptions']}\nCondition: {self['condition']}\nBody: {self['body']}"
 
     def __repr__(self):
-        return f"ASTCatchNode(exceptions={self.exceptions}, condition={self.condition}, body={self.body})"
+        return f"ASTCatchNode(exceptions={self['exceptions']}, condition={self['condition']}, body={self['body']})"
 
     def accept(self, visitor):
         """
@@ -2163,14 +2063,13 @@ class ASTFinallyNode(ASTNode):
         :param body: The code to execute after all corresponding try, catch and else blocks,
         regardless of exceptions thrown.
         """
-        self.body = body
-        super().__init__(self.body)
+        super().__init__({"body": body})
 
     def __str__(self):
-        return f"Finally clause.\nBody: {self.body}"
+        return f"Finally clause.\nBody: {self['body']}"
 
     def __repr__(self):
-        return f"ASTFinallyNode(body={self.body})"
+        return f"ASTFinallyNode(body={self['body']})"
 
     def accept(self, visitor):
         """
@@ -2193,14 +2092,13 @@ class ASTYieldExpressionNode(ASTNode):
 
         :param values: The value(s) being yielded.
         """
-        self.values = values
-        super().__init__(self.values)
+        super().__init__({"values": values})
 
     def __str__(self):
-        return f"Yield expression.\nValues: {self.values}"
+        return f"Yield expression.\nValues: {self['values']}"
 
     def __repr__(self):
-        return f"ASTYieldExpressionNode(values={self.values})"
+        return f"ASTYieldExpressionNode(values={self['values']})"
 
     def accept(self, visitor):
         """
@@ -2227,18 +2125,16 @@ class ASTBinaryOperationNode(ASTNode):
         :param left_operand: The left-hand operand of the operation.
         :param right_operand: The right-hand operand of the operation.
         """
+        super().__init__({"left_operand": left_operand, "right_operand": right_operand})
         self.operation = operation
-        self.left_operand = left_operand
-        self.right_operand = right_operand
-        super().__init__(self.left_operand, self.right_operand)
 
     def __str__(self):
-        return f"Binary operation.\nOperation: {self.operation}\nLeft operand: {self.left_operand}" \
-               f"\nRight operand: {self.right_operand}"
+        return f"Binary operation.\nOperation: {self.operation}\nLeft operand: {self['left_operand']}" \
+               f"\nRight operand: {self['right_operand']}"
 
     def __repr__(self):
-        return f"ASTBinaryOperationNode(operation={self.operation}, left_operand={self.left_operand}, " \
-               f"right_operand={self.right_operand})"
+        return f"ASTBinaryOperationNode(operation={self.operation}, left_operand={self['left_operand']}, " \
+               f"right_operand={self['right_operand']})"
 
     def accept(self, visitor):
         """
@@ -2262,15 +2158,14 @@ class ASTUnaryOperationNode(ASTNode):
         :param operation: The operation being performed.
         :param operand: The operand of the operation.
         """
+        super().__init__({"operand": operand})
         self.operation = operation
-        self.operand = operand
-        super().__init__(self.operand)
 
     def __str__(self):
-        return f"Unary operation.\nOperation: {self.operation}\nOperand: {self.operand}"
+        return f"Unary operation.\nOperation: {self.operation}\nOperand: {self['operand']}"
 
     def __repr__(self):
-        return f"ASTUnaryOperationNode(operation={self.operation}, operand={self.operand})"
+        return f"ASTUnaryOperationNode(operation={self.operation}, operand={self['operand']})"
 
     def accept(self, visitor):
         """
@@ -2296,15 +2191,13 @@ class ASTAliasNode(ASTNode):
         :param target: The expression to assign the alias to.
         :param alias: The alias to be assigned
         """
-        self.target = target
-        self.alias = alias
-        super().__init__(self.target, self.alias)
+        super().__init__({"target": target, "alias": alias})
 
     def __str__(self):
-        return f"Alias assignment.\nTarget: {self.target}\nAlias: {self.alias}"
+        return f"Alias assignment.\nTarget: {self['target']}\nAlias: {self['alias']}"
 
     def __repr__(self):
-        return f"ASTAliasNode(target={self.target}, alias={self.alias})"
+        return f"ASTAliasNode(target={self['target']}, alias={self['alias']})"
 
     def accept(self, visitor):
         """
@@ -2328,15 +2221,13 @@ class ASTFromNode(ASTNode):
         :param source: The source to take the expression(s) from.
         :param expressions: The expressions to take.
         """
-        self.source = source
-        self.expressions = expressions
-        super().__init__(self.source, self.expressions)
+        super().__init__({"source": source, "expressions": expressions})
 
     def __str__(self):
-        return f"\"From\" expression.\nSource: {self.source}\nExpressions: {self.expressions}"
+        return f"\"From\" expression.\nSource: {self['source']}\nExpressions: {self['expressions']}"
 
     def __repr__(self):
-        return f"ASTFromNode(source={self.source}, expressions={self.expressions})"
+        return f"ASTFromNode(source={self['source']}, expressions={self['expressions']})"
 
     def accept(self, visitor):
         """
@@ -2360,15 +2251,13 @@ class ASTAnonymousFunctionDefinitionNode(ASTNode):
         :param body: The body of the anonymous function.
         :param parameters: The parameter(s) of the function.
         """
-        self.body = body
-        self.parameters = parameters
-        super().__init__(self.parameters, self.body)
+        super().__init__({"body": body, "parameters": parameters})
 
     def __str__(self):
-        return f"Anonymous function definition.\nBody: {self.body}\nParameters: {self.parameters}"
+        return f"Anonymous function definition.\nBody: {self['body']}\nParameters: {self['parameters']}"
 
     def __repr__(self):
-        return f"ASTAnonymousFunctionDefinitionNode(body={self.body}, parameters={self.parameters})"
+        return f"ASTAnonymousFunctionDefinitionNode(body={self['body']}, parameters={self['parameters']})"
 
     def accept(self, visitor):
         """
@@ -2396,36 +2285,16 @@ class ASTParameterNode(ASTNode):
         :param attributes: The attribute(s) applied to the parameter.
         :param modifiers: The modifier(s) applied to the parameter.
         """
-        self.name = name
-        self.type = type_
-        self.default = default
-        self.__attributes = attributes
+        super().__init__({"name": name, "type": type_, "default": default, "attributes": attributes})
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, self.type, self.default, self.attributes)
 
     def __str__(self):
-        return f"Parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}\n" \
-               f"Attributes: {self.attributes}\nModifiers: {self.modifiers}"
+        return f"Parameter.\nName: {self['name']}\nType: {self['type']}\nDefault: {self['default']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTParameterNode(name={self.name}, type={self.type}, default={self.default}, " \
-               f"attributes={self.attributes}, modifiers={self.modifiers})"
-
-    @property
-    def attributes(self):
-        return self.__attributes
-
-    @attributes.setter
-    def attributes(self, new_attributes):
-        if self.attributes and self.attributes in self.children:
-            self.children.remove(self.attributes)
-
-        self.__attributes = new_attributes
-        self.children.append(self.attributes)
-
-    @attributes.deleter
-    def attributes(self):
-        del self.__attributes
+        return f"ASTParameterNode(name={self['name']}, type={self['type']}, default={self['default']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -2458,10 +2327,12 @@ class ASTPositionalOnlyParameterNode(ASTParameterNode):
         super().__init__(name, type_, default, attributes, modifiers)
 
     def __str__(self):
-        return f"Positional-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}\nModifiers: {self.modifiers}"
+        return f"Positional-only parameter.\nName: {self['name']}\nType: {self['type']}\n" \
+               f"Default: {self['default']}\nAttributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTPositionalOnlyParameterNode(name={self.name}, type={self.type}, default={self.default}, modifiers={self.modifiers})"
+        return f"ASTPositionalOnlyParameterNode(name={self['name']}, type={self['type']}, " \
+               f"default={self['default']}, attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -2494,10 +2365,12 @@ class ASTKeywordOnlyParameterNode(ASTParameterNode):
         super().__init__(name, type_, default, attributes, modifiers)
 
     def __str__(self):
-        return f"Keyword-only parameter.\nName: {self.name}\nType: {self.type}\nDefault: {self.default}\nModifiers: {self.modifiers}"
+        return f"Keyword-only parameter.\nName: {self['name']}\nType: {self['type']}\nDefault: {self['default']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTKeywordOnlyParameterNode(name={self.name}, type={self.type}, default={self.default}, modifiers={self.modifiers})"
+        return f"ASTKeywordOnlyParameterNode(name={self['name']}, type={self['type']}, default={self['default']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -2522,32 +2395,15 @@ class ASTPositionalArgumentsParameterNode(ASTNode):
         :param type_: The type of all positional arguments supplied using the parameter.
         :param attributes: The attribute(s) applied to all positional arguments supplied using the parameter.
         """
-        self.name = name
-        self.type = type_
-        self.__attributes = attributes
-        super().__init__(self.name, self.type, self.attributes)
+        super().__init__({"name": name, "type": type_, "attributes": attributes})
 
     def __str__(self):
-        return f"Positional arguments parameter.\nName: {self.name}\nType: {self.type}"
+        return f"Positional arguments parameter.\nName: {self['name']}\nType: {self['type']}\n" \
+               f"Attributes: {self['attributes']}"
 
     def __repr__(self):
-        return f"ASTPositionalArgumentsParameterNode(name={self.name}, type={self.type})"
-
-    @property
-    def attributes(self):
-        return self.__attributes
-
-    @attributes.setter
-    def attributes(self, new_attributes):
-        if self.attributes and self.attributes in self.children:
-            self.children.remove(self.attributes)
-
-        self.__attributes = new_attributes
-        self.children.append(self.attributes)
-
-    @attributes.deleter
-    def attributes(self):
-        del self.__attributes
+        return f"ASTPositionalArgumentsParameterNode(name={self['name']}, type={self['type']}, " \
+               f"attributes={self['attributes']})"
 
     def accept(self, visitor):
         """
@@ -2571,15 +2427,13 @@ class ASTKeywordArgumentsParameterNode(ASTNode):
         :param name: The name of the parameter.
         :param type_: The type of all keyword arguments supplied using the parameter.
         """
-        self.name = name
-        self.type = type_
-        super().__init__(self.name, self.type)
+        super().__init__({"name": name, "type": type_})
 
     def __str__(self):
-        return f"Keyword arguments parameter.\nName: {self.name}\n Type: {self.type}"
+        return f"Keyword arguments parameter.\nName: {self['name']}\n Type: {self['type']}"
 
     def __repr__(self):
-        return f"ASTKeywordArgumentsParameterNode(name={self.name}, type={self.type})"
+        return f"ASTKeywordArgumentsParameterNode(name={self['name']}, type={self['type']})"
 
     def accept(self, visitor):
         """
@@ -2602,14 +2456,13 @@ class ASTPositionalUnpackExpressionNode(ASTNode):
 
         :param expression: The expression to positionally unpack.
         """
-        self.expression = expression
-        super().__init__(self.expression)
+        super().__init__({"expression": expression})
 
     def __str__(self):
-        return f"Positional unpack expression.\nExpression: {self.expression}"
+        return f"Positional unpack expression.\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTPositionalUnpackExpressionNode(expressions={self.expression})"
+        return f"ASTPositionalUnpackExpressionNode(expressions={self['expression']})"
 
     def accept(self, visitor):
         """
@@ -2632,14 +2485,13 @@ class ASTKeywordUnpackExpressionNode(ASTNode):
 
         :param expression: The expression to keyword-wise unpack.
         """
-        self.expression = expression
-        super().__init__(self.expression)
+        super().__init__({"expression": expression})
 
     def __str__(self):
-        return f"Keyword unpack expression.\nExpression: {self.expression}"
+        return f"Keyword unpack expression.\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTKeywordUnpackExpressionNode(expressions={self.expression})"
+        return f"ASTKeywordUnpackExpressionNode(expressions={self['expression']})"
 
     def accept(self, visitor):
         """
@@ -2662,14 +2514,13 @@ class ASTAsyncNode(ASTNode):
 
         :param target: The code to be declared as asynchronous.
         """
-        self.target = target
-        super().__init__(self.target)
+        super().__init__({"target": target})
 
     def __str__(self):
-        return f"Async declaration.\nTarget: {self.target}"
+        return f"Async declaration.\nTarget: {self['target']}"
 
     def __repr__(self):
-        return f"ASTAsyncNode(target={self.target}"
+        return f"ASTAsyncNode(target={self['target']}"
 
     def accept(self, visitor):
         """
@@ -2692,14 +2543,13 @@ class ASTAwaitNode(ASTNode):
 
         :param expression: The expression to await.
         """
-        self.expression = expression
-        super().__init__(self.expression)
+        super().__init__({"expression": expression})
 
     def __str__(self):
-        return f"Await expression.\nExpression: {self.expression}"
+        return f"Await expression.\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTAwaitNode(expression={self.expression})"
+        return f"ASTAwaitNode(expression={self['expression']})"
 
     def accept(self, visitor):
         """
@@ -2723,15 +2573,13 @@ class ASTMemberNode(ASTNode):
         :param parent: The member's parent.
         :param member: The member to access.
         """
-        self.parent = parent
-        self.member = member
-        super().__init__(self.parent, self.member)
+        super().__init__({"parent": parent, "member": member})
 
     def __str__(self):
-        return f"Member access.\nParent: {self.parent}\nMember: {self.member}"
+        return f"Member access.\nParent: {self['parent']}\nMember: {self['member']}"
 
     def __repr__(self):
-        return f"ASTMemberNode(parent={self.parent}, member={self.member})"
+        return f"ASTMemberNode(parent={self['parent']}, member={self['member']})"
 
     def accept(self, visitor):
         """
@@ -2757,15 +2605,13 @@ class ASTAccessNode(ASTNode):
         :param sequence: The sequence to access.
         :param expressions: The expression(s) defining which elements to access.
         """
-        self.sequence = sequence
-        self.expressions = expressions
-        super().__init__(self.sequence, self.expressions)
+        super().__init__({"sequence": sequence, "expressions": expressions})
 
     def __str__(self):
-        return f"Sequence element(s) access.\nSequence: {self.sequence}\nExpressions: {self.expressions}"
+        return f"Sequence element(s) access.\nSequence: {self['sequence']}\nExpressions: {self['expressions']}"
 
     def __repr__(self):
-        return f"ASTAccessNode(sequence={self.sequence}, expressions={self.expressions})"
+        return f"ASTAccessNode(sequence={self['sequence']}, expressions={self['expressions']})"
 
     def accept(self, visitor):
         """
@@ -2790,14 +2636,13 @@ class ASTIndexNode(ASTNode):
 
         :param index: The index of the element to access.
         """
-        self.index = index
-        super().__init__(self.index)
+        super().__init__({"index": index})
 
     def __str__(self):
-        return f"Sequence single element access.\nIndex: {self.index}"
+        return f"Sequence single element access.\nIndex: {self['index']}"
 
     def __repr__(self):
-        return f"ASTIndexNode(index={self.index})"
+        return f"ASTIndexNode(index={self['index']})"
 
     def accept(self, visitor):
         """
@@ -2824,16 +2669,13 @@ class ASTSliceNode(ASTNode):
         :param stop: The index to slice up to.
         :param step: The step of the slice.
         """
-        self.start = start
-        self.stop = stop
-        self.step = step
-        super().__init__(self.start, self.stop, self.step)
+        super().__init__({"start": start, "stop": stop, "step": step})
 
     def __str__(self):
-        return f"Sequence slice access.\nStart: {self.start}\nStop: {self.stop}\nStep: {self.step}"
+        return f"Sequence slice access.\nStart: {self['start']}\nStop: {self['stop']}\nStep: {self['step']}"
 
     def __repr__(self):
-        return f"ASTSliceNode(start={self.start}, stop={self.stop}, step={self.step})"
+        return f"ASTSliceNode(start={self['start']}, stop={self['stop']}, step={self['step']})"
 
     def accept(self, visitor):
         """
@@ -2854,19 +2696,16 @@ class ASTCallNode(ASTNode):
         """
         Method/function call.
 
-
         :param function: The function being called.
         :param arguments: The arguments being supplied to the function.
         """
-        self.function = function
-        self.arguments = arguments
-        super().__init__(self.function, self.arguments)
+        super().__init__({"function": function, "arguments": arguments})
 
     def __str__(self):
-        return f"Method/function call.\nFunction: {self.function}\nArguments: {self.arguments}"
+        return f"Method/function call.\nFunction: {self['function']}\nArguments: {self['arguments']}"
 
     def __repr__(self):
-        return f"ASTCallNode(function={self.function}, arguments={self.arguments})"
+        return f"ASTCallNode(function={self['function']}, arguments={self['arguments']})"
 
     def accept(self, visitor):
         """
@@ -2890,15 +2729,14 @@ class ASTArgumentNode(ASTNode):
         :param value: The value being passed in as the argument.
         :param modifiers: The modifiers applied to the argument.
         """
-        self.value = value
+        super().__init__({"value": value})
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.value)
 
     def __str__(self):
-        return f"Argument.\nValue: {self.value}\nModifiers: {self.modifiers}"
+        return f"Argument.\nValue: {self['value']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTArgumentNode(value={self.value}, modifiers={self.modifiers})"
+        return f"ASTArgumentNode(value={self['value']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -2923,16 +2761,14 @@ class ASTKeywordArgumentNode(ASTNode):
         :param value: The value being passed in as the argument.
         :param modifiers: The modifiers applied to the argument.
         """
-        self.parameter = parameter
-        self.value = value
+        super().__init__({"parameter": parameter, "value": value})
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.parameter, self.value)
 
     def __str__(self):
-        return f"Keyword argument.\nParameter: {self.parameter}\nValue: {self.value}\nModifiers: {self.modifiers}"
+        return f"Keyword argument.\nParameter: {self['parameter']}\nValue: {self['value']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTKeywordArgumentNode(parameter={self.parameter}, value={self.value}, modifiers={self.modifiers})"
+        return f"ASTKeywordArgumentNode(parameter={self['parameter']}, value={self['value']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -2955,14 +2791,13 @@ class ASTGeneratorExpressionNode(ASTNode):
 
         :param expression: The expression defining the generator.
         """
-        self.expression = expression
-        super().__init__(self.expression)
+        super().__init__({"expression": expression})
 
     def __str__(self):
-        return f"Generator expression.\nExpression: {self.expression}"
+        return f"Generator expression.\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTGeneratorExpressionNode(expression={self.expression})"
+        return f"ASTGeneratorExpressionNode(expression={self['expression']})"
 
     def accept(self, visitor):
         """
@@ -2986,15 +2821,13 @@ class ASTComprehensionNode(ASTNode):
         :param value: The value to return from the loop.
         :param loop: The loop represented in the comprehension.
         """
-        self.value = value
-        self.loop = loop
-        super().__init__(self.value, self.loop)
+        super().__init__({"value": value, "loop": loop})
 
     def __str__(self):
-        return f"Comprehension expression.\nValue: {self.value}\nLoop: {self.loop}"
+        return f"Comprehension expression.\nValue: {self['value']}\nLoop: {self['loop']}"
 
     def __repr__(self):
-        return f"ASTComprehensionNode(value={self.value}, loop={self.loop})"
+        return f"ASTComprehensionNode(value={self['value']}, loop={self['loop']})"
 
     def accept(self, visitor):
         """
@@ -3017,14 +2850,13 @@ class ASTListNode(ASTNode):
 
         :param elements: The elements of the list.
         """
-        self.elements = elements
-        super().__init__(self.elements)
+        super().__init__({"elements": elements})
 
     def __str__(self):
-        return f"List declaration.\nElements: {self.elements}"
+        return f"List declaration.\nElements: {self['elements']}"
 
     def __repr__(self):
-        return f"ASTListNode(elements={self.elements})"
+        return f"ASTListNode(elements={self['elements']})"
 
     def accept(self, visitor):
         """
@@ -3047,14 +2879,13 @@ class ASTTupleNode(ASTNode):
 
         :param elements: The elements of the tuple.
         """
-        self.elements = elements
-        super().__init__(self.elements)
+        super().__init__({"elements": elements})
 
     def __str__(self):
-        return f"Tuple declaration.\nElements: {self.elements}"
+        return f"Tuple declaration.\nElements: {self['elements']}"
 
     def __repr__(self):
-        return f"ASTTupleNode(elements={self.elements})"
+        return f"ASTTupleNode(elements={self['elements']})"
 
     def accept(self, visitor):
         """
@@ -3077,14 +2908,13 @@ class ASTSetNode(ASTNode):
 
         :param elements: The elements of the set.
         """
-        self.elements = elements
-        super().__init__(self.elements)
+        super().__init__({"elements": elements})
 
     def __str__(self):
-        return f"Set declaration.\nElements: {self.elements}"
+        return f"Set declaration.\nElements: {self['elements']}"
 
     def __repr__(self):
-        return f"ASTSetNode(elements={self.elements})"
+        return f"ASTSetNode(elements={self['elements']})"
 
     def accept(self, visitor):
         """
@@ -3107,14 +2937,13 @@ class ASTMapNode(ASTNode):
 
         :param elements: The elements of the map.
         """
-        self.elements = elements
-        super().__init__(self.elements)
+        super().__init__({"elements": elements})
 
     def __str__(self):
-        return f"Map declaration.\nElements: {self.elements}"
+        return f"Map declaration.\nElements: {self['elements']}"
 
     def __repr__(self):
-        return f"ASTMapNode(elements={self.elements})"
+        return f"ASTMapNode(elements={self['elements']})"
 
     def accept(self, visitor):
         """
@@ -3138,15 +2967,13 @@ class ASTKeyValuePairNode(ASTNode):
         :param key: The key.
         :param value: The value.
         """
-        self.key = key
-        self.value = value
-        super().__init__(self.key, self.value)
+        super().__init__({"key": key, "value": value})
 
     def __str__(self):
-        return f"Key-value pair.\nKey: {self.key}\nValue: {self.value}"
+        return f"Key-value pair.\nKey: {self['key']}\nValue: {self['value']}"
 
     def __repr__(self):
-        return f"ASTKeyValuePairNode(key={self.key}, value={self.value})"
+        return f"ASTKeyValuePairNode(key={self['key']}, value={self['value']})"
 
     def accept(self, visitor):
         """
@@ -3170,15 +2997,13 @@ class ASTDecoratedNode(ASTNode):
         :param decorators: The decorators applied to the target.
         :param target: The target that is decorated.
         """
-        self.decorators = decorators
-        self.target = target
-        super().__init__(self.decorators, self.target)
+        super().__init__({"decorators": decorators, "target": target})
 
     def __str__(self):
-        return f"Decorated statement.\nDecorators: {self.decorators}\nTarget: {self.target}"
+        return f"Decorated statement.\nDecorators: {self['decorators']}\nTarget: {self['target']}"
 
     def __repr__(self):
-        return f"ASTDecoratedNode(decorators={self.decorators}, target={self.target})"
+        return f"ASTDecoratedNode(decorators={self['decorators']}, target={self['target']})"
 
     def accept(self, visitor):
         """
@@ -3202,15 +3027,13 @@ class ASTDecoratorNode(ASTNode):
         :param name: The name of the decorator.
         :param arguments: The arguments supplied to the decorator.
         """
-        self.name = name
-        self.arguments = arguments
-        super().__init__(self.name, self.arguments)
+        super().__init__({"name": name, "arguments": arguments})
 
     def __str__(self):
-        return f"Decorator.\nName: {self.name}\nArguments: {self.arguments}"
+        return f"Decorator.\nName: {self['name']}\nArguments: {self['arguments']}"
 
     def __repr__(self):
-        return f"ASTDecoratorNode(name={self.name}, arguments={self.arguments})"
+        return f"ASTDecoratorNode(name={self['name']}, arguments={self['arguments']})"
 
     def accept(self, visitor):
         """
@@ -3235,16 +3058,13 @@ class ASTConditionalExpressionNode(ASTNode):
         :param consequent: The expression to evaluate if the condition is true.
         :param alternative: The expression to evaluate if the condition is false.
         """
-        self.condition = condition
-        self.consequent = consequent
-        self.alternative = alternative
-        super().__init__(self.condition, self.consequent, self.alternative)
+        super().__init__({"condition": condition, "consequent": consequent, "alternative": alternative})
 
     def __str__(self):
-        return f"Conditional expression.\nCondition: {self.condition}\nConsequent: {self.consequent}\nAlternative: {self.alternative}"
+        return f"Conditional expression.\nCondition: {self['condition']}\nConsequent: {self['consequent']}\nAlternative: {self['alternative']}"
 
     def __repr__(self):
-        return f"ASTConditionalExpressionNode(condition={self.condition}, consequent={self.consequent}, alternative={self.alternative})"
+        return f"ASTConditionalExpressionNode(condition={self['condition']}, consequent={self['consequent']}, alternative={self['alternative']})"
 
     def accept(self, visitor):
         """
@@ -3267,15 +3087,13 @@ class ASTNullCoalescingExpressionNode(ASTNode):
         :param expression: The expression to evaluate.
         :param alternative: The expression to evaluate if the expression is null.
         """
-        self.expression = expression
-        self.alternative = alternative
-        super().__init__(self.expression, self.alternative)
+        super().__init__({"expression": expression, "alternative": alternative})
 
     def __str__(self):
-        return f"Null-coalescing expression.\nExpression: {self.expression}\nAlternative: {self.alternative}"
+        return f"Null-coalescing expression.\nExpression: {self['expression']}\nAlternative: {self['alternative']}"
 
     def __repr__(self):
-        return f"ASTNullCoalescingExpressionNode(expression={self.expression} alternative={self.alternative})"
+        return f"ASTNullCoalescingExpressionNode(expression={self['expression']} alternative={self['alternative']})"
 
     def accept(self, visitor):
         """
@@ -3298,15 +3116,13 @@ class ASTTypeCastNode(ASTNode):
         :param type_: The type to cast the expression to.
         :param expression: The expression to cast.
         """
-        self.type = type_
-        self.expression = expression
-        super().__init__(self.type, self.expression)
+        super().__init__({"type": type_, "expression": expression})
 
     def __str__(self):
-        return f"Type cast.\nType: {self.type}\nExpression: {self.expression}"
+        return f"Type cast.\nType: {self['type']}\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTTypeCastNode(type={self.type}, expression={self.expression})"
+        return f"ASTTypeCastNode(type={self['type']}, expression={self['expression']})"
 
     def accept(self, visitor):
         """
@@ -3329,15 +3145,13 @@ class ASTTypeNode(ASTNode):
         :param name: The type's name. 
         :param arguments: The type's arguments. 
         """
-        self.name = name
-        self.arguments = arguments
-        super().__init__(self.name, self.arguments)
+        super().__init__({"name": name, "arguments": arguments})
 
     def __str__(self):
-        return f"Type.\nName: {self.name}\nArguments: {self.arguments}"
+        return f"Type.\nName: {self['name']}\nArguments: {self['arguments']}"
 
     def __repr__(self):
-        return f"ASTTypeNode(name={self.name}, arguments={self.arguments})"
+        return f"ASTTypeNode(name={self['name']}, arguments={self['arguments']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3360,15 +3174,13 @@ class ASTObjectCreationNode(ASTNode):
         :param type_: The type of the object being created.
         :param expression: The expression dictating information about the object being created.
         """
-        self.type = type_
-        self.expression = expression
-        super().__init__(self.type, self.expression)
+        super().__init__({"type": type_, "expression": expression})
 
     def __str__(self):
-        return f"Object creation.\nType: {self.type}\nExpression: {self.expression}"
+        return f"Object creation.\nType: {self['type']}\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTObjectCreationNode(type={self.type}, expression={self.expression})"
+        return f"ASTObjectCreationNode(type={self['type']}, expression={self['expression']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3391,15 +3203,13 @@ class ASTNullConditionalOperatorNode(ASTNode):
         :param operand: The expression to evaluate.
         :param consequent: The access expression to evaluate if the operand does not evaluate to null.
         """
-        self.operand = operand
-        self.consequent = consequent
-        super().__init__(self.operand, self.consequent)
+        super().__init__({"operand": operand, "consequent": consequent})
 
     def __str__(self):
-        return f"Null-conditional operator.\nOperand: {self.operand}\nConsequent: {self.consequent}"
+        return f"Null-conditional operator.\nOperand: {self['operand']}\nConsequent: {self['consequent']}"
 
     def __repr__(self):
-        return f"ASTNullConditionalOperatorNode(operand={self.operand}, consequent: {self.consequent})"
+        return f"ASTNullConditionalOperatorNode(operand={self['operand']}, consequent: {self['consequent']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3421,14 +3231,13 @@ class ASTInitializerNode(ASTNode):
 
         :param expressions: The expressions contained within the initializer.
         """
-        self.expressions = expressions
-        super().__init__(self.expressions)
+        super().__init__({"expressions": expressions})
 
     def __str__(self):
-        return f"Initializer.\nExpressions: {self.expressions}"
+        return f"Initializer.\nExpressions: {self['expressions']}"
 
     def __repr__(self):
-        return f"ASTInitializerNode(expressions={self.expressions})"
+        return f"ASTInitializerNode(expressions={self['expressions']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3450,14 +3259,13 @@ class ASTQueryNode(ASTNode):
 
         :param clauses: The clauses that make up the query.
         """
-        self.clauses = clauses
-        super().__init__(self.clauses)
+        super().__init__({"clauses": clauses})
 
     def __str__(self):
-        return f"Query.\nClauses: {self.clauses}"
+        return f"Query.\nClauses: {self['clauses']}"
 
     def __repr__(self):
-        return f"ASTQueryNode(clauses={self.clauses})"
+        return f"ASTQueryNode(clauses={self['clauses']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3480,15 +3288,13 @@ class ASTFromClauseNode(ASTNode):
         :param range_variable: The variable representing each element in the source.
         :param source: The data source on which a query is being run.
         """
-        self.range_variable = range_variable
-        self.source = source
-        super().__init__(self.range_variable, self.source)
+        super().__init__({"range_variable": range_variable, "source": source})
 
     def __str__(self):
-        return f"From clause.\nRange variable: {self.range_variable}\nSource: {self.source}"
+        return f"From clause.\nRange variable: {self['range_variable']}\nSource: {self['source']}"
 
     def __repr__(self):
-        return f"ASTFromClauseNode(range_variable={self.range_variable}, source={self.source})"
+        return f"ASTFromClauseNode(range_variable={self['range_variable']}, source={self['source']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3511,15 +3317,13 @@ class ASTLetClauseNode(ASTNode):
         :param name: The variable to assign a value to.
         :param value: The value to be assigned..
         """
-        self.name = name
-        self.value = value
-        super().__init__(self.name, self.value)
+        super().__init__({"name": name, "value": value})
 
     def __str__(self):
-        return f"Let clause.\nName: {self.name}\nValue: {self.value}"
+        return f"Let clause.\nName: {self['name']}\nValue: {self['value']}"
 
     def __repr__(self):
-        return f"ASTLetClauseNode(name={self.name}, value={self.value})"
+        return f"ASTLetClauseNode(name={self['name']}, value={self['value']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3541,14 +3345,13 @@ class ASTWhereClauseNode(ASTNode):
 
         :param predicate: The boolean predicate to apply to each source element.
         """
-        self.predicate = predicate
-        super().__init__(self.predicate)
+        super().__init__({"predicate": predicate})
 
     def __str__(self):
-        return f"Where clause.\nPredicate: {self.predicate}"
+        return f"Where clause.\nPredicate: {self['predicate']}"
 
     def __repr__(self):
-        return f"ASTWhereClauseNode(predicate={self.predicate})"
+        return f"ASTWhereClauseNode(predicate={self['predicate']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3573,17 +3376,17 @@ class ASTJoinClauseNode(ASTNode):
         :param left_key: The left-hand key being checked for equality.
         :param right_key: The right-hand key being checked for equality.
         """
-        self.target_range_variable = target_range_variable
-        self.target_source = target_source
-        self.left_key = left_key
-        self.right_key = right_key
-        super().__init__(self.target_range_variable, self.target_source, self.left_key, self.right_key)
+        super().__init__({"target_range_variable": target_range_variable, "target_source": target_source, "left_key": left_key, "right_key": right_key})
 
     def __str__(self):
-        return f"Join clause.\nTarget range variable: {self.target_range_variable}\nTarget source: {self.target_source}\nLeft key: {self.left_key}\nRight key: {self.right_key}"
+        return f"Join clause.\nTarget range variable: {self['target_range_variable']}\n" \
+               f"Target source: {self['target_source']}\nLeft key: {self['left_key']}\n" \
+               f"Right key: {self['right_key']}"
 
     def __repr__(self):
-        return f"ASTJoinClauseNode(target_range_variable={self.target_range_variable}, target_source={self.target_source}, left_key={self.left_key}, right_key={self.right_key})"
+        return f"ASTJoinClauseNode(target_range_variable={self['target_range_variable']}, " \
+               f"target_source={self['target_source']}, left_key={self['left_key']}, " \
+               f"right_key={self['right_key']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3605,14 +3408,13 @@ class ASTOrderByClauseNode(ASTNode):
 
         :param orderings: The variable representing each element in the target source.
         """
-        self.orderings = orderings
-        super().__init__(self.orderings)
+        super().__init__({"orderings": orderings})
 
     def __str__(self):
-        return f"Order-by clause.\nOrderings: {self.orderings}"
+        return f"Order-by clause.\nOrderings: {self['orderings']}"
 
     def __repr__(self):
-        return f"ASTOrderByClauseNode(orderings={self.orderings})"
+        return f"ASTOrderByClauseNode(orderings={self['orderings']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3635,15 +3437,13 @@ class ASTOrderingNode(ASTNode):
         :param key: The key specifying what to order by.
         :param direction: The direction in which to order.
         """
-        self.key = key
-        self.direction = direction
-        super().__init__(self.key, self.direction)
+        super().__init__({"key": key, "direction": direction})
 
     def __str__(self):
-        return f"Ordering.\nKey: {self.key}\nDirection: {self.direction}"
+        return f"Ordering.\nKey: {self['key']}\nDirection: {self['direction']}"
 
     def __repr__(self):
-        return f"ASTOrderingNode(key={self.key}, direction={self.direction})"
+        return f"ASTOrderingNode(key={self['key']}, direction={self['direction']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3665,14 +3465,13 @@ class ASTSelectClauseNode(ASTNode):
 
         :param expression: The expression specifying the type of values produced by the query.
         """
-        self.expression = expression
-        super().__init__(self.expression)
+        super().__init__({"expression": expression})
 
     def __str__(self):
-        return f"Select clause.\nExpression: {self.expression}"
+        return f"Select clause.\nExpression: {self['expression']}"
 
     def __repr__(self):
-        return f"ASTSelectClauseNode(expression={self.expression})"
+        return f"ASTSelectClauseNode(expression={self['expression']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3695,15 +3494,13 @@ class ASTGroupByClauseNode(ASTNode):
         :param range_variable: The variable representing each element in the target source.
         :param key: The key specifying how values are to be grouped.
         """
-        self.range_variable = range_variable
-        self.key = key
-        super().__init__(self.range_variable)
+        super().__init__({"range_variable": range_variable, "key": key})
 
     def __str__(self):
-        return f"Group-by clause.\nRange variable: {self.range_variable}\nKey: {self.key}"
+        return f"Group-by clause.\nRange variable: {self['range_variable']}\nKey: {self['key']}"
 
     def __repr__(self):
-        return f"ASTGroupByClauseNode(range_variable={self.range_variable}, key={self.key})"
+        return f"ASTGroupByClauseNode(range_variable={self['range_variable']}, key={self['key']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3725,14 +3522,13 @@ class ASTIntoClauseNode(ASTNode):
 
         :param identifier: The identifier to store the results of the previous clause against.
         """
-        self.identifier = identifier
-        super().__init__(self.identifier)
+        super().__init__({"identifier": identifier})
 
     def __str__(self):
-        return f"Into clause.\nIdentifier: {self.identifier}"
+        return f"Into clause.\nIdentifier: {self['identifier']}"
 
     def __repr__(self):
-        return f"ASTIntoClauseNode(identifier={self.identifier})"
+        return f"ASTIntoClauseNode(identifier={self['identifier']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3749,15 +3545,19 @@ class ASTLabelNode(ASTNode):
     """
 
     def __init__(self, name: ASTNode, target: ASTNode):
-        self.name = name
-        self.target = target
-        super().__init__(self.name, self.target)
+        """
+        Label.
+        
+        :param name: The name of the label. 
+        :param target: The target of the label.
+        """
+        super().__init__({"name": name, "target": target})
 
     def __str__(self):
-        return f"Label.\nName: {self.name}\nTarget: {self.target}"
+        return f"Label.\nName: {self['name']}\nTarget: {self['target']}"
 
     def __repr__(self):
-        return f"ASTLabelNode(name={self.name}, target={self.target})"
+        return f"ASTLabelNode(name={self['name']}, target={self['target']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3780,15 +3580,13 @@ class ASTSwitchSectionNode(ASTNode):
         :param labels: The labels contained within the switch section.
         :param body: The code to execute if the match expressions matches with one of the label patterns.
         """
-        self.labels = labels
-        self.body = body
-        super().__init__(self.labels, self.body)
+        super().__init__({"labels": labels, "body": body})
 
     def __str__(self):
-        return f"Switch section.\nLabels: {self.labels}\nBody: {self.body}"
+        return f"Switch section.\nLabels: {self['labels']}\nBody: {self['body']}"
 
     def __repr__(self):
-        return f"ASTSwitchStatementNode(labels={self.labels}, body={self.body})"
+        return f"ASTSwitchStatementNode(labels={self['labels']}, body={self['body']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3810,14 +3608,13 @@ class ASTCaseLabelNode(ASTNode):
 
         :param pattern: The pattern for the case label.
         """
-        self.pattern = pattern
-        super().__init__(self.pattern)
+        super().__init__({"pattern": pattern})
 
     def __str__(self):
-        return f"Case label.\nPattern: {self.pattern}"
+        return f"Case label.\nPattern: {self['pattern']}"
 
     def __repr__(self):
-        return f"ASTCaseLabelNode(pattern={self.pattern})"
+        return f"ASTCaseLabelNode(pattern={self['pattern']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3863,15 +3660,13 @@ class ASTAttributeSectionNode(ASTNode):
         :param attributes: The attributes being applied.
         :param target: The target for the the attributes.
         """
-        self.attributes = attributes
-        self.target = target
-        super().__init__(self.target, self.attributes)
+        super().__init__({"target": target, "attributes": attributes})
 
     def __str__(self):
-        return f"Attribute section.\nAttributes: {self.attributes}\nTarget: {self.target}"
+        return f"Attribute section.\nAttributes: {self['attributes']}\nTarget: {self['target']}"
 
     def __repr__(self):
-        return f"ASTAttributeSectionNode(attributes={self.attributes}, target={self.target})"
+        return f"ASTAttributeSectionNode(attributes={self['attributes']}, target={self['target']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3894,15 +3689,13 @@ class ASTAttributeNode(ASTNode):
         :param name: The name of the attribute. 
         :param arguments: The attribute's arguments.
         """
-        self.name = name
-        self.arguments = arguments
-        super().__init__(self.name, self.arguments)
+        super().__init__({"name": name, "arguments": arguments})
 
     def __str__(self):
-        return f"Attribute.\nName: {self.name}\nArguments: {self.arguments}"
+        return f"Attribute.\nName: {self['name']}\nArguments: {self['arguments']}"
 
     def __repr__(self):
-        return f"ASTAttributeNode(name={self.name}, arguments={self.arguments})"
+        return f"ASTAttributeNode(name={self['name']}, arguments={self['arguments']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3924,14 +3717,13 @@ class ASTPointerTypeNode(ASTNode):
 
         :param type_: The type of the value that the pointer points to.
         """
-        self.type = type_
-        super().__init__(self.type)
+        super().__init__({"type": type_})
 
     def __str__(self):
-        return f"Pointer type.\nType: {self.type}"
+        return f"Pointer type.\nType: {self['type']}"
 
     def __repr__(self):
-        return f"ASTPointerTypeNode(type={self.type})"
+        return f"ASTPointerTypeNode(type={self['type']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3953,14 +3745,13 @@ class ASTNullableTypeNode(ASTNode):
 
         :param type_: The type that may also be null.
         """
-        self.type = type_
-        super().__init__(self.type)
+        super().__init__({"type": type_})
 
     def __str__(self):
-        return f"Nullable type.\nType: {self.type}"
+        return f"Nullable type.\nType: {self['type']}"
 
     def __repr__(self):
-        return f"ASTNullableTypeNode(type={self.type})"
+        return f"ASTNullableTypeNode(type={self['type']})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -3983,15 +3774,14 @@ class ASTArrayTypeNode(ASTNode):
         :param type_: The type of the elements in the array.
         :param dimensions: The number of dimensions in the array.
         """
-        self.type = type_
+        super().__init__({"type": type_})
         self.dimensions = dimensions
-        super().__init__(self.type)
 
     def __str__(self):
-        return f"Array type.\nType: {self.type}\nDimensions: {self.dimensions}"
+        return f"Array type.\nType: {self['type']}\nDimensions: {self.dimensions}"
 
     def __repr__(self):
-        return f"ASTArrayTypeNode(type={self.type}, dimensions={self.dimensions})"
+        return f"ASTArrayTypeNode(type={self['type']}, dimensions={self.dimensions})"
 
     def accept(self, visitor: ASTVisitor):
         """
@@ -4008,15 +3798,19 @@ class ASTConstraintsClauseNode(ASTNode):
     """
 
     def __init__(self, type_parameter: ASTNode, constraints: ASTNode):
-        self.type_parameter = type_parameter
-        self.constraints = constraints
-        super().__init__(self.type_parameter, self.constraints)
+        """
+        Constraints clause.
+        
+        :param type_parameter: The type parameter to apply the constraint(s) to. 
+        :param constraints: The constraint(s) to apply.
+        """
+        super().__init__({"type_parameter": type_parameter, "constraints": constraints})
 
     def __str__(self):
-        return f"Constraints clause.\nType parameter: {self.type_parameter}\nConstraints: {self.constraints}"
+        return f"Constraints clause.\nType parameter: {self['type_parameter']}\nConstraints: {self['constraints']}"
 
     def __repr__(self):
-        return f"ASTConstraintsClauseNode(type_parameter={self.type_parameter}, constraints={self.constraints})"
+        return f"ASTConstraintsClauseNode(type_parameter={self['type_parameter']}, constraints={self['constraints']})"
 
     def accept(self, visitor: ASTVisitor):
         """

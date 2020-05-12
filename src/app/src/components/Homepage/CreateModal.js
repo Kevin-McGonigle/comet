@@ -135,9 +135,9 @@ const CreateModal = props => {
                         />
                     </Dialog>
 
-                    <IconButton icon="plus" onClick={onPlusIconHandler}/>
-                    <IconButton icon="edit" onClick={onEditIconHandler}/>
-                    <IconButton icon="trash" intent="danger" onClick={onDeleteIconHandler}/>
+                    <IconButton id="plus" icon="plus" onClick={onPlusIconHandler}/>
+                    <IconButton id="edit" icon="edit" onClick={onEditIconHandler}/>
+                    <IconButton id="trash" icon="trash" intent="danger" onClick={onDeleteIconHandler}/>
                 </div>
             
                 <Pane height={16}>

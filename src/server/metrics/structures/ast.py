@@ -610,6 +610,68 @@ class ASTAttributesNode(ASTMultiplesNode):
         return visitor.visit_attributes(self)
 
 
+class ASTConstraintsClausesNode(ASTMultiplesNode):
+    """
+    Constraints clauses.
+
+    Representation of multiple, consecutive constraints clauses.
+    """
+
+    def __init__(self, constraints_clauses: Sequence[ASTNode]):
+        """
+        Constraints.
+
+        :param constraints_clauses: The constraints clauses (in order) to be represented.
+        """
+        super().__init__(constraints_clauses)
+
+    def __str__(self):
+        return f"Multiple, consecutive constraints clauses.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTConstraintsClausesNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_constraints_clauses method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_constraints_clauses(self)
+    
+
+class ASTConstraintsNode(ASTMultiplesNode):
+    """
+    Constraints.
+
+    Representation of multiple, consecutive constraints.
+    """
+
+    def __init__(self, constraints: Sequence[ASTNode]):
+        """
+        Constraints.
+
+        :param constraints: The constraints (in order) to be represented.
+        """
+        super().__init__(constraints)
+
+    def __str__(self):
+        return f"Multiple, consecutive constraints.\nChildren: {self.children}"
+
+    def __repr__(self):
+        return f"ASTConstraintsNode(children={self.children})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_constraints method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_constraints(self)
+
+
 # endregion
 
 # region Statements
@@ -1430,7 +1492,8 @@ class ASTClassDefinitionNode(ASTStatementNode):
     """
 
     def __init__(self, name: ASTNode, body: Optional[ASTNode] = None, superclasses: Optional[ASTNode] = None,
-                 interfaces: Optional[ASTNode] = None, modifiers: Optional[Sequence[ASTModifier]] = None):
+                 interfaces: Optional[ASTNode] = None, constraints_clauses: Optional[ASTNode] = None,
+                 modifiers: Optional[Sequence[ASTModifier]] = None):
         """
         Class definition.
 
@@ -1438,22 +1501,26 @@ class ASTClassDefinitionNode(ASTStatementNode):
         :param body: The body of the class.
         :param superclasses: The class(es) that the class inherits from.
         :param interfaces: The interface(s) that the class implements.
+        :param constraints_clauses: The clause(s) dictating the constraints on the class' type parameters.
         :param modifiers: The modifier(s) applied to the class.
         """
         self.name = name
         self.body = body
         self.superclasses = superclasses
         self.interfaces = interfaces
+        self.constraints_clauses = constraints_clauses
         self.modifiers = modifiers if modifiers is not None else []
-        super().__init__(self.name, self.superclasses, self.interfaces, self.body)
+        super().__init__(self.name, self.superclasses, self.interfaces, self.constraints_clauses, self.body)
 
     def __str__(self):
-        return f"Class definition\nName: {self.name}\nSuperclasses: {self.superclasses}\n" \
-               f"Interfaces: {self.interfaces}\nBody: {self.body}\nModifiers: {self.modifiers}"
+        return f"Class definition\nName: {self.name}\nBody: {self.body}\nSuperclasses: {self.superclasses}\n" \
+               f"Interfaces: {self.interfaces}\nConstraint clauses: {self.constraints_clauses}\n" \
+               f"Modifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTClassDefinitionNode(name={self.name}, arguments={self.superclasses}, " \
-               f"interfaces={self.interfaces}\nbody={self.body}, modifiers={self.modifiers})"
+        return f"ASTClassDefinitionNode(name={self.name}, body={self.body}, arguments={self.superclasses}, " \
+               f"interfaces={self.interfaces}, constraints_clauses={self.constraints_clauses}, " \
+               f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -3467,6 +3534,31 @@ class ASTArrayTypeNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_array_type(self)
+
+
+class ASTConstraintsClauseNode(ASTNode):
+    """
+    Constraints clause.
+    """
+
+    def __init__(self, type_parameter: ASTNode, constraints: ASTNode):
+        self.type_parameter = type_parameter
+        self.constraints = constraints
+        super().__init__(self.type_parameter, self.constraints)
+
+    def __str__(self):
+        return f"Constraints clause.\nType parameter: {self.type_parameter}\nConstraints: {self.constraints}"
+
+    def __repr__(self):
+        return f"ASTConstraintsClauseNode(type_parameter={self.type_parameter}, constraints={self.constraints})"
+
+    def accept(self, visitor: ASTVisitor):
+        """
+        Accept AST visitor and call its visit_constraints_clause method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_constraints_clause(self)
 
 
 # endregion

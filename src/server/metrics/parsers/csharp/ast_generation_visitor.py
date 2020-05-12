@@ -34,7 +34,6 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         elif child:
             multi.add_child(child)
 
-
     # endregion
 
     # region Visits
@@ -879,8 +878,17 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ctx.getChild(0).accept(self)
 
     def visitType_declaration(self, ctx: CSharpParser.Type_declarationContext):
-        # TODO
-        return super().visitType_declaration(ctx)
+        declared_type = ctx.getChild(ctx.getChildCount() - 1).accept(self)
+
+        modifiers = ctx.all_member_modifiers()
+        if modifiers:
+            declared_type.modifiers.extend(modifiers)
+
+        attributes = ctx.attributes()
+        if attributes:
+            return ASTStatementsNode([attributes.accept(self), declared_type])
+
+        return declared_type
 
     def visitQualified_alias_member(self, ctx: CSharpParser.Qualified_alias_memberContext):
         alias = ctx.identifier(0).accept(self)
@@ -896,8 +904,13 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(self.visitChildren(ctx), ASTParametersNode)
 
     def visitType_parameter(self, ctx: CSharpParser.Type_parameterContext):
-        # TODO
-        return super().visitType_parameter(ctx)
+        identifier = ctx.identifier().accept(self)
+
+        attributes = ctx.attributes()
+        if attributes:
+            return ASTExpressionsNode([attributes.accept(self), identifier])
+
+        return identifier
 
     def visitClass_base(self, ctx: CSharpParser.Class_baseContext):
         return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
@@ -906,27 +919,26 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
 
     def visitType_parameter_constraints_clauses(self, ctx: CSharpParser.Type_parameter_constraints_clausesContext):
-        # TODO
-        return super().visitType_parameter_constraints_clauses(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTConstraintsClausesNode)
 
     def visitType_parameter_constraints_clause(self, ctx: CSharpParser.Type_parameter_constraints_clauseContext):
-        # TODO
-        return super().visitType_parameter_constraints_clause(ctx)
+        return ASTConstraintsClauseNode(ctx.identifier().accept(self), ctx.type_parameter_constraints().accept(self))
 
     def visitType_parameter_constraints(self, ctx: CSharpParser.Type_parameter_constraintsContext):
-        # TODO
-        return super().visitType_parameter_constraints(ctx)
+        return self.build_multi(self.visitChildren(ctx), ASTConstraintsNode)
 
     def visitPrimary_constraint(self, ctx: CSharpParser.Primary_constraintContext):
-        return ctx.getChild(0).accept(self)
+        class_type = ctx.class_type()
+        if class_type:
+            return class_type.accept(self)
+
+        return ASTIdentifierNode(ctx.getText())
 
     def visitSecondary_constraints(self, ctx: CSharpParser.Secondary_constraintsContext):
-        # TODO
-        return super().visitSecondary_constraints(ctx)
+        return self.visitChildren(ctx)
 
     def visitConstructor_constraint(self, ctx: CSharpParser.Constructor_constraintContext):
-        # TODO
-        return super().visitConstructor_constraint(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     def visitClass_body(self, ctx: CSharpParser.Class_bodyContext):
         body = ctx.class_member_declarations()
@@ -937,8 +949,17 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitClass_member_declaration(self, ctx: CSharpParser.Class_member_declarationContext):
-        # TODO
-        return super().visitClass_member_declaration(ctx)
+        class_member = ctx.getChild(ctx.getChildCount() - 1).accept(self)
+
+        modifiers = ctx.all_member_modifiers()
+        if modifiers:
+            class_member.modifiers.extend(modifiers)
+
+        attributes = ctx.attributes()
+        if attributes:
+            return ASTStatementsNode([attributes.accept(self), class_member])
+
+        return class_member
 
     def visitAll_member_modifiers(self, ctx: CSharpParser.All_member_modifiersContext):
         return self.visitChildren(ctx)

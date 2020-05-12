@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, List
 
 from antlr4 import ParserRuleContext
 from antlr4.tree.Tree import TerminalNodeImpl
@@ -115,6 +115,50 @@ class ASTGenerationVisitor(Python3Visitor):
 
         return ASTMemberNode(self.build_atom_expr(children[:-1]), ASTIdentifierNode(children[-1].getText()))
 
+    def build_parameters(self, ctx: Union[Python3Parser.TypedargslistContext, Python3Parser.VarargslistContext]) -> \
+            Optional[List[Union[ASTParametersNode, ASTParameterNode, ASTPositionalArgumentsParameterNode,
+                                ASTKeywordArgumentsParameterNode]]]:
+        parameters = []
+
+        positional_only = ctx.getChild(0, Python3Parser.DIV) is not None  # Future-proofing for PEP 570
+        keyword_only = False
+
+        children = ctx.getChildren()
+        child_count = ctx.getChildCount()
+
+        i = 0
+        while i < child_count:
+            child = children[i]
+            if isinstance(child, TerminalNodeImpl):
+                if child.symbol.type == Python3Parser.STAR:
+                    if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.TfpdefContext):
+                        parameters.append(ASTPositionalArgumentsParameterNode(**children[i + 1].accept(self)))
+                        i += 1
+                    else:
+                        keyword_only = True
+                elif child.symbol.type == Python3Parser.POWER:
+                    parameters.append(ASTKeywordArgumentsParameterNode(**children[i + 1].accept(self)))
+                    i += 1
+                elif child.symbol.type == Python3Parser.DIV:
+                    positional_only = False
+            elif isinstance(child, Python3Parser.TfpdefContext) or isinstance(child, Python3Parser.VfpdefContext):
+                default = None
+                if i + 2 < child_count and isinstance(children[i + 2], Python3Parser.TestContext):
+                    default = children[i + 2].accept(self)
+                    i += 2
+
+                if positional_only:
+                    param = ASTPositionalOnlyParameterNode(**(child.accept(self)), default=default)
+                elif keyword_only:
+                    param = ASTKeywordOnlyParameterNode(**(child.accept(self)), default=default)
+                else:
+                    param = ASTParameterNode(**(child.accept(self)), default=default)
+
+                parameters.append(param)
+            i += 1
+
+        return self.build_multi(parameters, ASTParametersNode)
+
     @staticmethod
     def filter_child(child, *contexts):
         for context in contexts:
@@ -199,34 +243,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return self.defaultResult()
 
     def visitTypedargslist(self, ctx: Python3Parser.TypedargslistContext):
-        parameters = []
-
-        children = ctx.getChildren()
-        child_count = ctx.getChildCount()
-
-        i = 0
-        while i < child_count:
-            child = children[i]
-            if isinstance(child, TerminalNodeImpl):
-                if child.symbol.type == Python3Parser.STAR:
-                    if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.TfpdefContext):
-                        parameters.append(ASTPositionalArgumentsParameterNode(**children[i + 1].accept(self)))
-                        i += 1
-                    else:
-                        parameters.append("*")
-                elif child.symbol.type == Python3Parser.POWER:
-                    parameters.append(ASTKeywordArgumentsParameterNode(**children[i + 1].accept(self)))
-                    i += 1
-            else:
-                if isinstance(child, Python3Parser.TfpdefContext):
-                    if i + 2 < child_count and isinstance(children[i + 2], Python3Parser.TestContext):
-                        parameters.append(ASTParameterNode(**child.accept(self), default=children[i + 2].accept(self)))
-                        i += 2
-                    else:
-                        parameters.append(ASTParameterNode(**child.accept(self)))
-            i += 1
-
-        return self.build_multi(parameters, ASTParametersNode)
+        return self.build_parameters(ctx)
 
     def visitTfpdef(self, ctx: Python3Parser.TfpdefContext):
         name = ASTIdentifierNode(ctx.NAME().getText())
@@ -238,34 +255,7 @@ class ASTGenerationVisitor(Python3Visitor):
         return {"name": name}
 
     def visitVarargslist(self, ctx: Python3Parser.VarargslistContext):
-        parameters = []
-
-        children = ctx.getChildren()
-        child_count = ctx.getChildCount()
-
-        i = 0
-        while i < child_count:
-            child = children[i]
-            if isinstance(child, TerminalNodeImpl):
-                if child.symbol.type == Python3Parser.STAR:
-                    if i + 1 < child_count and isinstance(children[i + 1], Python3Parser.VfpdefContext):
-                        parameters.append(ASTPositionalArgumentsParameterNode(**children[i + 1].accept(self)))
-                        i += 1
-                    else:
-                        parameters.append("*")
-                elif child.symbol.type == Python3Parser.POWER:
-                    parameters.append(ASTKeywordArgumentsParameterNode(**children[i + 1].accept(self)))
-                    i += 1
-            else:
-                if isinstance(child, Python3Parser.VfpdefContext):
-                    if i + 2 < child_count and isinstance(children[i + 2], Python3Parser.TestContext):
-                        parameters.append(ASTParameterNode(**child.accept(self), default=children[i + 2].accept(self)))
-                        i += 2
-                    else:
-                        parameters.append(ASTParameterNode(**child.accept(self)))
-            i += 1
-
-        return self.build_multi(parameters, ASTParametersNode)
+        return self.build_parameters(ctx)
 
     def visitVfpdef(self, ctx: Python3Parser.VfpdefContext):
         return {"name": ASTIdentifierNode(ctx.NAME().getText())}

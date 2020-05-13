@@ -3,9 +3,9 @@ from typing import Optional
 from metrics.structures.ast import AST
 from metrics.structures.cfg import CFG
 from metrics.structures.inheritance_tree import InheritanceTree
-from visitors.metrics.lloc_calculation_visitor import LLOCCalculationVisitor
-from visitors.structures.cfg_generation_visitor import CFGGenerationVisitor
-from visitors.structures.inheritance_tree_generation_visitor import InheritanceTreeGenerationVisitor
+from metrics.visitors.metrics.lloc_calculation_visitor import LLOCCalculationVisitor
+from metrics.visitors.structures.cfg_generation_visitor import CFGGenerationVisitor
+from metrics.visitors.structures.inheritance_tree_generation_visitor import InheritanceTreeGenerationVisitor
 
 
 class Calculator(object):

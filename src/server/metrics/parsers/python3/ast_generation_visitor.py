@@ -695,9 +695,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         visibility = self.get_visibility(name.name)
 
         if arguments:
-            return ASTClassDefinitionNode(name, modifiers=[visibility])
+            return ASTClassDefinitionNode(name, body, arguments.accept(self), modifiers=[visibility])
 
-        return ASTClassDefinitionNode(name, modifiers=[visibility])
+        return ASTClassDefinitionNode(name, body, modifiers=[visibility])
 
     def visitArglist(self, ctx: Python3Parser.ArglistContext):
         return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)

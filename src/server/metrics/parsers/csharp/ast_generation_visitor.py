@@ -609,7 +609,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         body = ctx.if_body(0).accept(self)
 
         if ctx.ELSE():
-            return ASTIfElseStatementNode(condition, body, ctx.if_body(1).accept(self))
+            return ASTIfStatementNode(condition, body, ctx.if_body(1).accept(self))
 
         return ASTIfStatementNode(condition, body)
 
@@ -886,7 +886,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         attributes = ctx.attributes()
         if attributes:
-            declared_type.attributes = attributes.accept(self)
+            declared_type["attributes"] = attributes.accept(self)
 
         return declared_type
 
@@ -957,7 +957,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         attributes = ctx.attributes()
         if attributes:
-            class_member.attributes = attributes.accept(self)
+            class_member["attributes"] = attributes.accept(self)
 
         return class_member
 
@@ -988,16 +988,28 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         if ctx.VOID():
             return ctx.method_declaration().accept(self)
 
-        conversion_operator_declarator = ctx.conversion_operator_declarator()
-        if conversion_operator_declarator:
-            if ctx.getChildCount() == 2:
-                return ASTConversionOperatorDefinitionNode(**(conversion_operator_declarator.accept(self)), body=ctx.getChild(1).accept(self))
-            return ASTConversionOperatorDefinitionNode()
-        return ctx.getChild(0).accept(self)
+        definition = ctx.getChild(0).accept(self)
+        if ctx.getChildCount() == 2:
+            definition["body"] = ctx.getChild(1).accept(self)
+
+        return definition
 
     def visitTyped_member_declaration(self, ctx: CSharpParser.Typed_member_declarationContext):
-        # TODO
-        return super().visitTyped_member_declaration(ctx)
+        if ctx.getChildCount() == 2:
+            declaration = ctx.getChild(1).accept(self)
+            declaration["name"] = ASTMemberNode(ctx.namespace_or_type_name().accept(self), declaration["name"])
+        else:
+            declaration = ctx.getChild(0).accept(self)
+
+        type_ = ctx.type_().accept(self)
+        if isinstance(declaration, ASTIndexerDefinitionNode) or \
+                isinstance(declaration, ASTFunctionDefinitionNode) or \
+                isinstance(declaration, ASTOperatorOverloadDefinitionNode):
+            declaration["return_type"] = type_
+        else:
+            declaration["type"] = type_
+
+        return declaration
 
     def visitConstant_declarators(self, ctx: CSharpParser.Constant_declaratorsContext):
         return self.visitChildren(ctx)
@@ -1072,21 +1084,62 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
     def visitParameter_array(self, ctx: CSharpParser.Parameter_arrayContext):
         attributes = ctx.attributes()
         if attributes:
-            return ASTPositionalArgumentsParameterNode(ctx.identifier().accept(self), ctx.array_type().accept(self), attributes.accept(self))
+            return ASTPositionalArgumentsParameterNode(ctx.identifier().accept(self), ctx.array_type().accept(self),
+                                                       attributes.accept(self))
 
         return ASTPositionalArgumentsParameterNode(ctx.identifier().accept(self), ctx.array_type().accept(self))
 
     def visitAccessor_declarations(self, ctx: CSharpParser.Accessor_declarationsContext):
-        # TODO
-        return super().visitAccessor_declarations(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes().accept(self)
+
+        modifiers = ctx.accessor_modifier()
+        if modifiers:
+            modifiers = modifiers.accept(self)
+
+        if ctx.GET():
+            getter = ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.GET().getText()), ctx.accessor_body().accept(self),
+                                               attributes, modifiers)
+            setter = ctx.set_accessor_declaration()
+            if setter:
+                setter = setter.accept(self)
+                return ASTStatementsNode([getter, setter])
+
+            return getter
+
+        setter = ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.SET().getText()), ctx.accessor_body().accept(self),
+                                           attributes, modifiers)
+        getter = ctx.set_accessor_declaration()
+        if getter:
+            getter = getter.accept(self)
+            return ASTStatementsNode([setter, getter])
+
+        return setter
 
     def visitGet_accessor_declaration(self, ctx: CSharpParser.Get_accessor_declarationContext):
-        # TODO
-        return super().visitGet_accessor_declaration(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes().accept(self)
+
+        modifiers = ctx.accessor_modifier()
+        if modifiers:
+            modifiers = modifiers.accept(self)
+
+        return ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.GET().getText()), ctx.accessor_body().accept(self),
+                                         attributes, modifiers)
 
     def visitSet_accessor_declaration(self, ctx: CSharpParser.Set_accessor_declarationContext):
-        # TODO
-        return super().visitSet_accessor_declaration(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes().accept(self)
+
+        modifiers = ctx.accessor_modifier()
+        if modifiers:
+            modifiers = modifiers.accept(self)
+
+        return ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.SET().getText()), ctx.accessor_body().accept(self),
+                                         attributes, modifiers)
 
     def visitAccessor_modifier(self, ctx: CSharpParser.Accessor_modifierContext):
         return {
@@ -1103,28 +1156,58 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
             return block.accept(self)
 
     def visitEvent_accessor_declarations(self, ctx: CSharpParser.Event_accessor_declarationsContext):
-        # TODO
-        return super().visitEvent_accessor_declarations(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes().accept(self)
+
+        if ctx.ADD():
+            adder = ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.ADD().getText()), ctx.block().accept(self),
+                                              attributes)
+            remover = ctx.remove_accessor_declaration()
+            if remover:
+                remover = remover.accept(self)
+                return ASTStatementsNode([adder, remover])
+
+            return adder
+
+        remover = ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.REMOVE().getText()), ctx.block().accept(self),
+                                            attributes)
+        adder = ctx.add_accessor_declaration()
+        if adder:
+            adder = adder.accept(self)
+            return ASTStatementsNode([remover, adder])
+
+        return remover
 
     def visitAdd_accessor_declaration(self, ctx: CSharpParser.Add_accessor_declarationContext):
-        # TODO
-        return super().visitAdd_accessor_declaration(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes().accept(self)
+
+        return ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.ADD().getText()), ctx.block().accept(self), attributes)
 
     def visitRemove_accessor_declaration(self, ctx: CSharpParser.Remove_accessor_declarationContext):
-        # TODO
-        return super().visitRemove_accessor_declaration(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes().accept(self)
+
+        return ASTAccessorDefinitionNode(ASTIdentifierNode(ctx.REMOVE().getText()), ctx.block().accept(self),
+                                         attributes)
 
     def visitOverloadable_operator(self, ctx: CSharpParser.Overloadable_operatorContext):
-        # TODO
-        return super().visitOverloadable_operator(ctx)
+        return ASTIdentifierNode(ctx.getText())
 
     def visitConversion_operator_declarator(self, ctx: CSharpParser.Conversion_operator_declaratorContext):
-        # TODO
-        return super().visitConversion_operator_declarator(ctx)
+        return ASTConversionOperatorDefinitionNode(ctx.type_().accept(self), {"implicit": ASTConversionType.IMPLICIT,
+                                                                              "explicit": ASTConversionType.EXPLICIT}[
+            ctx.getChild(0).getText()], ctx.arg_declaration().accept(self))
 
     def visitConstructor_initializer(self, ctx: CSharpParser.Constructor_initializerContext):
-        # TODO
-        return super().visitConstructor_initializer(ctx)
+        arguments = ctx.argument_list()
+        if arguments:
+            return ASTCallNode(ASTIdentifierNode(ctx.getChild(1).getText()), arguments.accept(self))
+
+        return ASTCallNode(ASTIdentifierNode(ctx.getChild(1).getText()))
 
     def visitBody(self, ctx: CSharpParser.BodyContext):
         block = ctx.block()
@@ -1140,16 +1223,26 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitStruct_member_declaration(self, ctx: CSharpParser.Struct_member_declarationContext):
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes.accept(self)
+
+        modifiers = ctx.all_member_modifiers()
+        if modifiers:
+            modifiers = modifiers.accept(self)
+
         # TODO
         return super().visitStruct_member_declaration(ctx)
 
     def visitArray_type(self, ctx: CSharpParser.Array_typeContext):
-        # TODO workout what to do with rank specfiier, pointer, nullable
+        # TODO workout what to do with rank specifier, pointer, nullable
+
+
 
         return ctx.base_type().accept(self)
 
     def visitRank_specifier(self, ctx: CSharpParser.Rank_specifierContext):
-        return super().visitRank_specifier(ctx)
+        return ctx.getChildCount() - 1
 
     def visitArray_initializer(self, ctx: CSharpParser.Array_initializerContext):
         return self.build_multi(self.visitChildren(ctx), ASTExpressionsNode)
@@ -1158,8 +1251,15 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(self.visitChildren(ctx), ASTParametersNode)
 
     def visitVariant_type_parameter(self, ctx: CSharpParser.Variant_type_parameterContext):
-        # TODO
-        return super().visitVariant_type_parameter(ctx)
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes.accept(self)
+
+        modifiers = ctx.variance_annotation()
+        if modifiers:
+            modifiers = [modifiers.accept(self)]
+
+        return ASTParameterNode(ctx.identifier().accept(self), attributes=attributes, modifiers=modifiers)
 
     def visitVariance_annotation(self, ctx: CSharpParser.Variance_annotationContext):
         return {
@@ -1178,8 +1278,20 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return super().visitInterface_member_declaration(ctx)
 
     def visitInterface_accessors(self, ctx: CSharpParser.Interface_accessorsContext):
-        # TODO
-        return super().visitInterface_accessors(ctx)
+        accessors = []
+        children = ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.AttributesContext, CSharpParser.GET, CSharpParser.SET))
+
+        i = 0
+        while i < len(children):
+            if isinstance(children[i], CSharpParser.AttributesContext):
+                accessors.append(ASTAccessorDefinitionNode(children[i+1].getText(), attributes=children[i].accept(self)))
+                i += 1
+            else:
+                accessors.append(ASTAccessorDefinitionNode(children[i].getText()))
+
+            i += 1
+
+        return self.build_multi(accessors, ASTStatementsNode)
 
     def visitEnum_base(self, ctx: CSharpParser.Enum_baseContext):
         return ctx.type_().accept(self)
@@ -1188,8 +1300,17 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
 
     def visitEnum_member_declaration(self, ctx: CSharpParser.Enum_member_declarationContext):
-        # TODO
-        return super().visitEnum_member_declaration(ctx)
+        name = ctx.identifier().accept(self)
+
+        attributes = ctx.attributes()
+        if attributes:
+            attributes = attributes.accept(self)
+
+        initial_value = ctx.expression()
+        if initial_value:
+            return ASTVariableDeclarationNode(name, initial_value=initial_value.accept(self), attributes=attributes)
+
+        return ASTVariableDeclarationNode(name, attributes=attributes)
 
     def visitGlobal_attribute_section(self, ctx: CSharpParser.Global_attribute_sectionContext):
         return ASTAttributeSectionNode(ctx.global_attribute_target().accept(self), ctx.attribute_list().accept(self))
@@ -1230,8 +1351,11 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ASTArgumentNode(value)
 
     def visitPointer_type(self, ctx: CSharpParser.Pointer_typeContext):
+        void = ctx.VOID()
+        if void:
+            return ASTPointerTypeNode(ASTIdentifierNode(void.getText()))
+
         # TODO
-        return super().visitPointer_type(ctx)
 
     def visitFixed_pointer_declarators(self, ctx: CSharpParser.Fixed_pointer_declaratorsContext):
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
@@ -1251,8 +1375,10 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         }
 
     def visitFixed_pointer_initializer(self, ctx: CSharpParser.Fixed_pointer_initializerContext):
-        # TODO
-        return super().visitFixed_pointer_initializer(ctx)
+        if ctx.AMP():
+            return ASTUnaryOperationNode(ASTUnaryOperation.ADDRESS, ctx.expression.accept(self))
+
+        return ctx.getChild(0).accept(self)
 
     def visitFixed_size_buffer_declarator(self, ctx: CSharpParser.Fixed_size_buffer_declaratorContext):
         # TODO
@@ -1295,36 +1421,87 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ASTLiteralNode(ASTLiteralType.STRING, ctx.getText())
 
     def visitInterpolated_regular_string(self, ctx: CSharpParser.Interpolated_regular_stringContext):
-        # TODO
-        return super().visitInterpolated_regular_string(ctx)
+        return ctx.getText()
 
     def visitInterpolated_verbatium_string(self, ctx: CSharpParser.Interpolated_verbatium_stringContext):
-        # TODO
-        return super().visitInterpolated_verbatium_string(ctx)
+        return ctx.getText()
 
     def visitInterpolated_regular_string_part(self, ctx: CSharpParser.Interpolated_regular_string_partContext):
-        return super().visitInterpolated_regular_string_part(ctx)
+        return ctx.getText()
 
     def visitInterpolated_verbatium_string_part(self, ctx: CSharpParser.Interpolated_verbatium_string_partContext):
-        return super().visitInterpolated_verbatium_string_part(ctx)
+        return ctx.getText()
 
     def visitInterpolated_string_expression(self, ctx: CSharpParser.Interpolated_string_expressionContext):
-        return super().visitInterpolated_string_expression(ctx)
+        return ctx.getText()
 
     def visitKeyword(self, ctx: CSharpParser.KeywordContext):
         return ASTIdentifierNode(ctx.getText())
 
     def visitClass_definition(self, ctx: CSharpParser.Class_definitionContext):
-        return super().visitClass_definition(ctx)
+        name = ctx.identifier().accept(self)
+        type_parameters = ctx.type_parameter_list()
+        if type_parameters:
+            name = ASTTypeNode(name, type_parameters)
+
+        bases = ctx.class_base()
+        if bases:
+            bases = bases.accept(self)
+
+        constraints = ctx.type_parameter_constraints_clauses()
+        if constraints:
+            constraints = constraints.accept(self)
+
+        body = ctx.class_body().accept(self)
+
+        return ASTClassDefinitionNode(name, body, bases, constraints)
 
     def visitStruct_definition(self, ctx: CSharpParser.Struct_definitionContext):
-        return super().visitStruct_definition(ctx)
+        name = ctx.identifier().accept(self)
+        type_parameters = ctx.type_parameter_list()
+        if type_parameters:
+            name = ASTTypeNode(name, type_parameters)
+
+        interfaces = ctx.struct_interfaces()
+        if interfaces:
+            interfaces = interfaces.accept(self)
+
+        constraints = ctx.type_parameter_constraints_clauses()
+        if constraints:
+            constraints = constraints.accept(self)
+
+        body = ctx.struct_body().accept(self)
+
+        return ASTStructDefinitionNode(name, interfaces, constraints, body)
 
     def visitInterface_definition(self, ctx: CSharpParser.Interface_definitionContext):
-        return super().visitInterface_definition(ctx)
+        name = ctx.identifier().accept(self)
+        type_parameters = ctx.variant_type_parameter_list()
+        if type_parameters:
+            name = ASTTypeNode(name, type_parameters)
+
+        bases = ctx.interface_base()
+        if bases:
+            bases = bases.accept(self)
+
+        constraints = ctx.type_parameter_constraints_clauses()
+        if constraints:
+            constraints = constraints.accept(self)
+
+        body = ctx.interface_body().accept(self)
+
+        return ASTInterfaceDefinitionNode(name, bases, constraints, body)
 
     def visitEnum_definition(self, ctx: CSharpParser.Enum_definitionContext):
-        return super().visitEnum_definition(ctx)
+        name = ctx.identifier().accept(self)
+
+        underlying_type = ctx.enum_base()
+        if underlying_type:
+            underlying_type = underlying_type.accept(self)
+
+        body = ctx.enum_body().accept(self)
+
+        return ASTEnumDefinitionNode(name, underlying_type, body)
 
     def visitDelegate_definition(self, ctx: CSharpParser.Delegate_definitionContext):
         return super().visitDelegate_definition(ctx)

@@ -31,7 +31,7 @@ class AST(Graph):
     def __repr__(self):
         return f"AST(root={self.root}"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor: "ASTVisitor"):
         """
         Accept an AST visitor.
 
@@ -66,13 +66,16 @@ class ASTNode(Node):
     def __getitem__(self, item):
         return self.children[item]
 
+    def __setitem__(self, key, value: ASTNode):
+        self.children[key] = value
+
     def __contains__(self, item):
         return item in self.children
 
     def values(self):
         return list(self.children.values())
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor: "ASTVisitor"):
         """
         Accept an AST visitor.
 
@@ -1776,6 +1779,40 @@ class ASTDestructorDefinitionNode(ASTDefinitionNode):
         return visitor.visit_destructor_definition(self)
 
 
+class ASTAccessorDefinitionNode(ASTDefinitionNode):
+    """
+    Accessor definition.
+    """
+
+    def __init__(self, name, body: Optional[ASTNode] = None, attributes=None, modifiers=None):
+        """
+        Accessor definition.
+
+        :param name: The name of the accessor.
+        :param body: The body of the accessor.
+        :param attributes: The attribute(s) being applied to the accessor.
+        :param modifiers: The modifier(s) being applied to the accessor.
+        """
+        super().__init__(name, attributes, modifiers, {"body": body})
+
+    def __str__(self):
+        return f"Accessor definition.\nName: {self['name']}\nBody: {self['body']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTAccessorDefinitionNode(name={self['name']}, body={self['body']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_accessor_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_accessor_definition(self)
+
+
 class ASTStructDefinitionNode(ASTDefinitionNode):
     """
     Struct definition.
@@ -1854,6 +1891,42 @@ class ASTInterfaceDefinitionNode(ASTDefinitionNode):
         :return: The result of the visit.
         """
         return visitor.visit_interface_definition(self)
+
+
+class ASTPropertyDefinitionNode(ASTDefinitionNode):
+    """
+    Property definition.
+    """
+
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
+                 initial_value: Optional[ASTNode] = None, attributes=None, modifiers=None):
+        """
+        Property definition.
+        :param name: The name of the property.
+        :param type_: The type of the property.
+        :param body: The body of the property.
+        :param initial_value: The initial value of the property.
+        :param attributes: The attribute(s) being applied to the property.
+        :param modifiers: The modifier(s) being applied to the property.
+        """
+        super().__init__(name, attributes, modifiers, {"type": type_, "body": body, "initial_value": initial_value})
+
+    def __str__(self):
+        return f"Property definition.\nName: {self['name']}\nType: {self['type']}\nBody: {self['body']}\n" \
+               f"Initial value: {self['initial_value']}\nAttributes: {self['attributes']}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTPropertyDefinitionNode(name={self['name']}, type={self['type']}, body={self['body']}, " \
+               f"initial_value={self['initial_value']}, attributes={self['attributes']}. modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_property_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+                """
+        return visitor.visit_property_definition(self)
 
 
 class ASTEnumDefinitionNode(ASTDefinitionNode):
@@ -3153,7 +3226,7 @@ class ASTTypeNode(ASTNode):
     def __repr__(self):
         return f"ASTTypeNode(name={self['name']}, arguments={self['arguments']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_type method.
         :param visitor: The AST visitor to accept.
@@ -3182,7 +3255,7 @@ class ASTObjectCreationNode(ASTNode):
     def __repr__(self):
         return f"ASTObjectCreationNode(type={self['type']}, expression={self['expression']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_object_creation method.
         :param visitor: The AST visitor to accept.
@@ -3211,7 +3284,7 @@ class ASTNullConditionalOperatorNode(ASTNode):
     def __repr__(self):
         return f"ASTNullConditionalOperatorNode(operand={self['operand']}, consequent: {self['consequent']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_null_conditional_operator method.
         :param visitor: The AST visitor to accept.
@@ -3239,7 +3312,7 @@ class ASTInitializerNode(ASTNode):
     def __repr__(self):
         return f"ASTInitializerNode(expressions={self['expressions']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_initializer method.
         :param visitor: The AST visitor to accept.
@@ -3267,7 +3340,7 @@ class ASTQueryNode(ASTNode):
     def __repr__(self):
         return f"ASTQueryNode(clauses={self['clauses']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_query method.
         :param visitor: The AST visitor to accept.
@@ -3296,7 +3369,7 @@ class ASTFromClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTFromClauseNode(range_variable={self['range_variable']}, source={self['source']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_from_clause method.
         :param visitor: The AST visitor to accept.
@@ -3325,7 +3398,7 @@ class ASTLetClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTLetClauseNode(name={self['name']}, value={self['value']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_let_clause method.
         :param visitor: The AST visitor to accept.
@@ -3353,7 +3426,7 @@ class ASTWhereClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTWhereClauseNode(predicate={self['predicate']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_where_clause method.
         :param visitor: The AST visitor to accept.
@@ -3376,7 +3449,9 @@ class ASTJoinClauseNode(ASTNode):
         :param left_key: The left-hand key being checked for equality.
         :param right_key: The right-hand key being checked for equality.
         """
-        super().__init__({"target_range_variable": target_range_variable, "target_source": target_source, "left_key": left_key, "right_key": right_key})
+        super().__init__(
+            {"target_range_variable": target_range_variable, "target_source": target_source, "left_key": left_key,
+             "right_key": right_key})
 
     def __str__(self):
         return f"Join clause.\nTarget range variable: {self['target_range_variable']}\n" \
@@ -3388,7 +3463,7 @@ class ASTJoinClauseNode(ASTNode):
                f"target_source={self['target_source']}, left_key={self['left_key']}, " \
                f"right_key={self['right_key']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_join_clause method.
         :param visitor: The AST visitor to accept.
@@ -3416,7 +3491,7 @@ class ASTOrderByClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTOrderByClauseNode(orderings={self['orderings']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_order_by_clause method.
         :param visitor: The AST visitor to accept.
@@ -3445,7 +3520,7 @@ class ASTOrderingNode(ASTNode):
     def __repr__(self):
         return f"ASTOrderingNode(key={self['key']}, direction={self['direction']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_ordering method.
         :param visitor: The AST visitor to accept.
@@ -3473,7 +3548,7 @@ class ASTSelectClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTSelectClauseNode(expression={self['expression']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_select_clause method.
         :param visitor: The AST visitor to accept.
@@ -3502,7 +3577,7 @@ class ASTGroupByClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTGroupByClauseNode(range_variable={self['range_variable']}, key={self['key']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_group_by_clause method.
         :param visitor: The AST visitor to accept.
@@ -3530,7 +3605,7 @@ class ASTIntoClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTIntoClauseNode(identifier={self['identifier']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_into_clause method.
         :param visitor: The AST visitor to accept.
@@ -3559,7 +3634,7 @@ class ASTLabelNode(ASTNode):
     def __repr__(self):
         return f"ASTLabelNode(name={self['name']}, target={self['target']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_label method.
         :param visitor: The AST visitor to accept.
@@ -3588,7 +3663,7 @@ class ASTSwitchSectionNode(ASTNode):
     def __repr__(self):
         return f"ASTSwitchStatementNode(labels={self['labels']}, body={self['body']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_switch_statement method.
         :param visitor: The AST visitor to accept.
@@ -3616,7 +3691,7 @@ class ASTCaseLabelNode(ASTNode):
     def __repr__(self):
         return f"ASTCaseLabelNode(pattern={self['pattern']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_case_label method.
         :param visitor: The AST visitor to accept.
@@ -3639,7 +3714,7 @@ class ASTDefaultLabelNode(ASTNode):
     def __repr__(self):
         return f"ASTDefaultLabelNode()"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_default_label method.
         :param visitor: The AST visitor to accept.
@@ -3668,7 +3743,7 @@ class ASTAttributeSectionNode(ASTNode):
     def __repr__(self):
         return f"ASTAttributeSectionNode(attributes={self['attributes']}, target={self['target']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_attribute_section method.
         :param visitor: The AST visitor to accept.
@@ -3697,7 +3772,7 @@ class ASTAttributeNode(ASTNode):
     def __repr__(self):
         return f"ASTAttributeNode(name={self['name']}, arguments={self['arguments']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_attribute method.
         :param visitor: The AST visitor to accept.
@@ -3725,7 +3800,7 @@ class ASTPointerTypeNode(ASTNode):
     def __repr__(self):
         return f"ASTPointerTypeNode(type={self['type']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_pointer_type method.
         :param visitor: The AST visitor to accept.
@@ -3753,7 +3828,7 @@ class ASTNullableTypeNode(ASTNode):
     def __repr__(self):
         return f"ASTNullableTypeNode(type={self['type']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_nullable_type method.
         :param visitor: The AST visitor to accept.
@@ -3783,7 +3858,7 @@ class ASTArrayTypeNode(ASTNode):
     def __repr__(self):
         return f"ASTArrayTypeNode(type={self['type']}, dimensions={self.dimensions})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_array_type method.
         :param visitor: The AST visitor to accept.
@@ -3812,7 +3887,7 @@ class ASTConstraintsClauseNode(ASTNode):
     def __repr__(self):
         return f"ASTConstraintsClauseNode(type_parameter={self['type_parameter']}, constraints={self['constraints']})"
 
-    def accept(self, visitor: ASTVisitor):
+    def accept(self, visitor):
         """
         Accept AST visitor and call its visit_constraints_clause method.
         :param visitor: The AST visitor to accept.

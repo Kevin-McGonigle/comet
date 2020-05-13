@@ -27,7 +27,7 @@ class ASTVisitor(GraphVisitor):
         :param node: The parent AST node whose children to visit.
         :return: Mapping of each child to their visit result.
         """
-        return {child: child.accept(self) for child in node.children}
+        return {child: child.accept(self) for child in node.children.values()}
 
     @staticmethod
     def visit_identifier(node: ASTIdentifierNode):
@@ -263,26 +263,10 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_if_else_statement(self, node: ASTIfElseStatementNode):
-        """
-        Visit AST if-else statement node.
-        :param node: The AST if-else statement node to visit.
-        :return: The result of the visit.
-        """
-        return self.visit_statement(node)
-
     def visit_loop_statement(self, node: ASTLoopStatementNode):
         """
         Visit AST loop statement node.
         :param node: The AST loop statement node to visit.
-        :return: The result of the visit.
-        """
-        return self.visit_statement(node)
-
-    def visit_loop_else_statement(self, node: ASTLoopElseStatementNode):
-        """
-        Visit AST loop-else statement node.
-        :param node: The AST loop-else statement node to visit.
         :return: The result of the visit.
         """
         return self.visit_statement(node)

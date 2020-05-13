@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 from metrics.structures.cfg import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
@@ -22,6 +22,7 @@ class CFGGenerationVisitor(ASTVisitor):
     def build_sequence(self, sequence: Optional[Sequence[CFGBlock]]) -> Optional[CFGBlock]:
         """
         Build sequence of blocks.
+
         :param sequence: The list of blocks to build into a sequence.
         :return: The first node of the sequence with built sequence as its exit block.
         None if no/empty sequence supplied.
@@ -41,6 +42,7 @@ class CFGGenerationVisitor(ASTVisitor):
     def visit(self, ast) -> CFG:
         """
         Visit the AST and produce a CFG.
+
         :param ast: The AST to visit.
         :return: The generated CFG.
         """
@@ -49,11 +51,12 @@ class CFGGenerationVisitor(ASTVisitor):
     def visit_children(self, node) -> Optional[CFGBlock]:
         """
         Visit each of an AST node's children.
+
         :param node: The parent AST node whose children to visit.
         :return: A built sequence of CFGNodes returned by visiting each child. None if no CFGNodes returned.
         """
         sequence = []
-        for child in node.children:
+        for child in node.children.values():
             child_result = child.accept(self)
             if isinstance(child_result, CFGBlock):
                 sequence.append(child_result)
@@ -63,6 +66,7 @@ class CFGGenerationVisitor(ASTVisitor):
     def visit_break_statement(self, node) -> CFGBreakBlock:
         """
         Visit AST break statement node and return the corresponding CFG block.
+
         :param node: The AST break statement node to visit.
         :return: The corresponding CFG block.
         """
@@ -74,6 +78,7 @@ class CFGGenerationVisitor(ASTVisitor):
     def visit_continue_statement(self, node) -> CFGContinueBlock:
         """
         Visit AST continue statement node and return the corresponding CFG block.
+
         :param node: The AST continue statement node to visit.
         :return: The corresponding CFG block.
         """
@@ -82,21 +87,17 @@ class CFGGenerationVisitor(ASTVisitor):
 
         return CFGContinueBlock()
 
-    def visit_if_statement(self, node) -> CFGIfBlock:
+    def visit_if_statement(self, node) -> Union[CFGIfBlock, CFGIfElseBlock]:
         """
         Visit AST if statement node and return the corresponding CFG block.
+
         :param node: The AST if statement node to visit.
         :return: The corresponding CFG block.
         """
-        return CFGIfBlock(node.body.accept(self))
+        if node['else_body'] is not None:
+            return CFGIfElseBlock(node['body'].accept(self), node['else'].accept(self))
 
-    def visit_if_else_statement(self, node) -> CFGIfElseBlock:
-        """
-        Visit AST if-else statement node and return the corresponding CFG block.
-        :param node: The AST if-else statement node to visit.
-        :return: The corresponding CFG block.
-        """
-        return CFGIfElseBlock(node.body.accept(self), node.else_body.accept(self))
+        return CFGIfBlock(node['body'].accept(self))
 
     def visit_loop_statement(self, node) -> CFGLoopBlock:
         """
@@ -105,29 +106,16 @@ class CFGGenerationVisitor(ASTVisitor):
         :return: The corresponding CFG block.
         """
         outer_loop_scope = self.loop_scope
-        self.loop_scope = loop = CFGLoopBlock()
 
-        loop.success_block = node.body.accept(self)
+        if node['else_body'] is not None:
+            self.loop_scope = loop = CFGLoopElseBlock(fail_block=node['else_body'])
+        else:
+            self.loop_scope = loop = CFGLoopBlock()
+
+        loop.success_block = node['body'].accept(self)
 
         self.loop_scope = outer_loop_scope
 
         return loop
-
-    def visit_loop_else_statement(self, node) -> CFGLoopElseBlock:
-        """
-        Visit AST loop-else statement node and return the corresponding CFG block.
-        :param node: The AST loop-else statement node to visit.
-        :return: The corresponding CFG block.
-        """
-        outer_loop_scope = self.loop_scope
-        self.loop_scope = loop_else = CFGLoopElseBlock()
-
-        loop_else.success_block = node.body.accept(self)
-
-        self.loop_scope = outer_loop_scope
-
-        loop_else.fail_block = node.else_body.accept(self)
-
-        return loop_else
 
     # endregion

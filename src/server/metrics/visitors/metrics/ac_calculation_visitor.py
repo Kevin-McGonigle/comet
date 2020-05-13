@@ -1,6 +1,4 @@
-from typing import TYPE_CHECKING, Dict
-
-from metrics.visitors.base.dependency_graph_visitor import DependencyGraphVisitor
+from typing import Dict
 
 from metrics.structures.dependency_graph import *
 

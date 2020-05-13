@@ -102,14 +102,8 @@ class ASTFormattingVisitor(ASTVisitor):
     def visit_if_statement(self, node: "ASTIfStatementNode"):
         return {"name": "If statement", "children": self.visit_children(node)}
 
-    def visit_if_else_statement(self, node: "ASTIfElseStatementNode"):
-        return {"name": "If-else statement", "children": self.visit_children(node)}
-
     def visit_loop_statement(self, node: "ASTLoopStatementNode"):
         return {"name": "Loop statement", "children": self.visit_children(node)}
-
-    def visit_loop_else_statement(self, node: "ASTLoopElseStatementNode"):
-        return {"name": "Loop-else statement", "children": self.visit_children(node)}
 
     def visit_try_statement(self, node: "ASTTryStatementNode"):
         return {"name": "Try statement", "children": self.visit_children(node)}

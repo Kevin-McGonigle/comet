@@ -70,14 +70,14 @@ class CFGFormattingVisitor(CFGVisitor):
         if block in self._visited:
             return self._visited[block]
         else:
-            id = str(self.current_id)
+            id_ = str(self.current_id)
             self.current_id += 1
 
-            self._visited[block] = id
+            self._visited[block] = id_
         
-            self._blocks.append({"id": id})
+            self._blocks.append({"id": id_})
 
             for child_id in self.visit_children(block):
-                self._links.append({"source": id, "target": child_id})
+                self._links.append({"source": id_, "target": child_id})
 
-            return id
+            return id_

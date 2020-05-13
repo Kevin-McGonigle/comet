@@ -1,7 +1,3 @@
-from typing import TYPE_CHECKING, List, Any
-
-from metrics.visitors.base.graph_visitor import GraphVisitor
-
 from metrics.structures.dependency_graph import *
 
 

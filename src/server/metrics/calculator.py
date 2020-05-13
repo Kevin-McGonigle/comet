@@ -268,9 +268,10 @@ class CalculatorStub(Calculator):
 
     def class_diagram(self, ast: Optional[AST]) -> ClassDiagram:
         a = Class("A", [Attribute("a_attr", Visibility.PRIVATE)], [Method("a_method", Visibility.PUBLIC)])
-        b = Class("B", [Attribute("b_attr", Visibility.PRIVATE)], [Method("b_method", Visibility.PUBLIC)])
+        b = Class("B", [Attribute("b_attr", Visibility.PRIVATE)], [Method("b_method", Visibility.PUBLIC)],
+                  relationships=[Relationship(RelationshipType.ASSOCIATION, a)])
 
-        return ClassDiagram([a, b], [Relationship(RelationshipType.ASSOCIATION, a, b)])
+        return ClassDiagram([a, b])
 
     def logical_lines_of_code(self, ast: Optional[AST] = None) -> int:
         return 0

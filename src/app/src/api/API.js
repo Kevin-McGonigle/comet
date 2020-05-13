@@ -1,6 +1,6 @@
 const UPLOAD_URL = "http://127.0.0.1:8000/api/upload/";
 
-async function upload_files(data)  {
+export const createFormData = data => {
     let formData = new FormData();
     data.forEach(file => {
         formData.append("name", file.name);
@@ -8,7 +8,11 @@ async function upload_files(data)  {
         formData.append("file_type", file.type);
         formData.append("file", file);
     });
+    return formData;
+}
 
+export async function upload_files(data)  {
+    const formData = createFormData(data);
     return await fetch(UPLOAD_URL, {
         method: 'post',
         body: formData

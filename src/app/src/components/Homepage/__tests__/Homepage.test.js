@@ -38,3 +38,40 @@ test('render should contain all div items specified', () => {
         expect(foundBool.first().props().className);
     })
 });
+
+test('should open CreateModal on createButton click', () => {
+    const store = mockStore(initialState);
+    const component = mount(<Provider store={store}><Homepage/></Provider>);
+    const createButton = component.find('#createButton').first();
+    createButton.simulate('click');
+    expect(component.html()).toMatchSnapshot();
+});
+
+test('should close CreateModal on close button click', () => {
+    const store = mockStore(initialState);
+    const component = mount(<Provider store={store}><Homepage /></Provider>);
+    const createButton = component.find('#createButton').first();
+    createButton.simulate('click');
+    const closeButton = component.find('.css-1ii3p2c').first();
+    closeButton.simulate('click');
+    expect(component.html()).toMatchSnapshot();
+});
+
+test('should open Upload Modal on Upload Modal click', () => {
+    const store = mockStore(initialState);
+    const component = mount(<Provider store={store}><Homepage/></Provider>);
+    const uploadButton = component.find('#uploadButton').first();
+    uploadButton.simulate('click');
+    expect(component.html()).toMatchSnapshot();
+})
+
+test('should open Upload Modal on Upload Modal click', () => {
+    const setAlertNone = jest.fn();
+    const store = mockStore(initialState);
+    const component = mount(<Provider store={store}><Homepage /></Provider>);
+    const uploadButton = component.find('#uploadButton').first();
+    uploadButton.simulate('click');
+    const closeButton = component.find('.css-1ii3p2c').first();
+    closeButton.simulate('click');
+    expect(component.html()).toMatchSnapshot();
+})

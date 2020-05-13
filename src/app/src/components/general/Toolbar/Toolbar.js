@@ -8,11 +8,11 @@ import ToolbarMenu from '../Menu/Menu';
 const cx = args => classnames(styles, args);
 
 const Toolbar  = props => {
-    const { tabState, setTabState } = props;
+    const { tabState, setTabState, tabMapping } = props;
 
     const onClickHandler = (event) => {
         const tabTitle = event.currentTarget.id;
-        const tabIndex = tabState.tabs.indexOf(tabTitle);
+        const tabIndex = tabState.tabs.indexOf(tabMapping[tabTitle]);
         setTabState({
             ...tabState,
             selectedIndex: tabIndex,
@@ -26,7 +26,7 @@ const Toolbar  = props => {
                     {tabState.tabs.map((tab, index) => (
                         <Tab
                             key={tab}
-                            id={tab}
+                            id={tab.split(" ").join('')}
                             isSelected={index === tabState.selectedIndex}
                             aria-controls={`panel-${tab}`}
                             color="white"

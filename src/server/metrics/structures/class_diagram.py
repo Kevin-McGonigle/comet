@@ -100,7 +100,7 @@ class Class:
 
     def __repr__(self) -> str:
         return f"Class(name={self.name}, attributes={self.attributes}, methods={self.methods}, " \
-               f"superclasses={self.superclasses}, interfaces={self.interfaces}, " \
+               f"bases={self.superclasses}, interfaces={self.interfaces}, " \
                f"nested_classes={self.nested_classes}, relationships={self.relationships})"
 
 

@@ -1,107 +1,25 @@
 from typing import Type, List
 
-from antlr4 import ParserRuleContext
-from antlr4.tree.Tree import TerminalNodeImpl
+from antlr4.tree.Tree import TerminalNodeImpl, ParserRuleContext
 
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 from metrics.parsers.python3.base.Python3Visitor import Python3Visitor
 from metrics.structures.ast import *
+from metrics.visitors.structures.ast_generation_visitor import ASTGenerationVisitor as BaseASTGenerationVisitor
 
 
-class ASTGenerationVisitor(Python3Visitor):
-    # region Behaviour
-    def visit(self, tree):
-        return AST(super().visit(tree))
-
-    def visitChildren(self, node):
-        result = []
-        for i in range(node.getChildCount()):
-            if not self.shouldVisitNextChild(node, result):
-                return result
-
-            result = self.aggregateResult(result, node.getChild(i).accept(self))
-
-        return result
-
-    def visitTerminal(self, node):
-        return super().visitTerminal(node)
-
-    def visitErrorNode(self, node):
-        return super().visitErrorNode(node)
-
-    def defaultResult(self):
-        return super().defaultResult()
-
-    def aggregateResult(self, aggregate, next_result):
-        return aggregate + [next_result] if next_result is not None else aggregate
-
-    def shouldVisitNextChild(self, node, current_result):
-        return super().shouldVisitNextChild(node, current_result)
-
-    # endregion
-
+class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
     # region Helpers
-
-    def build_multi(self, sequence: Optional[Sequence[ASTNode]], multi_node: Type[ASTMultiplesNode]):
-        if not sequence:
-            return self.defaultResult()
-
-        if len(sequence) == 1:
-            return sequence[0]
-
-        return multi_node(sequence)
-
-    def build_right_associated(self, sequence: Optional[Sequence[ASTNode]], parent_node: Type[ASTNode]):
-        if not sequence:
-            return self.defaultResult()
-
-        if len(sequence) == 1:
-            return sequence[0]
-
-        return parent_node(sequence[0], self.build_right_associated(sequence[1:], parent_node))
-
-    def build_left_associated(self, sequence: Optional[Sequence[ASTNode]], parent_node: Type[ASTNode]):
-        if not sequence:
-            return self.defaultResult()
-
-        if len(sequence) == 1:
-            return sequence[0]
-
-        return parent_node(self.build_right_associated(sequence[:-1], parent_node), sequence[-1])
 
     def build_if_else(self, children):
         if isinstance(children[0], TerminalNodeImpl) and (
                 children[0].symbol.type == Python3Parser.IF or children[0].symbol.type == Python3Parser.ELIF):
             if len(children) == 3:
                 return ASTIfStatementNode(children[1].accept(self), children[2].accept(self))
-            return ASTIfElseStatementNode(children[1].accept(self), children[2].accept(self),
-                                          self.build_if_else(children[3:]))
+            return ASTIfStatementNode(children[1].accept(self), children[2].accept(self),
+                                      self.build_if_else(children[3:]))
 
         return children[-1].accept(self)
-
-    def build_bin_op(self, operation, expressions):
-        if len(expressions) == 1:
-            return expressions[0]
-        return ASTBinaryOperationNode(operation, self.build_bin_op(operation, expressions[:-1]), expressions[-1])
-
-    def build_bin_op_choice(self, children):
-        if len(children) == 1:
-            return children[0]
-
-        operator = children[-2]
-        if isinstance(operator, list):
-            return ASTUnaryOperationNode(operator[0],
-                                         ASTBinaryOperationNode(operator[1],
-                                                                self.build_bin_op_choice(children[:-2]),
-                                                                children[-1]))
-
-        return ASTBinaryOperationNode(operator, self.build_bin_op_choice(children[:-2]), children[-1])
-
-    def build_bin_op_rassoc(self, operation, expressions):
-        if len(expressions) == 1:
-            return expressions[0]
-        return ASTBinaryOperationNode(operation, expressions[0],
-                                      self.build_bin_op_rassoc(operation, expressions[1:]))
 
     def build_atom_expr(self, children):
         if len(children) == 1:
@@ -148,9 +66,9 @@ class ASTGenerationVisitor(Python3Visitor):
                     i += 2
 
                 if positional_only:
-                    param = ASTPositionalOnlyParameterNode(**(child.accept(self)), default=default)
+                    param = ASTPositionalOnlyParameterNode(default=default, **(child.accept(self)))
                 elif keyword_only:
-                    param = ASTKeywordOnlyParameterNode(**(child.accept(self)), default=default)
+                    param = ASTKeywordOnlyParameterNode(default=default, **(child.accept(self)))
                 else:
                     param = ASTParameterNode(**(child.accept(self)), default=default)
 
@@ -158,16 +76,6 @@ class ASTGenerationVisitor(Python3Visitor):
             i += 1
 
         return self.build_multi(parameters, ASTParametersNode)
-
-    @staticmethod
-    def filter_child(child, *contexts):
-        for context in contexts:
-            if isinstance(context, int) and isinstance(child, TerminalNodeImpl) and child.symbol.type == context:
-                return True
-            elif isinstance(context, ParserRuleContext) and isinstance(child, context):
-                return True
-
-        return False
 
     @staticmethod
     def get_visibility(name: str) -> ASTVisibilityModifier:
@@ -231,7 +139,7 @@ class ASTGenerationVisitor(Python3Visitor):
         visibility = self.get_visibility(name.name)
 
         if return_type:
-            return ASTFunctionDefinitionNode(name, parameters, return_type.accept(self), body, [visibility])
+            return ASTFunctionDefinitionNode(name, return_type.accept(self), parameters, body, modifiers=[visibility])
 
         return ASTFunctionDefinitionNode(name, parameters, body=body, modifiers=[visibility])
 
@@ -413,7 +321,7 @@ class ASTGenerationVisitor(Python3Visitor):
 
     def visitDotted_name(self, ctx: Python3Parser.Dotted_nameContext):
         names = [ASTIdentifierNode(name.getText()) for name in ctx.NAME()]
-        return self.build_right_associated(names, ASTMemberNode)
+        return self.build_left_associated(names, ASTMemberNode)
 
     def visitGlobal_stmt(self, ctx: Python3Parser.Global_stmtContext):
         return ASTGlobalStatementNode(
@@ -449,7 +357,7 @@ class ASTGenerationVisitor(Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(condition, body, else_body.accept(self))
+            return ASTLoopStatementNode(condition, body, else_body.accept(self))
 
         return ASTLoopStatementNode(condition, body)
 
@@ -460,8 +368,8 @@ class ASTGenerationVisitor(Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body,
-                                            else_body.accept(self))
+            return ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body,
+                                        else_body.accept(self))
 
         return ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body)
 
@@ -484,7 +392,7 @@ class ASTGenerationVisitor(Python3Visitor):
                 else:
                     finally_body = children[i + 1].accept(self)
             else:
-                catches.append(ASTCatchNode(children[i].accept(self), children[i + 1].accept(self)))
+                catches.append(ASTCatchNode(children[i].accept(self), body=children[i + 1].accept(self)))
 
         return ASTTryStatementNode(body, self.build_multi(catches, ASTCatchesNode), else_body, finally_body)
 
@@ -526,7 +434,7 @@ class ASTGenerationVisitor(Python3Visitor):
         condition = ctx.or_test(1)
 
         if condition:
-            return ASTIfElseStatementNode(condition.accept(self), ctx.getChild(0).accept(self), ctx.test().accept(self))
+            return ASTIfStatementNode(condition.accept(self), ctx.getChild(0).accept(self), ctx.test().accept(self))
 
         return ctx.getChild(0).accept(self)
 
@@ -552,16 +460,16 @@ class ASTGenerationVisitor(Python3Visitor):
         return ASTAnonymousFunctionDefinitionNode(body)
 
     def visitOr_test(self, ctx: Python3Parser.Or_testContext):
-        self.build_bin_op(ASTLogicalOperation.OR, self.visitChildren(ctx))
+        return self.build_bin_op(ASTLogicalOperation.OR, self.visitChildren(ctx))
 
     def visitAnd_test(self, ctx: Python3Parser.And_testContext):
-        self.build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
+        return self.build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
 
     def visitNot_test(self, ctx: Python3Parser.Not_testContext):
         return ASTUnaryOperationNode(ASTLogicalOperation.NOT, ctx.getChild(1).accept(self))
 
     def visitComparison(self, ctx: Python3Parser.ComparisonContext):
-        self.build_bin_op_choice(self.visitChildren(ctx))
+        return self.build_bin_op_choice(self.visitChildren(ctx))
 
     def visitComp_op(self, ctx: Python3Parser.Comp_opContext):
         return {

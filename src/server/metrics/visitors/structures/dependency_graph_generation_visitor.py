@@ -9,6 +9,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def __init__(self, base=None, classes=None):
         """
         Dependency graph generation visitor.
+
         :param base: The base node of the dependency graph to be generated.
         :type base: Class or None
         :param classes: List of exterior classes.
@@ -33,6 +34,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def add_class(self, class_):
         """
         Add a class to the available class list.
+
         :param class_: The class to add.
         :type class_: Class
         """
@@ -45,6 +47,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def get_class(self, name):
         """
         Get the most recent class binding to the specified name.
+
         :param name: The name of the class to get.
         :type name: str
         :return: The most recent class binding to the specified name. None if no such class exists/
@@ -60,13 +63,14 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def visit_children(self, node):
         """
         Visit all of a node's children.
+
         :param node: The node whose children to visit.
         :type node: ASTNode
         :return: A built sequence of CFGNodes returned by visiting each child. None if no CFGNodes returned.
         :rtype: list[Any]
         """
         child_results = []
-        for child in node.children:
+        for child in node.children.values():
             child_result = child.accept(self)
             if child_results:
                 if isinstance(child_result, list):
@@ -79,6 +83,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def visit_class_definition(self, node):
         """
         Visit AST class definition node and add the class to the available class list.
+
         :param node: The AST class definition node.
         :type node: ASTClassDefinitionNode
         """
@@ -109,6 +114,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def visit_function_definition(self, node):
         """
         Visit AST function definition node and return its dependencies.
+
         :param node: The AST function definition node.
         :type node: ASTFunctionDefinitionNode
         :return: The corresponding method object.
@@ -138,6 +144,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def visit_parameter(self, node):
         """
         Visit AST parameter node and return its dependency (if one exists).
+
         :param node: The AST parameter node.
         :type node: ASTParameterNode
         :return: The parameter's dependency. None if the parameter has no type.
@@ -148,6 +155,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def visit_positional_arguments_parameter(self, node):
         """
         Visit AST positional arguments parameter node and return its dependency (if one exists).
+
         :param node: The AST positional arguments parameter node.
         :type node: ASTPositionalArgumentsParameterNode
         :return: The positional arguments parameter's dependency. None if the parameter has no type.
@@ -158,6 +166,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def visit_member(self, node):
         """
         Visit AST member node and return the dot-separated string of parent and member.
+
         :param node: The AST member node.
         :type node: ASTMemberNode
         :return: Dot-separated string of parent and member. Unknown class if anything other than identifiers are found.
@@ -185,6 +194,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
     def get_dependency(self, type_):
         """
         Get the dependency of a node's type attribute.
+
         :param type_: The type attribute.
         :type type_: ASTNode or None
         :return: The dependency of the parameter. None if the parameter has no type.
@@ -215,6 +225,7 @@ class Reason:
     def not_found(class_name, scope=None):
         """
         Return a reason string for a class that cannot be found.
+
         :param class_name: The name of the class that cannot be found.
         :type class_name: str
         :param scope: The scope being searched for local definitions. None if only scope is global.
@@ -231,6 +242,7 @@ class Reason:
     def unsupported(node):
         """
         Return a reason string for an AST node that is an unsupported type for class identification.
+
         :param node: The node that is not supported.
         :type node: ASTNode
         :return: Unsupported reason string. 

@@ -95,6 +95,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def visit(self, ast) -> ClassDiagram:
         """
         Visit the AST and produce a class diagram.
+
         :param ast: The AST to visit.
         :return: The generated class diagram.
         """
@@ -109,10 +110,11 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def visit_children(self, node) -> List:
         """
         Visit each of an AST node's children.
+
         :param node: The parent AST node whose children to visit.
         """
         child_results = []
-        for child in node.children:
+        for child in node.children.values():
             child_result = child.accept(self)
             if child_results:
                 if isinstance(child_result, list):

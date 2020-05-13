@@ -3,8 +3,7 @@ from typing import Optional, Sequence, Type
 from antlr4 import ParseTreeVisitor, ParserRuleContext
 from antlr4.tree.Tree import TerminalNodeImpl
 
-from metrics.structures.ast import AST, ASTNode, ASTMultiplesNode, ASTBinaryOperationNode, ASTUnaryOperationNode, \
-    ASTVisibilityModifier
+from metrics.structures.ast import AST, ASTNode, ASTMultiplesNode, ASTBinaryOperationNode, ASTUnaryOperationNode
 
 
 class ASTGenerationVisitor(ParseTreeVisitor):
@@ -57,6 +56,7 @@ class ASTGenerationVisitor(ParseTreeVisitor):
         if len(sequence) == 1:
             return sequence[0]
 
+        # noinspection PyArgumentList
         return parent_node(sequence[0], self.build_right_associated(sequence[1:], parent_node))
 
     def build_left_associated(self, sequence: Optional[Sequence[ASTNode]], parent_node: Type[ASTNode]):
@@ -66,6 +66,7 @@ class ASTGenerationVisitor(ParseTreeVisitor):
         if len(sequence) == 1:
             return sequence[0]
 
+        # noinspection PyArgumentList
         return parent_node(self.build_right_associated(sequence[:-1], parent_node), sequence[-1])
 
     def build_bin_op(self, operation, expressions):

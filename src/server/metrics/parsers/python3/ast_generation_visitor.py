@@ -16,8 +16,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
                 children[0].symbol.type == Python3Parser.IF or children[0].symbol.type == Python3Parser.ELIF):
             if len(children) == 3:
                 return ASTIfStatementNode(children[1].accept(self), children[2].accept(self))
-            return ASTIfElseStatementNode(children[1].accept(self), children[2].accept(self),
-                                          self.build_if_else(children[3:]))
+            return ASTIfStatementNode(children[1].accept(self), children[2].accept(self),
+                                      self.build_if_else(children[3:]))
 
         return children[-1].accept(self)
 
@@ -139,7 +139,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         visibility = self.get_visibility(name.name)
 
         if return_type:
-            return ASTFunctionDefinitionNode(name, return_type.accept(self), parameters, body, [visibility])
+            return ASTFunctionDefinitionNode(name, return_type.accept(self), parameters, body, modifiers=[visibility])
 
         return ASTFunctionDefinitionNode(name, parameters, body=body, modifiers=[visibility])
 
@@ -357,7 +357,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(condition, body, else_body.accept(self))
+            return ASTLoopStatementNode(condition, body, else_body.accept(self))
 
         return ASTLoopStatementNode(condition, body)
 
@@ -368,8 +368,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         else_body = ctx.suite(1)
 
         if else_body:
-            return ASTLoopElseStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body,
-                                            else_body.accept(self))
+            return ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body,
+                                        else_body.accept(self))
 
         return ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, testlist), body)
 
@@ -434,7 +434,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         condition = ctx.or_test(1)
 
         if condition:
-            return ASTIfElseStatementNode(condition.accept(self), ctx.getChild(0).accept(self), ctx.test().accept(self))
+            return ASTIfStatementNode(condition.accept(self), ctx.getChild(0).accept(self), ctx.test().accept(self))
 
         return ctx.getChild(0).accept(self)
 

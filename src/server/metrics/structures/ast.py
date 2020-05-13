@@ -1221,7 +1221,8 @@ class ASTLoopStatementNode(ASTStatementNode):
         return f"Loop statement.\nCondition: {self['condition']}\nBody: {self['body']}\nElse body: {self['else_body']}"
 
     def __repr__(self):
-        return f"ASTLoopStatementNode(condition={self['condition']}, body={self['body']}, else_body={self['else_body']})"
+        return f"ASTLoopStatementNode(condition={self['condition']}, body={self['body']}, " \
+               f"else_body={self['else_body']})"
 
     def accept(self, visitor):
         """
@@ -1462,12 +1463,14 @@ class ASTVariableDeclarationNode(ASTStatementNode):
         super().__init__({"name": name, "type": type_, "initial_value": initial_value, "attributes": attributes})
 
     def __str__(self):
-        return f"Variable declaration.\nName: {self['name']}\nType: {self['type']}\nInitial value: {self['initial_value']}\n" \
-               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
+        return f"Variable declaration.\nName: {self['name']}\nType: {self['type']}\n" \
+               f"Initial value: {self['initial_value']}\nAttributes: {self['attributes']}\n" \
+               f"Modifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTVariableDeclaration(name={self['name']}, type={self['type']}, initial_value={self['initial_value']}, " \
-               f"attributes={self['attributes']}, modifiers={self.modifiers})"
+        return f"ASTVariableDeclaration(name={self['name']}, type={self['type']}, " \
+               f"initial_value={self['initial_value']}, attributes={self['attributes']}, " \
+               f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1497,10 +1500,12 @@ class ASTConstantDeclarationNode(ASTStatementNode):
         self.modifiers = modifiers if modifiers is not None else []
 
     def __str__(self):
-        return f"Constant declaration.\nName: {self['name']}\nType: {self['type']}\nInitial value: {self['initial_value']}\nModifiers: {self.modifiers}"
+        return f"Constant declaration.\nName: {self['name']}\nType: {self['type']}\n" \
+               f"Initial value: {self['initial_value']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTConstantDeclaration(name={self['name']}, type={self['type']}, initial_value={self['initial_value']}, modifiers={self.modifiers})"
+        return f"ASTConstantDeclaration(name={self['name']}, type={self['type']}, " \
+               f"initial_value={self['initial_value']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -1611,7 +1616,8 @@ class ASTFunctionDefinitionNode(ASTDefinitionNode):
         :param attributes: The attribute(s) applied to the function.
         :param modifiers: The modifier(s) applied to the function.
         """
-        super().__init__(name, attributes, modifiers, {"return_type": return_type, "parameters": parameters, "constraints_clauses": constraints_clauses, "body": body})
+        super().__init__(name, attributes, modifiers, {"return_type": return_type, "parameters": parameters,
+                                                       "constraints_clauses": constraints_clauses, "body": body})
 
     def __str__(self):
         return f"Function definition.\nName: {self['name']}\nParameters: {self['parameters']}\n" \
@@ -1986,7 +1992,8 @@ class ASTDelegateDefinitionNode(ASTDefinitionNode):
         :param modifiers: The modifier(s) being applied to the delegate.
         """
         super().__init__(name, attributes, modifiers,
-                         {"return_type": return_type, "constraints_clauses": constraints_clauses, "parameters": parameters})
+                         {"return_type": return_type, "constraints_clauses": constraints_clauses,
+                          "parameters": parameters})
 
     def __str__(self):
         return f"Delegate definition.\nName: {self['name']}\nReturn type: {self['return_type']}\n" \
@@ -2013,7 +2020,8 @@ class ASTIndexerDefinitionNode(ASTDefinitionNode):
     Indexer definition.
     """
 
-    def __init__(self, name, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
+    def __init__(self, name, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None,
+                 body: Optional[ASTNode] = None,
                  attributes=None, modifiers=None):
         """
         Indexer definition.
@@ -2093,7 +2101,8 @@ class ASTFixedSizeBufferDefinitionNode(ASTDefinitionNode):
     Fixed size buffer definition.
     """
 
-    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, size: Optional[ASTNode] = None, attributes=None, modifiers=None):
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, size: Optional[ASTNode] = None, attributes=None,
+                 modifiers=None):
         """
         Fixed size buffer definition.
         
@@ -2879,7 +2888,8 @@ class ASTKeywordArgumentNode(ASTNode):
         return f"Keyword argument.\nParameter: {self['parameter']}\nValue: {self['value']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
-        return f"ASTKeywordArgumentNode(parameter={self['parameter']}, value={self['value']}, modifiers={self.modifiers})"
+        return f"ASTKeywordArgumentNode(parameter={self['parameter']}, value={self['value']}, " \
+               f"modifiers={self.modifiers})"
 
     def accept(self, visitor):
         """
@@ -3172,10 +3182,12 @@ class ASTConditionalExpressionNode(ASTNode):
         super().__init__({"condition": condition, "consequent": consequent, "alternative": alternative})
 
     def __str__(self):
-        return f"Conditional expression.\nCondition: {self['condition']}\nConsequent: {self['consequent']}\nAlternative: {self['alternative']}"
+        return f"Conditional expression.\nCondition: {self['condition']}\nConsequent: {self['consequent']}\n" \
+               f"Alternative: {self['alternative']}"
 
     def __repr__(self):
-        return f"ASTConditionalExpressionNode(condition={self['condition']}, consequent={self['consequent']}, alternative={self['alternative']})"
+        return f"ASTConditionalExpressionNode(condition={self['condition']}, consequent={self['consequent']}, " \
+               f"alternative={self['alternative']})"
 
     def accept(self, visitor):
         """
@@ -3278,7 +3290,8 @@ class ASTObjectCreationNode(ASTNode):
     Object creation.
     """
 
-    def __init__(self, type_: Optional[ASTNode] = None, arguments: Optional[ASTNode] = None, initializer: Optional[ASTNode] = None):
+    def __init__(self, type_: Optional[ASTNode] = None, arguments: Optional[ASTNode] = None,
+                 initializer: Optional[ASTNode] = None):
         """
         Object creation.
 
@@ -3289,10 +3302,12 @@ class ASTObjectCreationNode(ASTNode):
         super().__init__({"type": type_, "arguments": arguments, "initializer": initializer})
 
     def __str__(self):
-        return f"Object creation.\nType: {self['type']}\nArguments: {self['arguments']}\nInitializer: {self['initializer']}"
+        return f"Object creation.\nType: {self['type']}\nArguments: {self['arguments']}\n" \
+               f"Initializer: {self['initializer']}"
 
     def __repr__(self):
-        return f"ASTObjectCreationNode(type={self['type']}, arguments={self['arguments']}, initializer={self['initializer']})"
+        return f"ASTObjectCreationNode(type={self['type']}, arguments={self['arguments']}, " \
+               f"initializer={self['initializer']})"
 
     def accept(self, visitor):
         """
@@ -3301,14 +3316,15 @@ class ASTObjectCreationNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_object_creation(self)
-        
+
 
 class ASTArrayCreationNode(ASTNode):
     """
     Array creation.
     """
 
-    def __init__(self, type_: Optional[ASTNode] = None, dimensions: Optional[int] = 1, size: Optional[ASTNode] = None, initializer: Optional[ASTNode] = None):
+    def __init__(self, type_: Optional[ASTNode] = None, dimensions: Optional[int] = 1, size: Optional[ASTNode] = None,
+                 initializer: Optional[ASTNode] = None):
         """
         Array creation.
 
@@ -3952,8 +3968,13 @@ class ASTStackAllocationNode(ASTNode):
     def __repr__(self):
         return f"ASTStackAllocationNode(type={self['type']}, length={self['length']})"
 
-    def accept(self, visitor: "ASTVisitor"):
-        return super().accept(visitor)
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_stack_allocation method.
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_stack_allocation(self)
 
 
 # endregion

@@ -1299,43 +1299,6 @@ class ASTWithStatementNode(ASTStatementNode):
         return visitor.visit_with_statement(self)
 
 
-class ASTFunctionDefinitionNode(ASTStatementNode):
-    """
-    Function definition.
-    """
-
-    def __init__(self, name, parameters: Optional[ASTNode] = None, return_type: Optional[ASTNode] = None,
-                 body: Optional[ASTNode] = None, modifiers: Optional[Sequence[ASTModifier]] = None):
-        """
-        Function definition.
-
-        :param name: The name of the function.
-        :param parameters: The parameter(s) of the function.
-        :param return_type: The return type of the function.
-        :param body: The body of the function.
-        :param modifiers: The modifier(s) applied to the function.
-        """
-        self.modifiers = modifiers if modifiers is not None else []
-        super().__init__({"name": name, "parameters": parameters, "return_type": return_type, "body": body})
-
-    def __str__(self):
-        return f"Function definition.\nName: {self['name']}\nParameters: {self['parameters']}\n" \
-               f"Return type: {self['return_type']}\nBody: {self['body']}\nModifiers: {self.modifiers}"
-
-    def __repr__(self):
-        return f"ASTFunctionDefinitionNode(name={self['name']}, parameters={self['parameters']}, " \
-               f"return_type={self['return_type']}, body={self['body']}, modifiers={self.modifiers})"
-
-    def accept(self, visitor):
-        """
-        Accept AST visitor and call its visit_function_definition method.
-
-        :param visitor: The AST visitor to accept.
-        :return: The result of the visit.
-        """
-        return visitor.visit_function_definition(self)
-
-
 class ASTNamespaceDeclarationNode(ASTStatementNode):
     """
     Namespace declaration.
@@ -1628,6 +1591,46 @@ class ASTClassDefinitionNode(ASTDefinitionNode):
         :return: The result of the visit.
         """
         return visitor.visit_class_definition(self)
+
+
+class ASTFunctionDefinitionNode(ASTDefinitionNode):
+    """
+    Function definition.
+    """
+
+    def __init__(self, name, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None,
+                 constraints_clauses=None, body: Optional[ASTNode] = None, attributes=None, modifiers=None):
+        """
+        Function definition.
+
+        :param name: The name of the function.
+        :param return_type: The return type of the function.
+        :param parameters: The parameter(s) of the function.
+        :param constraints_clauses: The constraint(s) applied to the function's type parameters.
+        :param body: The body of the function.
+        :param attributes: The attribute(s) applied to the function.
+        :param modifiers: The modifier(s) applied to the function.
+        """
+        super().__init__(name, attributes, modifiers, {"return_type": return_type, "parameters": parameters, "constraints_clauses": constraints_clauses, "body": body})
+
+    def __str__(self):
+        return f"Function definition.\nName: {self['name']}\nParameters: {self['parameters']}\n" \
+               f"Return type: {self['return_type']}\nBody: {self['body']}\nAttributes: {self['attributes']}\n" \
+               f"Modifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTFunctionDefinitionNode(name={self['name']}, parameters={self['parameters']}, " \
+               f"return_type={self['return_type']}, body={self['body']}, attributes={self['attributes']}, " \
+               f"modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_function_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_function_definition(self)
 
 
 class ASTEventDefinitionNode(ASTDefinitionNode):
@@ -1971,28 +1974,28 @@ class ASTDelegateDefinitionNode(ASTDefinitionNode):
     """
 
     def __init__(self, name, return_type: Optional[ASTNode] = None, constraints_clauses: Optional[ASTNode] = None,
-                 body: Optional[ASTNode] = None, attributes=None, modifiers=None):
+                 parameters: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Delegate definition.
         
         :param name: The name of the delegate.
         :param return_type: The return type of the delegate.
         :param constraints_clauses: The constraint(s) being applied to the delegate's type parameters.
-        :param body: The body of the delegate.
+        :param parameters: The parameters of the delegate.
         :param attributes: The attribute(s) being applied to the delegate.
         :param modifiers: The modifier(s) being applied to the delegate.
         """
         super().__init__(name, attributes, modifiers,
-                         {"return_type": return_type, "constraints_clauses": constraints_clauses, "body": body})
+                         {"return_type": return_type, "constraints_clauses": constraints_clauses, "parameters": parameters})
 
     def __str__(self):
         return f"Delegate definition.\nName: {self['name']}\nReturn type: {self['return_type']}\n" \
-               f"Constraints clauses: {self['constraints_clauses']}\nBody: {self['body']}\n" \
+               f"Constraints clauses: {self['constraints_clauses']}\nParameters: {self['parameters']}\n" \
                f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
 
     def __repr__(self):
         return f"ASTDelegateDefinitionNode(name={self['name']}, return_type={self['return_type']}, " \
-               f"constraints_clauses={self['constraints_clauses']}, body={self['body']}, " \
+               f"constraints_clauses={self['constraints_clauses']}, parameters={self['parameters']}, " \
                f"attributes={self['attributes']}, modifiers={self.modifiers})"
 
     def accept(self, visitor):
@@ -2010,7 +2013,7 @@ class ASTIndexerDefinitionNode(ASTDefinitionNode):
     Indexer definition.
     """
 
-    def __init__(self, name, return_type: ASTNode, parameters: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
+    def __init__(self, name, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None, body: Optional[ASTNode] = None,
                  attributes=None, modifiers=None):
         """
         Indexer definition.
@@ -2050,7 +2053,7 @@ class ASTOperatorOverloadDefinitionNode(ASTDefinitionNode):
     Operator overload definition.
     """
 
-    def __init__(self, operator, return_type: ASTNode, parameters: Optional[ASTNode] = None,
+    def __init__(self, operator, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None,
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Operator overload definition.
@@ -2083,6 +2086,41 @@ class ASTOperatorOverloadDefinitionNode(ASTDefinitionNode):
         :return: The result of the visit.
         """
         return visitor.visit_operator_overload_definition(self)
+
+
+class ASTFixedSizeBufferDefinitionNode(ASTDefinitionNode):
+    """
+    Fixed size buffer definition.
+    """
+
+    def __init__(self, name: ASTNode, type_: Optional[ASTNode] = None, size: Optional[ASTNode] = None, attributes=None, modifiers=None):
+        """
+        Fixed size buffer definition.
+        
+        :param name: The name of the buffer. 
+        :param type_: The type of the members of the buffer.
+        :param size: The size of the buffer.
+        :param attributes: The attribute(s) being applied to the buffer.
+        :param modifiers: The modifier(s) being applied to the buffer.
+        """
+        super().__init__(name, attributes, modifiers, {"type": type_, "size": size})
+
+    def __str__(self):
+        return f"Fixed size buffer definition.\nName: {self['name']}\nType: {self['type']}\nSize: {self['size']}\n" \
+               f"Attributes: {self['attributes']}\nModifiers: {self.modifiers}"
+
+    def __repr__(self):
+        return f"ASTFixedSizeBufferDefinitionNode(name={self['name']}, type={self['type']}, size={self['size']}, " \
+               f"attributes={self['attributes']}, modifiers={self.modifiers})"
+
+    def accept(self, visitor):
+        """
+        Accept AST visitor and call its visit_fixed_size_buffer_definition method.
+
+        :param visitor: The AST visitor to accept.
+        :return: The result of the visit.
+        """
+        return visitor.visit_fixed_size_buffer_definition(self)
 
 
 # endregion
@@ -3240,20 +3278,21 @@ class ASTObjectCreationNode(ASTNode):
     Object creation.
     """
 
-    def __init__(self, type_: ASTNode, expression: ASTNode):
+    def __init__(self, type_: Optional[ASTNode] = None, arguments: Optional[ASTNode] = None, initializer: Optional[ASTNode] = None):
         """
         Object creation.
 
         :param type_: The type of the object being created.
-        :param expression: The expression dictating information about the object being created.
+        :param arguments: The arguments passed to the type's constructor.
+        :param initializer: The initial values of the object.
         """
-        super().__init__({"type": type_, "expression": expression})
+        super().__init__({"type": type_, "arguments": arguments, "initializer": initializer})
 
     def __str__(self):
-        return f"Object creation.\nType: {self['type']}\nExpression: {self['expression']}"
+        return f"Object creation.\nType: {self['type']}\nArguments: {self['arguments']}\nInitializer: {self['initializer']}"
 
     def __repr__(self):
-        return f"ASTObjectCreationNode(type={self['type']}, expression={self['expression']})"
+        return f"ASTObjectCreationNode(type={self['type']}, arguments={self['arguments']}, initializer={self['initializer']})"
 
     def accept(self, visitor):
         """
@@ -3262,35 +3301,38 @@ class ASTObjectCreationNode(ASTNode):
         :return: The result of the visit.
         """
         return visitor.visit_object_creation(self)
+        
 
-
-class ASTNullConditionalOperatorNode(ASTNode):
+class ASTArrayCreationNode(ASTNode):
     """
-    Null-conditional operator.
+    Array creation.
     """
 
-    def __init__(self, operand: Optional[ASTNode] = None, consequent: Optional[ASTNode] = None):
+    def __init__(self, type_: Optional[ASTNode] = None, dimensions: Optional[int] = 1, size: Optional[ASTNode] = None, initializer: Optional[ASTNode] = None):
         """
-        Null-conditional operator.
+        Array creation.
 
-        :param operand: The expression to evaluate.
-        :param consequent: The access expression to evaluate if the operand does not evaluate to null.
+        :param type_: The type of the array being created.
+        :param dimensions: The dimensions of the array.
+        :param size: The size of the array.
+        :param initializer: The initial values of the array.
         """
-        super().__init__({"operand": operand, "consequent": consequent})
+        super().__init__({"type": type_, "size": size, "initializer": initializer})
+        self.dimensions = dimensions
 
     def __str__(self):
-        return f"Null-conditional operator.\nOperand: {self['operand']}\nConsequent: {self['consequent']}"
+        return f"Array creation.\nType: {self['type']}\nSize: {self['size']}\nInitializer: {self['initializer']}"
 
     def __repr__(self):
-        return f"ASTNullConditionalOperatorNode(operand={self['operand']}, consequent: {self['consequent']})"
+        return f"ASTArrayCreationNode(type={self['type']}, size={self['size']}, initializer={self['initializer']})"
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_null_conditional_operator method.
+        Accept AST visitor and call its visit_array_creation method.
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """
-        return visitor.visit_null_conditional_operator(self)
+        return visitor.visit_array_creation(self)
 
 
 class ASTInitializerNode(ASTNode):
@@ -3896,6 +3938,24 @@ class ASTConstraintsClauseNode(ASTNode):
         return visitor.visit_constraints_clause(self)
 
 
+class ASTStackAllocationNode(ASTNode):
+    """
+    Stack allocation.
+    """
+
+    def __init__(self, type_: ASTNode, length: ASTNode):
+        super().__init__({"type": type_, "length": length})
+
+    def __str__(self):
+        return f"Stack allocation.\nType: {self['type']}\nLength: {self['length']}"
+
+    def __repr__(self):
+        return f"ASTStackAllocationNode(type={self['type']}, length={self['length']})"
+
+    def accept(self, visitor: "ASTVisitor"):
+        return super().accept(visitor)
+
+
 # endregion
 
 # region Enums
@@ -3980,6 +4040,7 @@ class ASTUnaryOperation(ASTOperation):
     DECREMENT = "Decrement"
     POINTER_DEREFERENCE = "Pointer Dereference"
     ADDRESS = "Address"
+    NULL_CONDITIONAL = "Null Conditional"
 
 
 class ASTInPlaceOperation(ASTOperation):

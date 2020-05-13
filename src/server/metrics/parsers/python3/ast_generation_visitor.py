@@ -139,7 +139,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         visibility = self.get_visibility(name.name)
 
         if return_type:
-            return ASTFunctionDefinitionNode(name, parameters, return_type.accept(self), body, [visibility])
+            return ASTFunctionDefinitionNode(name, return_type.accept(self), parameters, body, [visibility])
 
         return ASTFunctionDefinitionNode(name, parameters, body=body, modifiers=[visibility])
 

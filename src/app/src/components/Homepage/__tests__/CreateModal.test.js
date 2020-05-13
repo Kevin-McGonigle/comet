@@ -60,3 +60,21 @@ test('should render with alert when alertInfo is passed', () => {
         expect(alertDiv.html()).toMatchSnapshot();
     })
 });
+
+test('should open create file dialog on plus icon click', () => { 
+    const component = mount(
+        <Provider store={mockStore()} >
+            <CreateModal
+                alertInfo={{ show: 'none', intent: 'none', title: 'none' }}
+                createModal={{ isOpen: true, isLoading: false }}
+                createModalOnConfirmHandler={jest.fn()}
+                createModalOnCloseHandler={jest.fn()}
+                setAlertSuccess={jest.fn()}
+                setAlertDanger={jest.fn()}
+                />       
+        </Provider>
+    );
+    const plusButton = component.find('#plus').first();
+    plusButton.simulate('click');    
+    expect(component.html()).toMatchSnapshot();
+});

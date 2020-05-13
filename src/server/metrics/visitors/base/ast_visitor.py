@@ -375,7 +375,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_anonymous_function_definition(self, node: ASTAnonymousFunctionDefinitionNode):
+    def visit_anonymous_function_definition(self, node: "ASTAnonymousFunctionDefinitionNode"):
         """
         Visit AST anonymous function definition node.
         :param node: The AST anonymous function definition node to visit.
@@ -383,7 +383,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_parameter(self, node: ASTParameterNode):
+    def visit_parameter(self, node: "ASTParameterNode"):
         """
         Visit AST parameter node.
         :param node: The AST parameter node to visit.
@@ -391,7 +391,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_positional_only_parameter(self, node: ASTPositionalOnlyParameterNode):
+    def visit_positional_only_parameter(self, node: "ASTPositionalOnlyParameterNode"):
         """
         Visit AST positional-only parameter node.
         :param node: The AST positional-only parameter node to visit.
@@ -399,7 +399,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_parameter(node)
 
-    def visit_keyword_only_parameter(self, node: ASTKeywordOnlyParameterNode):
+    def visit_keyword_only_parameter(self, node: "ASTKeywordOnlyParameterNode"):
         """
         Visit AST keyword-only parameter node.
         :param node: The AST keyword-only parameter node to visit.
@@ -407,7 +407,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_parameter(node)
 
-    def visit_positional_arguments_parameter(self, node: ASTPositionalArgumentsParameterNode):
+    def visit_positional_arguments_parameter(self, node: "ASTPositionalArgumentsParameterNode"):
         """
         Visit AST positional arguments parameter node.
         :param node: The AST positional arguments parameter node to visit.
@@ -423,7 +423,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_positional_unpack_expression(self, node: ASTPositionalUnpackExpressionNode):
+    def visit_positional_unpack_expression(self, node: "ASTPositionalUnpackExpressionNode"):
         """
         Visit AST positional unpack expression node.
         :param node: The AST positional unpack expression node to visit.

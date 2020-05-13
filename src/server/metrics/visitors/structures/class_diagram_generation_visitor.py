@@ -123,13 +123,13 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         return child_results
 
     def visit_class_definition(self, node):
-        name = node.name.accept(self)
+        name = node['name'].accept(self)
 
-        superclasses = node.bases.accept(self) if node.bases else None
-        interfaces = node.interfaces.accept(self) if node.interfaces else None
+        superclasses = node['bases'].accept(self) if node['bases'] else None
+        interfaces = node['interfaces'].accept(self) if node['interfaces'] else None
 
-        if node.body:
-            body = node.body.accept(self)
+        if node['body']:
+            body = node['body'].accept(self)
 
             attributes = [attribute for attribute in body if isinstance(attribute, Attribute)]
             methods = [method for method in body if isinstance(method, Method)]
@@ -144,7 +144,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         return class_
 
     def visit_function_definition(self, node):
-        return_type = node.return_type.accept(self) if isinstance(node.return_type, ASTIdentifierNode) else None
+        return_type = node['return_type'].accept(self) if isinstance(node['return_type'], ASTIdentifierNode) else None
 
         visibility = None
         static = False
@@ -155,12 +155,12 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
             elif modifier is ASTMiscModifier.STATIC:
                 static = True
 
-        parameters = node.parameters.accept(self) if node.parameters else None
+        parameters = node['parameters'].accept(self) if node['parameters'] else None
 
-        return Method(node.name.accept(self), visibility, parameters, return_type, static)
+        return Method(node['name'].accept(self), visibility, parameters, return_type, static)
 
     def visit_variable_declaration(self, node):
-        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+        type_ = node['type'].accept(self) if isinstance(node['type'], ASTIdentifierNode) else None
 
         visibility = None
         static = False
@@ -172,33 +172,33 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
                 static = True
 
         attributes = []
-        for variable in node.name.accept(self):
+        for variable in node['name'].accept(self):
             attributes.append(Attribute(variable, visibility, type_, None, static))
 
         return attributes if attributes else None
 
     def visit_argument(self, node):
-        return node.value.accept(self) if isinstance(node.value, ASTIdentifierNode) else None
+        return node['value'].accept(self) if isinstance(node['value'], ASTIdentifierNode) else None
 
     def visit_keyword_argument(self, node):
         return None
 
     def visit_parameter(self, node):
-        name = node.name.accept(self)
-        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
-        default = node.default.accept(self) if isinstance(node.default, ASTIdentifierNode) else None
+        name = node['name'].accept(self)
+        type_ = node['type'].accept(self) if isinstance(node['type'], ASTIdentifierNode) else None
+        default = node['default'].accept(self) if isinstance(node['default'], ASTIdentifierNode) else None
 
         return Parameter(name, type_, default)
 
     def visit_positional_arguments_parameter(self, node):
-        name = "*" + node.name.accept(self)
-        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+        name = "*" + node['name'].accept(self)
+        type_ = node['type'].accept(self) if isinstance(node['type'], ASTIdentifierNode) else None
 
         return Parameter(name, type_)
 
     def visit_keyword_arguments_parameter(self, node):
-        name = "**" + node.name.accept(self)
-        type_ = node.type.accept(self) if isinstance(node.type, ASTIdentifierNode) else None
+        name = "**" + node['name'].accept(self)
+        type_ = node['type'].accept(self) if isinstance(node['type'], ASTIdentifierNode) else None
 
         return Parameter(name, type_)
 

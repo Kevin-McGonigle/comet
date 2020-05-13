@@ -83,20 +83,20 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :type node: ASTClassDefinitionNode
         """
         # Class name
-        name = node.name.accept(self)
+        name = node['name'].accept(self)
         if self.scope:
             name = f"{self.scope}.{name}"
 
         # Class bases
         superclasses = [self.base]
-        if node.bases:
-            superclasses = node.bases.accept(self)
+        if node['bases']:
+            superclasses = node['bases'].accept(self)
 
         # Dependencies inside the class
         scope_tmp = self.scope
         self.scope = name
 
-        inner_dependencies = [class_ for class_ in node.body.accept(self) if isinstance(class_, Class)]
+        inner_dependencies = [class_ for class_ in node['body'].accept(self) if isinstance(class_, Class)]
 
         self.scope = scope_tmp
 
@@ -104,7 +104,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         self.classes[name] = Class(name, list(set(superclasses + inner_dependencies)))
 
     def visit_argument(self, node):
-        return self.get_dependency(node.value)
+        return self.get_dependency(node['value'])
 
     def visit_function_definition(self, node):
         """
@@ -114,22 +114,22 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :return: The corresponding method object.
         :rtype: Method
         """
-        name = node.name.accept(self)
+        name = node['name'].accept(self)
         if self.scope:
             name = f"{self.scope}.{name}"
 
         dependencies = []
-        if node.parameters:
-            dependencies = [class_ for class_ in node.parameters.accept(self) if isinstance(class_, Class)]
+        if node['parameters']:
+            dependencies = [class_ for class_ in node['parameters'].accept(self) if isinstance(class_, Class)]
 
-        return_dependency = self.get_dependency(node.return_type)
+        return_dependency = self.get_dependency(node['return_type'])
         if return_dependency:
             dependencies.append(return_dependency)
 
         scope_tmp = self.scope
         self.scope = f"{self.scope}.{name}.<locals>" if self.scope else f"{name}.<locals>"
 
-        node.body.accept(self)
+        node['body'].accept(self)
 
         self.scope = scope_tmp
 
@@ -143,7 +143,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :return: The parameter's dependency. None if the parameter has no type.
         :rtype: Class or None
         """
-        return self.get_dependency(node.type)
+        return self.get_dependency(node['type'])
 
     def visit_positional_arguments_parameter(self, node):
         """
@@ -153,7 +153,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :return: The positional arguments parameter's dependency. None if the parameter has no type.
         :rtype: Class or None
         """
-        return self.get_dependency(node.type)
+        return self.get_dependency(node['type'])
 
     def visit_member(self, node):
         """
@@ -163,21 +163,21 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :return: Dot-separated string of parent and member. Unknown class if anything other than identifiers are found.
         :rtype: str or UnknownClass
         """
-        if isinstance(node.parent, ASTIdentifierNode) or isinstance(node.parent, ASTMemberNode):
-            if isinstance(node.member, ASTIdentifierNode or isinstance(node.member, ASTMemberNode)):
-                parent = node.parent.accept(self)
+        if isinstance(node['parent'], ASTIdentifierNode) or isinstance(node['parent'], ASTMemberNode):
+            if isinstance(node['member'], ASTIdentifierNode or isinstance(node['member'], ASTMemberNode)):
+                parent = node['parent'].accept(self)
                 if isinstance(parent, UnknownClass):
                     return parent
 
-                member = node.member.accept(self)
+                member = node['member'].accept(self)
                 if isinstance(member, UnknownClass):
                     return member
 
                 return parent + "." + member
             return UnknownClass(dependencies=[self.base],
-                                reason=Reason.unsupported(node.member))
+                                reason=Reason.unsupported(node['member']))
         return UnknownClass(dependencies=[self.base],
-                            reason=Reason.unsupported(node.parent))
+                            reason=Reason.unsupported(node['parent']))
 
     def visit_identifier(self, node):
         return node.name

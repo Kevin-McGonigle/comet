@@ -21,8 +21,13 @@ test('should change to new tab on tab click succesfully', () => {
         tabs: ["Tab", "Tab2"],
         tabContent: []
     };
+    const tabMapping = {
+        "Tab": "Tab",
+        "Tab2": "Tab 2",
+    }
+
     const setTabState = jest.fn();
-    const component = mount(<Toolbar tabState={tabState} setTabState={setTabState}/>);
+    const component = mount(<Toolbar tabMapping={tabMapping} tabState={tabState} setTabState={setTabState}/>);
     const tabButton = component.find("#Tab2").first();
     tabButton.simulate('click');
     expect(setTabState).toHaveBeenCalled();

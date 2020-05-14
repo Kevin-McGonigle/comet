@@ -10,13 +10,22 @@ import TreeMapContainer from '../general/TreeMap/TreeMapContainer';
 
 const cx = args => classnames(styles, args)
 
+const tabMapping = {
+    "TreeMap": "TreeMap",
+    "ClassDiagram": "Class Diagram",
+    "InheritanceTree": "Inheritance Tree",
+    "AbstractSyntaxTree": "Abstract Syntax Tree",
+    "ControlFlowDiagram": "Control Flow Diagram",
+    "DependencyGraph": "Dependency Graph",
+}
+
 const Metrics = props => {
     const {fileDirectory, selected, metrics } = props;
     const selectedMetrics = Object.values(metrics).filter(value => value.fileName === selected)[0]
 
     const [tabState, setTabState] = useState({
         selectedIndex: 0,
-        tabs: ["TreeMap", "Class Diagram", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
+        tabs: Object.values(tabMapping),
         tabContent: [
             <TreeMapContainer metrics={selectedMetrics.metrics} />,
             <ForceDirectedGraph
@@ -47,7 +56,7 @@ const Metrics = props => {
         <>
             { fileDirectory && <FileDirectoryContainer /> }
             <div className={cx("metricContainer")}>
-                <Toolbar tabState={tabState} setTabState={setTabState} />
+                <Toolbar tabMapping={tabMapping} tabState={tabState} setTabState={setTabState} />
                 <div className={cx("metricTabContainer")}>
                     { tabState.tabContent[tabState.selectedIndex] }
                 </div>

@@ -21,7 +21,7 @@ const Homepage = props => {
     const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
     const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
 
-    // Handlers stop the creation a new functions each render 
+    // Handlers stop the creation of new functions each render 
     const createButtonOnClickHandler = () => setCreateModal({ isOpen: true, isLoading: false });
     const createModalOnCloseHandler = () => {
         setAlertNone();

@@ -118,7 +118,7 @@ class Class(Node):
         """
         return visitor.visit_class(self)
 
-    def add_subclass(self, subclass: Class):
+    def add_subclass(self, subclass: "Class"):
         """
         Add a subclass to the class.
 
@@ -126,7 +126,7 @@ class Class(Node):
         """
         self.add_child(subclass)
 
-    def add_superclass(self, superclass: Class):
+    def add_superclass(self, superclass: "Class"):
         """
         Add a superclass to the class.
 
@@ -143,7 +143,7 @@ class KnownClass(Class):
     """
 
     def __init__(self, name: str, subclasses: Optional[Sequence["Class"]] = None,
-                 methods: Optional[Sequence[Method]] = None):
+                 methods: Optional[Sequence["Method"]] = None):
         """
         Known class.
 

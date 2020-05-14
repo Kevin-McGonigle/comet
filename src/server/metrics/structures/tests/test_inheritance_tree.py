@@ -174,6 +174,10 @@ class TestKnownClass(TestCase):
 
 
 class TestUnknownClass(TestCase):
+    """
+    Unknown class test case.
+    """
+
     @patch.object(InheritanceTreeVisitor, "visit_unknown_class")
     def test_accept(self, mock_visit_unknown_class) -> None:
         """
@@ -193,16 +197,32 @@ class TestUnknownClass(TestCase):
 
 
 class TestMethod(TestCase):
+    """
+    Method test case.
+    """
+
     pass
 
 
 class TestParameter(TestCase):
+    """
+    Parameter test case.
+    """
+
     pass
 
 
 class TestPositionalArgumentsParameter(TestCase):
+    """
+    Positional arguments parameter test case.
+    """
+
     pass
 
 
 class TestKeywordArgumentsParameter(TestCase):
+    """
+    Keyword arguments parameter test case.
+    """
+
     pass

@@ -11,7 +11,12 @@ class TestGraph(TestCase):
     """
 
     @patch.object(Node, "accept")
-    def test_accept(self, mock_accept: NonCallableMock):
+    def test_accept(self, mock_accept: NonCallableMock) -> None:
+        """
+        Test accept method.
+
+        :param mock_accept: Mock of Node's accept method.
+        """
         # Check for root = None
         graph = Graph()
 
@@ -39,7 +44,12 @@ class TestNode(TestCase):
     """
 
     @patch.object(GraphVisitor, "visit_children")
-    def test_accept(self, mock_visit_children: NonCallableMock):
+    def test_accept(self, mock_visit_children: NonCallableMock) -> None:
+        """
+        Test accept method.
+
+        :param mock_visit_children: Mock of GraphVisitor's visit_children method.
+        """
         node = Node()
 
         visitor = GraphVisitor()
@@ -50,7 +60,10 @@ class TestNode(TestCase):
 
         visitor.visit_children.assert_called_with(node)
 
-    def test_add_child(self):
+    def test_add_child(self) -> None:
+        """
+        Test add_child method.
+        """
         # Valid child, not in node's children
         node = Node()
 
@@ -71,7 +84,10 @@ class TestNode(TestCase):
 
         self.assertNotIn(invalid_child, node.children)
 
-    def test_remove_child(self):
+    def test_remove_child(self) -> None:
+        """
+        Test remove_child method.
+        """
         # Valid child, in node's children
         child = Node()
 

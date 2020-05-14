@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, Sequence, List, Union
 from metrics.structures.base.graph import Graph, Node
 
 if TYPE_CHECKING:
-    from metrics.visitors.base.inheritance_tree_visitor import *
+    from metrics.visitors.base.inheritance_tree_visitor import InheritanceTreeVisitor
 
 
 class InheritanceTree(Graph):

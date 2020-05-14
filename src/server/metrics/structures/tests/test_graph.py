@@ -40,7 +40,7 @@ class TestNode(TestCase):
 
     @patch.object(GraphVisitor, "visit_children")
     def test_accept(self, mock_visit_children: NonCallableMock):
-        node = Node(Node())
+        node = Node()
 
         visitor = GraphVisitor()
 
@@ -51,6 +51,7 @@ class TestNode(TestCase):
         visitor.visit_children.assert_called_with(node)
 
     def test_add_child(self):
+        # Valid child, not in node's children
         node = Node()
 
         child = Node()
@@ -59,9 +60,11 @@ class TestNode(TestCase):
 
         self.assertIn(child, node.children)
 
+        # Valid child, in node's children
         with self.assertRaises(ValueError):
             node.add_child(child)
 
+        # Invalid child
         invalid_child = "invalid"
         with self.assertRaises(TypeError):
             node.add_child(invalid_child)
@@ -69,6 +72,7 @@ class TestNode(TestCase):
         self.assertNotIn(invalid_child, node.children)
 
     def test_remove_child(self):
+        # Valid child, in node's children
         child = Node()
 
         node = Node(child)
@@ -77,9 +81,11 @@ class TestNode(TestCase):
 
         self.assertNotIn(child, node.children)
 
+        # Valid child, not in node's children
         with self.assertRaises(ValueError):
             node.remove_child(child)
 
+        # Invalid child
         invalid_child = "invalid"
         with self.assertRaises(TypeError):
             node.remove_child(invalid_child)

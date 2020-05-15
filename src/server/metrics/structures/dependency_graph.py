@@ -50,7 +50,7 @@ class DependencyGraph(Graph):
         """
         del self.root
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and visit each of the classes in the graph.
 
@@ -109,7 +109,7 @@ class Class(Node):
         """
         del self.children
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and call its visit_class method.
 
@@ -157,7 +157,7 @@ class KnownClass(Class):
     def __repr__(self):
         return f"KnownClass(name={self.name}, dependencies={self.dependencies})"
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and call its visit_known_class method.
 

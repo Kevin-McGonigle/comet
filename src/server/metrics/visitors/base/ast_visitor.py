@@ -22,7 +22,7 @@ class ASTVisitor(GraphVisitor):
         """
         return super().visit(ast)
 
-    def visit_children(self, node: "ASTNode") -> Any:
+    def visit_children(self, node: "ASTNode"):
         """
         Visit each of an AST node's children.
 

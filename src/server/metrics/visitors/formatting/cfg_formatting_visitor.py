@@ -49,7 +49,7 @@ class CFGFormattingVisitor(CFGVisitor):
         """
         results = []
         if block.children:
-            for child in block.children:
+            for child in block.children.values():
                 result = child.accept(self)
                 if result:
                     if isinstance(result, list):

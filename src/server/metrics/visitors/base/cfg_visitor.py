@@ -12,49 +12,46 @@ class CFGVisitor(GraphVisitor):
 
     Base class for visiting control-flow graph structures.
     """
+
     def __init__(self):
         self._visited = []
 
-    def visit(self, cfg):
+    def visit(self, cfg: CFG):
         """
         Visit a CFG structure.
+
         :param cfg: The CFG to visit.
-        :type cfg: CFG
         :return: The output of the visiting process.
-        :rtype: Any
         """
         self._visited = []
         return super().visit(cfg)
 
-    def visit_children(self, block):
+    def visit_children(self, block: CFGBlock):
         """
         Visit each of a block's children.
+
         :param block: The parent block whose children to visit.
-        :type block: CFGBlock
         :return: Mapping of each child block to their visit result
-        :rtype: dict[CFGBlock, Any]
         """
         return super().visit_children(block)
 
     def visit_block(self, block):
         """
         Visit CFG basic block.
+
         :param block: The CFG basic block.
-        :type block: CFGBlock
         :return: The result of the visit.
-        :rtype: Any
         """
         if block not in self._visited:
             self._visited.append(block)
             return self.visit_children(block)
 
-    def visit_if_block(self, block):
+    def visit_if_block(self, block: CFGIfBlock):
         """
         Visit CFG if block.
+
         :param block: The CFG if block.
-        :type block: CFGIfBlock
         :return: The result of the visit.
-        :rtype: Any
         """
         return self.visit_block(block)
 

@@ -16,7 +16,7 @@ class DependencyGraphVisitor(GraphVisitor):
     def __init__(self):
         self._visited = {}
 
-    def visit(self, graph: "DependencyGraph") -> Any:
+    def visit(self, graph: "DependencyGraph"):
         """
         Visit a dependency graph structure.
 
@@ -27,7 +27,7 @@ class DependencyGraphVisitor(GraphVisitor):
 
         return super().visit(graph)
 
-    def visit_children(self, cls: "Class") -> Any:
+    def visit_children(self, cls: "Class"):
         """
         "Visit" each of a class' dependencies. (Actually just returns the list of dependencies to avoid susceptibility
         to cycles).
@@ -37,7 +37,7 @@ class DependencyGraphVisitor(GraphVisitor):
         """
         return cls.dependencies
 
-    def visit_class(self, cls: "Class") -> Any:
+    def visit_class(self, cls: "Class"):
         """
         Visit dependency graph generic class.
 
@@ -49,7 +49,7 @@ class DependencyGraphVisitor(GraphVisitor):
 
         return self._visited[cls]
 
-    def visit_known_class(self, cls: "KnownClass") -> Any:
+    def visit_known_class(self, cls: "KnownClass"):
         """
         Visit dependency graph known class.
 
@@ -58,7 +58,7 @@ class DependencyGraphVisitor(GraphVisitor):
         """
         return self.visit_class(cls)
 
-    def visit_unknown_class(self, cls: "UnknownClass") -> Any:
+    def visit_unknown_class(self, cls: "UnknownClass"):
         """
         Visit dependency graph unknown class.
 

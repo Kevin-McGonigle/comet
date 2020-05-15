@@ -13,7 +13,7 @@ class GraphVisitor(object):
         """
         return graph.accept(self)
 
-    def visit_children(self, node: Node) -> Dict[Node, Any]:
+    def visit_children(self, node: Node) -> Any:
         """
         Visit each of a node's children.
         :param node: The parent node whose children to visit.

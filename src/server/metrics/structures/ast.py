@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Optional, Sequence, Union, Dict, Any
 
-from metrics.structures.base.graph import *
+from metrics.structures.base.graph import Node, Graph
 
 if TYPE_CHECKING:
     from metrics.visitors.base.ast_visitor import ASTVisitor

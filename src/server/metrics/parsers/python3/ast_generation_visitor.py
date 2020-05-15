@@ -731,8 +731,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         if comprehension:
             output = ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist,
                                                                  ASTComprehensionNode(or_test,
-                                                                                      comprehension.accept(self))),
-                                          None)
+                                                                                      comprehension.accept(self))))
         else:
             output = ASTLoopStatementNode(ASTBinaryOperationNode(ASTComparisonOperation.IN, exprlist, or_test))
 

@@ -88,7 +88,7 @@ class Calculator(object):
 
     # region Models
 
-    def control_flow_graph(self, ast: Optional[AST]) -> CFG:
+    def control_flow_graph(self, ast: Optional[AST] = None) -> CFG:
         """
         Generate control-flow graph.
 
@@ -103,7 +103,7 @@ class Calculator(object):
 
         return self.models[CFG]
 
-    def inheritance_tree(self, ast: Optional[AST]) -> InheritanceTree:
+    def inheritance_tree(self, ast: Optional[AST] = None) -> InheritanceTree:
         """
         Generate inheritance tree.
 
@@ -118,7 +118,7 @@ class Calculator(object):
 
         return self.models[InheritanceTree]
 
-    def dependency_graph(self, ast: Optional[AST]) -> DependencyGraph:
+    def dependency_graph(self, ast: Optional[AST] = None) -> DependencyGraph:
         """
         Generate dependency graph.
 
@@ -133,7 +133,7 @@ class Calculator(object):
 
         return self.models[DependencyGraph]
 
-    def class_diagram(self, ast: Optional[AST]) -> ClassDiagram:
+    def class_diagram(self, ast: Optional[AST] = None) -> ClassDiagram:
         """
         Generate class diagram.
 
@@ -245,10 +245,10 @@ class CalculatorStub(Calculator):
     def clear(self):
         pass
 
-    def control_flow_graph(self, ast: Optional[AST]) -> CFG:
+    def control_flow_graph(self, ast: Optional[AST] = None) -> CFG:
         return CFG(CFGIfElseBlock())
 
-    def inheritance_tree(self, ast: Optional[AST]) -> InheritanceTree:
+    def inheritance_tree(self, ast: Optional[AST] = None) -> InheritanceTree:
         d = ITKnownClass("D")
         c = ITKnownClass("C", [d])
         b = ITKnownClass("B", [d])
@@ -257,7 +257,7 @@ class CalculatorStub(Calculator):
 
         return InheritanceTree(base)
 
-    def dependency_graph(self, ast: Optional[AST]) -> DependencyGraph:
+    def dependency_graph(self, ast: Optional[AST] = None) -> DependencyGraph:
         base = DGKnownClass("object")
         a = DGKnownClass("A", [base])
         b = DGKnownClass("B", [base])
@@ -266,7 +266,7 @@ class CalculatorStub(Calculator):
 
         return DependencyGraph(base, [base, a, b, c, d])
 
-    def class_diagram(self, ast: Optional[AST]) -> ClassDiagram:
+    def class_diagram(self, ast: Optional[AST] = None) -> ClassDiagram:
         a = Class("A", [Attribute("a_attr", Visibility.PRIVATE)], [Method("a_method", Visibility.PUBLIC)])
         b = Class("B", [Attribute("b_attr", Visibility.PRIVATE)], [Method("b_method", Visibility.PUBLIC)],
                   relationships=[Relationship(RelationshipType.ASSOCIATION, a)])

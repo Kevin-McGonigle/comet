@@ -1,17 +1,50 @@
 from unittest import TestCase
+from unittest.mock import patch, MagicMock
+
+from metrics.structures.cfg import CFGBlock, CFG
 
 
 class TestCFG(TestCase):
-    def test_entry_block_getter(self):
-        self.fail()
+    """
+    Control-flow graph test case.
+    """
 
-    def test_entry_block_setter(self):
-        self.fail()
+    def test_entry_block_getter(self) -> None:
+        """
+        Test getter for entry_block property.
+        """
+        cfg = CFG(CFGBlock())
+
+        self.assertIs(cfg.entry_block, cfg.root)
+
+    def test_entry_block_setter(self) -> None:
+        """
+        Test setter for entry_block property.
+        """
+        cfg = CFG(CFGBlock())
+
+        cfg.entry_block = new_entry_block = CFGBlock()
+
+        self.assertIs(cfg.root, new_entry_block)
 
     def test_entry_block_deleter(self):
-        self.fail()
+        """
+        Test deleter for entry_block property.
+        """
+        cfg = CFG(CFGBlock())
 
-    def test_accept(self):
+        del cfg.entry_block
+
+        with self.assertRaises(AttributeError):
+            print(cfg.entry_block)
+
+    @patch("metrics.visitors.base.cfg_visitor.CFGVisitor")
+    @patch.object(CFGBlock, "accept")
+    def test_accept(self, mock_accept: MagicMock, mock_visitor: MagicMock):
+        cfg = CFG()
+
+        cfg.accept(mock_visitor)
+
         self.fail()
 
 

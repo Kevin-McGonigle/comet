@@ -16,7 +16,7 @@ class CFGVisitor(GraphVisitor):
     def __init__(self):
         self._visited = []
 
-    def visit(self, cfg: CFG):
+    def visit(self, cfg: "CFG"):
         """
         Visit a CFG structure.
 
@@ -26,7 +26,7 @@ class CFGVisitor(GraphVisitor):
         self._visited = []
         return super().visit(cfg)
 
-    def visit_children(self, block: CFGBlock):
+    def visit_children(self, block: "CFGBlock"):
         """
         Visit each of a block's children.
 
@@ -35,7 +35,7 @@ class CFGVisitor(GraphVisitor):
         """
         return super().visit_children(block)
 
-    def visit_block(self, block):
+    def visit_block(self, block: "CFGBlock"):
         """
         Visit CFG basic block.
 
@@ -46,7 +46,7 @@ class CFGVisitor(GraphVisitor):
             self._visited.append(block)
             return self.visit_children(block)
 
-    def visit_if_block(self, block: CFGIfBlock):
+    def visit_if_block(self, block: "CFGIfBlock"):
         """
         Visit CFG if block.
 
@@ -55,7 +55,7 @@ class CFGVisitor(GraphVisitor):
         """
         return self.visit_block(block)
 
-    def visit_if_else_block(self, block):
+    def visit_if_else_block(self, block: "CFGIfElseBlock"):
         """
         Visit CFG if-else block.
         :param block: The CFG if-else block.
@@ -65,7 +65,7 @@ class CFGVisitor(GraphVisitor):
         """
         return self.visit_block(block)
 
-    def visit_loop_block(self, block):
+    def visit_loop_block(self, block: "CFGLoopBlock"):
         """
         Visit CFG loop block.
         :param block: The CFG loop block.
@@ -75,7 +75,7 @@ class CFGVisitor(GraphVisitor):
         """
         return self.visit_block(block)
 
-    def visit_loop_else_block(self, block):
+    def visit_loop_else_block(self, block: "CFGLoopElseBlock"):
         """
         Visit CFG loop-else block.
         :param block: The CFG loop-else block.
@@ -85,7 +85,7 @@ class CFGVisitor(GraphVisitor):
         """
         return self.visit_block(block)
 
-    def visit_switch_block(self, block):
+    def visit_switch_block(self, block: "CFGSwitchBlock"):
         """
         Visit CFG switch block.
         :param block: The CFG switch block.
@@ -95,7 +95,7 @@ class CFGVisitor(GraphVisitor):
         """
         return self.visit_block(block)
 
-    def visit_break_block(self, block):
+    def visit_break_block(self, block: "CFGBreakBlock"):
         """
         Visit CFG break block.
         :param block: The CFG break block.
@@ -105,7 +105,7 @@ class CFGVisitor(GraphVisitor):
         """
         return self.visit_block(block)
 
-    def visit_continue_block(self, block):
+    def visit_continue_block(self, block: "CFGContinueBlock"):
         """
         Visit CFG continue block.
         :param block: The CFG continue block.

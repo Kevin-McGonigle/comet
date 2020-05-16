@@ -138,9 +138,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         parameters = None
         if node['parameters']:
             parameters = [parameter for parameter in node['parameters'].accept(self) if
-                          isinstance(parameter, Parameter)
-                          or isinstance(parameter, PositionalArgumentsParameter)
-                          or isinstance(parameter, KeywordArgumentsParameter)]
+                          isinstance(parameter, (Parameter, PositionalArgumentsParameter, KeywordArgumentsParameter))]
 
         # Method return type
         return_type = None
@@ -167,7 +165,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         :return: The corresponding class object. Unknown class/classes object if a corresponding class cannot be found.
         :rtype: Class
         """
-        if isinstance(node['value'], ASTIdentifierNode) or isinstance(node['value'], ASTMemberNode):
+        if isinstance(node['value'], (ASTIdentifierNode, ASTMemberNode)):
             # Superclass name
             name = node['value'].accept(self)
             if isinstance(name, UnknownClass):

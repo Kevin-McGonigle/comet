@@ -78,7 +78,7 @@ class MNDCalculationVisitor(CFGVisitor):
 
         success_depth = 1 + block["success_block"].accept(self)
 
-        if isinstance(block, CFGIfElseBlock) or isinstance(block, CFGLoopElseBlock):
+        if isinstance(block, (CFGIfElseBlock, CFGLoopElseBlock)):
             return max(exit_depth, success_depth, 1 + block["fail_block"].accept(self))
 
         return max(exit_depth, success_depth)

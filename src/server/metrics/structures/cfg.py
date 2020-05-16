@@ -97,11 +97,10 @@ class CFGBlock(Node):
 
         :param block: The block to append.
         """
-        if "exit_block" in self and self["exit_block"] is not None:
-            if self["exit_block"] != block:
-                self["exit_block"].append(block)
-
-        self["exit_block"] = block
+        if "exit_block" in self and self["exit_block"] != block:
+            self["exit_block"].append(block)
+        else:
+            self["exit_block"] = block
 
     def accept(self, visitor: "CFGVisitor"):
         """
@@ -127,7 +126,8 @@ class CFGIfBlock(CFGBlock):
         :param success_block: The block to visit if the condition is true.
         :param exit_block: The block following the if statement.
         """
-        success_block.append(exit_block)
+        if success_block and exit_block:
+            success_block.append(exit_block)
 
         super().__init__({"success_block": success_block, "exit_block": exit_block})
 
@@ -156,8 +156,11 @@ class CFGIfElseBlock(CFGBlock):
         :param fail_block: The block to visit if the condition is false.
         :param exit_block: The block following the if-else statement.
         """
-        success_block.append(exit_block)
-        fail_block.append(exit_block)
+        if exit_block:
+            if success_block:
+                success_block.append(exit_block)
+            if fail_block:
+                fail_block.append(exit_block)
 
         super().__init__({"success_block": success_block, "fail_block": fail_block})
 
@@ -185,7 +188,8 @@ class CFGLoopBlock(CFGBlock):
         :param success_block: The block to visit if the condition is true.
         :param exit_block: The block to following the while statement.
         """
-        success_block.append(self)
+        if success_block:
+            success_block.append(self)
 
         super().__init__({"success_block": success_block, "exit_block": exit_block})
 
@@ -214,8 +218,11 @@ class CFGLoopElseBlock(CFGBlock):
         :param fail_block: The block to visit if the condition is false.
         :param exit_block: The block following the while-else statement.
         """
-        success_block.append(self)
-        fail_block.append(exit_block)
+        if success_block:
+            success_block.append(self)
+
+        if fail_block and exit_block:
+            fail_block.append(exit_block)
 
         super().__init__({"success_block": success_block, "fail_block": fail_block})
 

@@ -59,7 +59,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
                     i += 1
                 elif child.symbol.type == Python3Parser.DIV:
                     positional_only = False
-            elif isinstance(child, Python3Parser.TfpdefContext) or isinstance(child, Python3Parser.VfpdefContext):
+            elif isinstance(child, (Python3Parser.TfpdefContext, Python3Parser.VfpdefContext)):
                 default = None
                 if i + 2 < child_count and isinstance(children[i + 2], Python3Parser.TestContext):
                     default = children[i + 2].accept(self)

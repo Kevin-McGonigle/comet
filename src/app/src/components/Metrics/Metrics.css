@@ -3,13 +3,13 @@
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: end;
-    overflow: hidden;
 }
 
 .metricTabContainer {
     margin-left: 300px;
     margin-top: 20px;
     display: flex;
+    height: 86vh;
 }
 
 .logo {

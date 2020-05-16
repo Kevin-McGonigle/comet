@@ -6,6 +6,7 @@ import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryCo
 import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
 import { classDiagramData } from '../general/Charts/configs';
 import ForceDirectedGraph from '../general/Charts/ForceDirectedGraph';
+import { useHistory } from 'react-router';
 
 const cx = args => classnames(styles, args)
 
@@ -20,7 +21,13 @@ const tabMapping = {
 
 const Metrics = props => {
     const { fileDirectory, selected, metrics } = props;
+    
+    const history = useHistory();
     const selectedMetrics = Object.values(metrics).filter(value => value.fileName === selected)[0]
+
+    if (selectedMetrics === null) {
+        history.push('/');
+    }
 
     const [tabState, setTabState] = useState({
         selectedIndex: 0,

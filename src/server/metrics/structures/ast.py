@@ -2235,9 +2235,7 @@ class ASTBinaryOperationNode(ASTNode):
     Binary operation.
     """
 
-    def __init__(self, operation: Union[
-        ASTArithmeticOperation, ASTLogicalOperation, ASTComparisonOperation, ASTBitwiseOperation],
-                 left_operand: ASTNode, right_operand: ASTNode):
+    def __init__(self, operation: Union[ASTOperation], left_operand: ASTNode, right_operand: ASTNode):
         """
         Binary operation.
 

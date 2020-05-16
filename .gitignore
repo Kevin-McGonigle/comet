@@ -26,3 +26,6 @@ __pycache__/
 
 # Ignore virtual environment.
 /venv/
+
+# Ignore temporary calculator stubs
+/src/server/metrics/calculator_stubs.py

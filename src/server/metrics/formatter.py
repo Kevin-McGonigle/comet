@@ -11,10 +11,10 @@ class Formatter(object):
     Class for formatting metrics & models for front-end use.
     """
 
-    def __init__(self, Calculator: Calculator, file_name: str):
-        self.calculator = Calculator
+    def __init__(self, calculator: Calculator, file_name: str):
+        self.calculator = calculator
         self.metric_info = {
-            "fileName": "test.py",
+            "fileName": file_name,
             "structures": {},
             "metrics": {}
         }

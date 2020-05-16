@@ -1,19 +1,24 @@
 import React from 'react'
 import Homepage from './Homepage/Homepage'
 import { useLocation } from 'react-router-dom'
+import { MetricsContainer } from './Metrics/MetricsContainer';
 
 const Main = (props) => {
+  console.log(props)
   const location = useLocation();
-  console.log(location.pathname);
-  if (location.pathname === '/metrics') 
-    console.log("metrics props", props)
-    console.log("yes")
+  if (location.pathname === "/") {
+    return (
+      <main>
+        <Homepage />
+      </main>
+    )
+  }
+
+  if ()
   return (
-  <main>
-    {
-      <Homepage />
-    }
-  </main>
+    <Main>
+      <MetricsContainer />
+    </Main>
   )}
 
 export default Main

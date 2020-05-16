@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
-import {Alert, Dialog, FilePicker} from 'evergreen-ui';
+import { Alert, Dialog, FilePicker } from 'evergreen-ui';
 import UploadedItem from './UploadedItem';
-import {shapeFileData} from '../../helpers/helpers';
+import { shapeFileData } from '../../helpers/helpers';
 import upload_files from '../../api/API';
+import { useHistory } from 'react-router';
 
 const cx = args => classnames(styles, args)
 
@@ -19,7 +20,7 @@ export const removeFileFromUploadedFiles = (files, name) => {
 
 const UploadModal = props => {
     const {
-        historyHandler,
+        setRedirect,
         fileData,
         alertInfo,
         uploadModal,
@@ -30,6 +31,7 @@ const UploadModal = props => {
         setFileData,
         setMetrics,
     } = props;
+    const history = useHistory();
 
     const fileItemDeleteOnClickHandler = (name) => {
         const updatedUploadedFiles = removeFileFromUploadedFiles(fileData, name);

@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import {Alert, Dialog, IconButton, Pane, Tab, Tablist, Textarea, TextInput} from 'evergreen-ui';
 import {createFileInformation, shapeFileData} from '../../helpers/helpers';
 import upload_files from '../../api/API';
+import { Redirect } from 'react-router';
 
 const cx = args => classnames(styles, args);
 
@@ -18,6 +19,7 @@ const CreateModal = props => {
         setAlertSuccess,
         setAlertDanger,
         setFileData,
+        setRedirect,
     } = props;
 
     const [fileTabs, setFileTabs] = useState({
@@ -37,9 +39,7 @@ const CreateModal = props => {
         setFileTabs({...fileTabs, tabContent: newFileContent});
     }
 
-    const onPlusIconHandler = () => {
-        setNewFileDialog({...newFileDialog, isShown: true});
-    }
+    const onPlusIconHandler = () => {}
 
     const onDeleteIconHandler = () => {
         const newTabs = fileTabs.tabs.filter(name => fileTabs.tabs.indexOf(name) !== fileTabs.selectedIndex)
@@ -52,10 +52,6 @@ const CreateModal = props => {
         });
     }
 
-    const onEditIconHandler = () => {
-
-    }
-
     const upload = () => {
         createModalOnConfirmHandler();
         // need to shape data into file 
@@ -66,7 +62,6 @@ const CreateModal = props => {
                 setFileData(shapedData);
                 setMetrics(data);
                 setAlertSuccess("Uploaded successfully!")
-                history.push('/metrics');
             } else {
                 createModalOnFailureHandler();
                 setAlertDanger("Could not upload: " + data.statusText)
@@ -135,7 +130,7 @@ const CreateModal = props => {
                     </Dialog>
 
                     <IconButton id="plus" icon="plus" onClick={onPlusIconHandler}/>
-                    <IconButton id="edit" icon="edit" onClick={onEditIconHandler}/>
+                    <IconButton id="edit" icon="edit" />
                     <IconButton id="trash" icon="trash" intent="danger" onClick={onDeleteIconHandler}/>
                 </div>
 

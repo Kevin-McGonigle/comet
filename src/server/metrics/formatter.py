@@ -1,4 +1,4 @@
-from metrics.calculator import Python3CalculatorStub
+from metrics.calculator_stubs import Python3CalculatorStub, CSharpCalculatorStub
 from metrics.visitors.formatting.ast_formatting_visitor import ASTFormattingVisitor
 from metrics.visitors.formatting.cfg_formatting_visitor import CFGFormattingVisitor
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
@@ -73,4 +73,31 @@ class Formatter(object):
         self.metric_info["structures"]["abstractSyntaxTree"] = ASTFormattingVisitor().visit(self.calculator.ast)
 
     def generate_class_diagram(self):
-        self.metric_info["structures"]["classDiagram"] = self.calculator.class_diagram()
+        formatted_class_diagram = {
+            "nodes": [],
+            "links": []
+        }
+
+        for cls in self.calculator.class_diagram().classes:
+            attributes = {}
+            methods = {}
+
+            for attribute in cls.attributes:
+                attributes[attribute.name] = attribute.type if attribute.type is not None else ""
+
+            for method in cls.methods:
+                parameters = {}
+                for parameter in method.parameters:
+                    parameters[parameter.name] = parameter.type if parameter.type is not None else ""
+
+                methods[method.name] = {
+                    "arguments": parameters,
+                    "returnType": method.return_type
+                }
+
+            formatted_class_diagram["nodes"].append({"id": cls.name, "classArgs": attributes, "classFunctions": methods})
+
+            for relationship in cls.relationships:
+                formatted_class_diagram["links"].append({"source": cls.name, "target": relationship.relation.name, "label": str(relationship.type), "value": 1})
+
+        self.metric_info["structures"]["classDiagram"] = formatted_class_diagram

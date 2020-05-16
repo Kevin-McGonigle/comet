@@ -60,7 +60,7 @@ class FileUploadViewset(viewsets.ModelViewSet):
             # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
             return JsonResponse(return_data, status=status.HTTP_201_CREATED, safe=False)
         except Exception as e:
-            print(e)
+            return JsonResponse({}, sttus=status.HTTP_500_INTERNAL_SERVER_ERROR, status=False)
 
 
 class FileInformationViewset(viewsets.ModelViewSet):

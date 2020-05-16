@@ -14,11 +14,11 @@ const Main = (props) => {
     )
   }
 
-  if ()
   return (
     <Main>
       <MetricsContainer />
     </Main>
-  )}
+  )
+}
 
 export default Main

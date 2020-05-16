@@ -133,8 +133,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return statements
 
     def visitNamespace_or_type_name(self, ctx: CSharpParser.Namespace_or_type_nameContext):
-        children = ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
-                                                                   CSharpParser.Type_argument_listContext))
+        children = list(ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
+                                                                  CSharpParser.Type_argument_listContext)))
 
         members = []
         i = 0
@@ -155,9 +155,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
     def visitType_(self, ctx: CSharpParser.Type_Context):
         base = ctx.base_type().accept(self)
-        extensions = ctx.getChildren(
+        extensions = list(ctx.getChildren(
             lambda child: self.filter_child(child, CSharpParser.INTERR, CSharpParser.Rank_specifierContext,
-                                            CSharpParser.STAR))
+                                            CSharpParser.STAR)))
         return self.build_type(base, extensions)
 
     def visitBase_type(self, ctx: CSharpParser.Base_typeContext):
@@ -367,7 +367,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ASTUnaryOperationNode(operators[ctx.getChild(0).getText()], unary_expression)
 
     def visitPrimary_expression(self, ctx: CSharpParser.Primary_expressionContext):
-        return self.build_primary_expression(ctx.getChildren())
+        return self.build_primary_expression(list(ctx.getChildren()))
 
     def visitLiteralExpression(self, ctx: CSharpParser.LiteralExpressionContext):
         return ctx.literal().accept(self)
@@ -587,9 +587,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
     def visitIsType(self, ctx: CSharpParser.IsTypeContext):
         base = ctx.base_type().accept(self)
-        extensions = ctx.getChildren(
+        extensions = list(ctx.getChildren(
             lambda child: self.filter_child(child, CSharpParser.INTERR, CSharpParser.Rank_specifierContext,
-                                            CSharpParser.STAR))
+                                            CSharpParser.STAR)))
         return self.build_type(base, extensions)
 
     def visitLambda_expression(self, ctx: CSharpParser.Lambda_expressionContext):
@@ -1373,7 +1373,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return declaration
 
     def visitArray_type(self, ctx: CSharpParser.Array_typeContext):
-        return self.build_array_or_pointer_type(ctx.getChildren())
+        return self.build_array_or_pointer_type(list(ctx.getChildren()))
 
     def visitRank_specifier(self, ctx: CSharpParser.Rank_specifierContext):
         return ctx.getChildCount() - 1
@@ -1461,8 +1461,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
     def visitInterface_accessors(self, ctx: CSharpParser.Interface_accessorsContext):
         accessors = []
-        children = ctx.getChildren(
-            lambda child: self.filter_child(child, CSharpParser.AttributesContext, CSharpParser.GET, CSharpParser.SET))
+        children = list(ctx.getChildren(
+            lambda child: self.filter_child(child, CSharpParser.AttributesContext, CSharpParser.GET, CSharpParser.SET)))
 
         i = 0
         while i < len(children):

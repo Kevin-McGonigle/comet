@@ -1,6 +1,7 @@
 from typing import Dict
 
 from metrics.structures.dependency_graph import *
+from metrics.visitors.base.dependency_graph_visitor import DependencyGraphVisitor
 
 
 class ACCalculationVisitor(DependencyGraphVisitor):

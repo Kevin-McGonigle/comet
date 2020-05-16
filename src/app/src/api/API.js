@@ -5,7 +5,7 @@ export const createFormData = data => {
     data.forEach(file => {
         formData.append("name", file.name);
         formData.append("size", file.size);
-        formData.append("file_type", file.type);
+        formData.append("file_type", "text/plain");
         formData.append("file", file);
     });
     return formData;

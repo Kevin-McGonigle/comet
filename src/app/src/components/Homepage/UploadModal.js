@@ -42,7 +42,7 @@ const UploadModal = props => {
             <UploadedItem
                 name={file.name}
                 size={file.size}
-                fileType={file.type}
+                fileType="text/plain"
                 deleteOnClickHandler={() => fileItemDeleteOnClickHandler(file.name)}
             />
         )

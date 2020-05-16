@@ -8,7 +8,6 @@ import {Button} from 'evergreen-ui';
 import {UploadModalContainer} from './UploadModalContainer';
 import {CreateModalContainer} from './CreateModalContainer';
 import {actions as alertActions} from '../../store/alert/alert';
-import { Redirect } from 'react-router-dom';
 
 const cx = args => classnames(styles, args)
 
@@ -16,13 +15,8 @@ const Homepage = props => {
     const {
         setAlertNone,
     } = props;
-    const [redirectBool, setRedirect] = useState(false);
     const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
     const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
-
-    if (redirectBool) {
-        return <Redirect to="/metrics" />
-    }
 
     // Handlers stop the creation of new functions each render 
     const createButtonOnClickHandler = () => setCreateModal({isOpen: true, isLoading: false});
@@ -68,7 +62,6 @@ const Homepage = props => {
                     <div>
                         <CreateModalContainer
                             createModal={createModal}
-                            setRedirect={setRedirect}
                             createModalOnConfirmHandler={createModalOnConfirmHandler}
                             createModalOnCloseHandler={createModalOnCloseHandler}
                             createModalOnFailureHandler={createModalOnFailureHandler}
@@ -76,7 +69,6 @@ const Homepage = props => {
 
                         <UploadModalContainer
                             uploadModal={uploadModal}
-                            setRedirect={setRedirect}
                             uploadModalOnConfirmHandler={uploadModalOnConfirmHandler}
                             uploadModalOnCloseHandler={uploadModalOnCloseHandler}
                         />

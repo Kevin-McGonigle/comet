@@ -1,4 +1,4 @@
-from metrics.calculator_stubs import Python3CalculatorStub, CSharpCalculatorStub
+from metrics.calculator import Calculator
 from metrics.visitors.formatting.ast_formatting_visitor import ASTFormattingVisitor
 from metrics.visitors.formatting.cfg_formatting_visitor import CFGFormattingVisitor
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
@@ -11,8 +11,8 @@ class Formatter(object):
     Class for formatting metrics & models for front-end use.
     """
 
-    def __init__(self, file_name: str):
-        self.calculator = Python3CalculatorStub()
+    def __init__(self, Calculator: Calculator, file_name: str):
+        self.calculator = Calculator
         self.metric_info = {
             "fileName": "test.py",
             "structures": {},

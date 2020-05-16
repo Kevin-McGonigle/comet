@@ -1,15 +1,19 @@
 import React from 'react'
-import {Route, Switch} from 'react-router-dom'
 import Homepage from './Homepage/Homepage'
-import {MetricsContainer} from './Metrics/MetricsContainer'
+import { useLocation } from 'react-router-dom'
 
-const Main = () => (
-    <main>
-        <Switch>
-            <Route exact path='/' component={Homepage}/>
-            <Route path='/metrics' component={MetricsContainer}/>
-        </Switch>
-    </main>
-)
+const Main = (props) => {
+  const location = useLocation();
+  console.log(location.pathname);
+  if (location.pathname === '/metrics') 
+    console.log("metrics props", props)
+    console.log("yes")
+  return (
+  <main>
+    {
+      <Homepage />
+    }
+  </main>
+  )}
 
 export default Main

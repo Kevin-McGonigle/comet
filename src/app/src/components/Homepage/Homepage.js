@@ -17,9 +17,8 @@ const Homepage = props => {
     const {
         setAlertNone,
     } = props;
-    const history = useHistory();
-    const [createModal, setCreateModal] = useState({isOpen: false, isLoading: false});
-    const [uploadModal, setUploadModal] = useState({isOpen: false, isLoading: false});
+    const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
+    const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
 
     // Handlers stop the creation of new functions each render 
     const createButtonOnClickHandler = () => setCreateModal({isOpen: true, isLoading: false});
@@ -64,7 +63,6 @@ const Homepage = props => {
 
                     <div>
                         <CreateModalContainer
-                            history={history}
                             createModal={createModal}
                             createModalOnConfirmHandler={createModalOnConfirmHandler}
                             createModalOnCloseHandler={createModalOnCloseHandler}
@@ -72,7 +70,6 @@ const Homepage = props => {
                         />
 
                         <UploadModalContainer
-                            history={history}
                             uploadModal={uploadModal}
                             uploadModalOnConfirmHandler={uploadModalOnConfirmHandler}
                             uploadModalOnCloseHandler={uploadModalOnCloseHandler}

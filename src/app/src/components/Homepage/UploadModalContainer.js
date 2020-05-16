@@ -4,7 +4,7 @@ import {actions as alertActions} from '../../store/alert/alert';
 import {actions as metricsActions} from '../../store/metrics/metrics';
 import {actions as fileDataActions} from '../../store/fileData/fileData';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ( {
     alertInfo: state.alert,
     fileData: state.fileData.files,
 })

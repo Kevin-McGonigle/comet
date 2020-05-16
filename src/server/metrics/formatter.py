@@ -14,7 +14,7 @@ class Formatter(object):
     def __init__(self, file_name: str):
         self.calculator = CalculatorStub()
         self.metric_info = {
-            "fileName": "_".join(file_name.split("_")[2:]),
+            "fileName": file_name,
             "structures": {},
             "metrics": {}
         }

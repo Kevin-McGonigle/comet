@@ -319,11 +319,21 @@ export const dependencyGraphData = {
 
 export const classDiagramData = {
     nodes: [
-        {
-            id: "A",
-            classArgs: {"Arg1": "String", "Arg2": "Int"},
+        {   id: "object", 
+            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
             classFunctions: {
-                "Function1": {
+                "d_fn": {
+                    arguments: {
+                        "Arg1": "String",
+                        "Arg2": "Int",
+                    },
+                    returnType: "String"
+            }}
+        },
+        {   id: "A", 
+            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+            classFunctions: {
+                "c_fn": {
                     arguments: {
                         "Arg1": "String",
                         "Arg2": "Int",
@@ -336,18 +346,44 @@ export const classDiagramData = {
             id: "B",
             classArgs: {"Arg1": "String", "Arg2": "Int"},
             classFunctions: {
-                "Function1": {
+                "b_fn": {
                     arguments: {
                         "Arg1": "String",
                         "Arg2": "Int",
                     },
                     returnType: "String"
-                }
-            }
-        }
+            }}
+        },
+        {   id: "C", 
+            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+            classFunctions: {
+                "c_fn": {
+                    arguments: {
+                        "Arg1": "String",
+                        "Arg2": "Int",
+                    },
+                    returnType: "String"
+            }}
+        },
+        {   id: "D", 
+            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+            classFunctions: {
+                "d_fn": {
+                    arguments: {
+                        "Arg1": "String",
+                        "Arg2": "Int",
+                    },
+                    returnType: "String"
+            }}
+        },
     ],
     links: [
-        {source: "A", target: "B", label: "test", value: 1},
+        {source: "object", target: "A", label: "inherits", value: 1},
+        {source: "object", target: "B", label: "inherits", value: 1},
+        {source: "A", target: "C", label: "inherits", value: 1},
+        {source: "B", target: "D", label: "inherits", value: 1},
+        {source: "C", target: "D", label: "inherits", value: 1},
+
     ]
 }
 

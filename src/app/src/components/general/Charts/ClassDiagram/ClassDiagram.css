@@ -19,7 +19,7 @@
 
 .classDiagramTable {
     --borderWidth: 3px;
-    background: #1D1F20;
+    background: #11182f;
     position: relative;
     border-radius: var(--borderWidth);
 }

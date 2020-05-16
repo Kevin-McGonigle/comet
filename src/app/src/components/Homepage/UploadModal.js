@@ -19,7 +19,7 @@ export const removeFileFromUploadedFiles = (files, name) => {
 
 const UploadModal = props => {
     const {
-        history,
+        historyHandler,
         fileData,
         alertInfo,
         uploadModal,
@@ -116,3 +116,4 @@ const UploadModal = props => {
 };
 
 export default UploadModal;
+

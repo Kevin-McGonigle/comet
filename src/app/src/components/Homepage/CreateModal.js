@@ -18,7 +18,6 @@ const CreateModal = props => {
         setAlertSuccess,
         setAlertDanger,
         setFileData,
-        history,
     } = props;
 
     const [fileTabs, setFileTabs] = useState({
@@ -43,14 +42,13 @@ const CreateModal = props => {
     }
 
     const onDeleteIconHandler = () => {
-        const selectedInd = fileTabs.selectedIndex;
-        const newTabs = fileTabs.tabs.splice(selectedInd, 1);
-        const newContent = fileTabs.tabContent.splice(selectedInd, 1);
+        const newTabs = fileTabs.tabs.filter(name => fileTabs.tabs.indexOf(name) !== fileTabs.selectedIndex)
+        const newTabContent = fileTabs.tabContent.filter(name => fileTabs.tabs.indexOf(name) !== fileTabs.selectedIndex)
 
         setFileTabs({
-            selectedIndex: 0,
+            selectedIndex: fileTabs.selectedIndex,
             tabs: newTabs,
-            tabContent: newContent,
+            tabContent: newTabContent,
         });
     }
 
@@ -83,7 +81,7 @@ const CreateModal = props => {
         newTabContent.push('');
 
         setFileTabs({
-            ...fileTabs,
+            selectedIndex: fileTabs.selectedIndex +1,
             tabContent: newTabContent,
             tabs: newTabs
         });

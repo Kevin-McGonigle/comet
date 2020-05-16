@@ -36,15 +36,11 @@ function ClassDiagram(node) {
                     flexDirection="column"
                 >
                     <div className={cx('classDiagramTable')} id="box">
-                        <div className={cx('className')}>{id}</div>
-                        <div className={cx('hrLine')}>
-                            <hr/>
-                        </div>
-                        <div className={cx('classArgs')}>{generateClassArgsText(classArgs)}</div>
-                        <div className={cx('hrLine')}>
-                            <hr/>
-                        </div>
-                        <div className={cx('classFunctions')}>{generateFunctionText(classFunctions)}</div>
+                        <div className={cx('className')}>{ id } - Cyclomatic Complexity 0</div>
+                        <div className={cx('hrLine')}><hr/></div>
+                        <div className={cx('classArgs')}>{ generateClassArgsText(classArgs) }</div>
+                        <div className={cx('hrLine')}><hr/></div>
+                        <div className={cx('classFunctions')}>{ generateFunctionText(classFunctions) }</div>
                     </div>
                 </Pane>
             }>

@@ -1,6 +1,6 @@
 import React from "react";
 import ClassDiagram from "./ClassDiagram/ClassDiagram";
-import { DependencyGraphNodeContainer } from './DependencyGraph/DependencyGraphContainer'
+import {DependencyGraphNodeContainer} from './DependencyGraph/DependencyGraphContainer'
 
 export const staticConfig = {
     "automaticRearrangeAfterDropNode": false,
@@ -59,7 +59,7 @@ export const staticConfig = {
         "strokeWidth": 1.5,
         "markerHeight": 6,
         "markerWidth": 6
-    }   
+    }
 };
 
 export const dynamicConfig = {
@@ -80,49 +80,49 @@ export const dynamicConfig = {
     "staticGraphWithDragAndDrop": false,
     "width": 800,
     "d3": {
-      "alphaTarget": 0.05,
-      "gravity": -100,
-      "linkLength": 100,
-      "linkStrength": 1,
-      "disableLinkForce": false
+        "alphaTarget": 0.05,
+        "gravity": -100,
+        "linkLength": 100,
+        "linkStrength": 1,
+        "disableLinkForce": false
     },
     "node": {
-      "color": "#3498db",
-      "fontColor": "black",
-      "fontSize": 8,
-      "fontWeight": "normal",
-      "highlightColor": "SAME",
-      "highlightFontSize": 8,
-      "highlightFontWeight": "normal",
-      "highlightStrokeColor": "SAME",
-      "highlightStrokeWidth": "SAME",
-      "labelProperty": "id",
-      "mouseCursor": "pointer",
-      "opacity": 1,
-      "renderLabel": true,
-      "size": 200,
-      "strokeColor": "#3498db",
-      "strokeWidth": 1.5,
-      "svg": "",
-      "symbolType": "circle"
+        "color": "#3498db",
+        "fontColor": "black",
+        "fontSize": 8,
+        "fontWeight": "normal",
+        "highlightColor": "SAME",
+        "highlightFontSize": 8,
+        "highlightFontWeight": "normal",
+        "highlightStrokeColor": "SAME",
+        "highlightStrokeWidth": "SAME",
+        "labelProperty": "id",
+        "mouseCursor": "pointer",
+        "opacity": 1,
+        "renderLabel": true,
+        "size": 200,
+        "strokeColor": "#3498db",
+        "strokeWidth": 1.5,
+        "svg": "",
+        "symbolType": "circle"
     },
     "link": {
-      "color": "#2c3e50",
-      "fontColor": "black",
-      "fontSize": 8,
-      "fontWeight": "normal",
-      "highlightColor": "true",
-      "highlightFontSize": 8,
-      "highlightFontWeight": "normal",
-      "labelProperty": "label",
-      "mouseCursor": "pointer",
-      "opacity": 1,
-      "renderLabel": false,
-      "semanticStrokeWidth": false,
-      "strokeWidth": 1.5,
-      "markerHeight": 6,
-      "markerWidth": 6,
-      "type": "CURVE_SMOOTH"
+        "color": "#2c3e50",
+        "fontColor": "black",
+        "fontSize": 8,
+        "fontWeight": "normal",
+        "highlightColor": "true",
+        "highlightFontSize": 8,
+        "highlightFontWeight": "normal",
+        "labelProperty": "label",
+        "mouseCursor": "pointer",
+        "opacity": 1,
+        "renderLabel": false,
+        "semanticStrokeWidth": false,
+        "strokeWidth": 1.5,
+        "markerHeight": 6,
+        "markerWidth": 6,
+        "type": "CURVE_SMOOTH"
     }
 }
 
@@ -164,7 +164,7 @@ export const classDiagramConfig = {
         "strokeWidth": 1.5,
         "svg": "",
         "symbolType": "square",
-        viewGenerator: node => <ClassDiagram data={node} />,
+        viewGenerator: node => <ClassDiagram data={node}/>,
 
     },
     "link": {
@@ -183,7 +183,7 @@ export const classDiagramConfig = {
         "strokeWidth": 1.5,
         "markerHeight": 6,
         "markerWidth": 6
-    }   
+    }
 }
 
 export const dependencyGraphConfig = {
@@ -224,7 +224,7 @@ export const dependencyGraphConfig = {
         "strokeWidth": 1.5,
         "svg": "",
         "symbolType": "square",
-        viewGenerator: node => <DependencyGraphNodeContainer data={node} />,
+        viewGenerator: node => <DependencyGraphNodeContainer data={node}/>,
     },
     "link": {
         "color": "#2c3e50",
@@ -242,10 +242,8 @@ export const dependencyGraphConfig = {
         "strokeWidth": 1.5,
         "markerHeight": 6,
         "markerWidth": 6,
-    }   
+    }
 }
-
-
 
 
 export const basicRelationshipData = {
@@ -321,8 +319,9 @@ export const dependencyGraphData = {
 
 export const classDiagramData = {
     nodes: [
-        {   id: "A",
-            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+        {
+            id: "A",
+            classArgs: {"Arg1": "String", "Arg2": "Int"},
             classFunctions: {
                 "Function1": {
                     arguments: {
@@ -330,10 +329,12 @@ export const classDiagramData = {
                         "Arg2": "Int",
                     },
                     returnType: "String"
-            }}
+                }
+            }
         },
-        {   id: "B", 
-            classArgs: {"Arg1": "String", "Arg2": "Int"}, 
+        {
+            id: "B",
+            classArgs: {"Arg1": "String", "Arg2": "Int"},
             classFunctions: {
                 "Function1": {
                     arguments: {
@@ -341,7 +342,8 @@ export const classDiagramData = {
                         "Arg2": "Int",
                     },
                     returnType: "String"
-            }}
+                }
+            }
         }
     ],
     links: [

@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './UploadModal.css';
 import classnames from 'classnames';
-import { Alert, Dialog, FilePicker } from 'evergreen-ui';
+import {Alert, Dialog, FilePicker} from 'evergreen-ui';
 import UploadedItem from './UploadedItem';
-import { shapeFileData } from '../../helpers/helpers';
+import {shapeFileData} from '../../helpers/helpers';
 import upload_files from '../../api/API';
 
 const cx = args => classnames(styles, args)
@@ -74,7 +74,7 @@ const UploadModal = props => {
                 const shapedData = shapeFileData(fileData);
                 setFileData(shapedData);
                 setMetrics(data);
-                setAlertSuccess("Uploaded succesfully!")
+                setAlertSuccess("Uploaded successfully!")
                 history.push('/metrics');
             } else {
                 setAlertDanger("Could not upload, please try again!")

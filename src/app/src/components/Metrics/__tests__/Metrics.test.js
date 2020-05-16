@@ -1,8 +1,8 @@
 import React from 'react';
-import { Provider } from 'react-redux'
+import {Provider} from 'react-redux'
 import Metrics from '../Metrics';
-import { shallow, mount } from 'enzyme';
-import configureStore from 'redux-mock-store' 
+import {shallow} from 'enzyme';
+import configureStore from 'redux-mock-store'
 import "../../../setupTests"
 
 
@@ -11,7 +11,7 @@ const state = {
         selected: 'file',
         files: [{"file": {"name": "file"}}]
     },
-    metrics:  [
+    metrics: [
         {
             "fileName": "file",
             "structures": {
@@ -34,10 +34,10 @@ const state = {
 }
 const mockStore = configureStore(state);
 
-test('Should render Metrics succesfully', () => { 
+test('Should render Metrics successfully', () => {
     const component = shallow(
         <Provider store={mockStore()}>
-            <Metrics fileDirectory={false} selected={state.fileData.selected} metrics={state.metrics} />
+            <Metrics fileDirectory={false} selected={state.fileData.selected} metrics={state.metrics}/>
         </Provider>
     )
     expect(component.html()).toMatchSnapshot()

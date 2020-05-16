@@ -13,15 +13,15 @@ describe('E2E', () => {
             headless: false
         });
         page = await browser.newPage();
-      
+
         page.emulate({
             viewport: {
-              width: 1000,
-              height: 1000
+                width: 1000,
+                height: 1000
             },
             userAgent: ''
-          });
-      
+        });
+
         await page.goto(HOMEPAGE);
     });
 
@@ -36,15 +36,15 @@ describe('E2E', () => {
 
     it('Create modal should allow creation of new file', async () => {
         await page.click('#createButton');
-        await page.type('#textAreaId', 'def pass(): pass', { delay: 20 });
-        
+        await page.type('#textAreaId', 'def pass(): pass', {delay: 20});
+
         await page.click('#plus');
-        await page.type('input.css-5ljhhe', 'test', { delay: 20 })
+        await page.type('input.css-5ljhhe', 'test', {delay: 20})
         await page.click('.📦z-idx_21 > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > button:nth-child(2)')
 
         await page.waitForSelector('#test')
         await page.click('#test');
-        await page.type('#textAreaId', 'def pass(): pass', { delay: 20 });
+        await page.type('#textAreaId', 'def pass(): pass', {delay: 20});
 
         await page.click('.css-nwvixr');
         await page.waitForNavigation();
@@ -54,9 +54,9 @@ describe('E2E', () => {
 
     it('Create modal should allow deletion of created tabs', async () => {
         await page.click('#createButton');
-        
+
         await page.click('#plus');
-        await page.type('input.css-5ljhhe', 't', { delay: 100 })
+        await page.type('input.css-5ljhhe', 't', {delay: 100})
         await page.click('.📦z-idx_21 > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > button:nth-child(2)')
 
         await page.waitFor(1000);
@@ -69,14 +69,14 @@ describe('E2E', () => {
     });
 
     // it('Upload modal should allow uploading of files & redirection to metrics page', async () => {
-        
+
     //     await page.click('#uploadButton');
     //     const uploadHandler = await page.$('.css-5ljhhe');
     //     await uploadHandler.uploadFile('test.txt');
-        
+
     //     await page.waitForSelector('.css-nwvixr');
     //     await page.click('.css-nwvixr');
-    
+
     //     browser.close();
     // });
 
@@ -102,7 +102,7 @@ describe('E2E', () => {
         await page.waitForSelector('#ControlFlowDiagram');
         await page.click('#ControlFlowDiagram');
         await page.waitFor(500);
-        
+
         await page.waitForSelector('#DependencyGraph');
         await page.click('#DependencyGraph');
         await page.waitFor(500);

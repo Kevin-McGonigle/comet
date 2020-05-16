@@ -275,7 +275,7 @@ class ASTVariablesNode(ASTMultiplesNode):
 
     def accept(self, visitor):
         """
-        Accept AST visitor and call its visit_variabes method.
+        Accept AST visitor and call its visit_variables method.
         :param visitor: The AST visitor to accept.
         :return: The result of the visit.
         """

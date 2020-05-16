@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useHistory } from "react-router-dom";
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, {useState} from 'react';
+import {useHistory} from "react-router-dom";
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import styles from './Homepage.css';
 import classnames from 'classnames';
 import comet from './comet.png';
-import { Button } from 'evergreen-ui';
-import { UploadModalContainer } from './UploadModalContainer';
-import { CreateModalContainer } from './CreateModalContainer';
-import { actions as alertActions } from '../../store/alert/alert';
+import {Button} from 'evergreen-ui';
+import {UploadModalContainer} from './UploadModalContainer';
+import {CreateModalContainer} from './CreateModalContainer';
+import {actions as alertActions} from '../../store/alert/alert';
 
 
 const cx = args => classnames(styles, args)
@@ -18,50 +18,50 @@ const Homepage = props => {
         setAlertNone,
     } = props;
     const history = useHistory();
-    const [createModal, setCreateModal] = useState({ isOpen: false, isLoading: false});
-    const [uploadModal, setUploadModal] = useState({ isOpen: false, isLoading: false });
+    const [createModal, setCreateModal] = useState({isOpen: false, isLoading: false});
+    const [uploadModal, setUploadModal] = useState({isOpen: false, isLoading: false});
 
     // Handlers stop the creation of new functions each render 
-    const createButtonOnClickHandler = () => setCreateModal({ isOpen: true, isLoading: false });
+    const createButtonOnClickHandler = () => setCreateModal({isOpen: true, isLoading: false});
     const createModalOnCloseHandler = () => {
         setAlertNone();
-        setCreateModal({ isOpen: false, isLoading: false });
+        setCreateModal({isOpen: false, isLoading: false});
     }
     const createModalOnConfirmHandler = () => {
         setAlertNone();
-        setCreateModal({ isOpen: true, isLoading: true })
+        setCreateModal({isOpen: true, isLoading: true})
     }
 
     const createModalOnFailureHandler = () => {
-        setCreateModal({ isOpen: true, isLoading: false})
+        setCreateModal({isOpen: true, isLoading: false})
     }
 
     const uploadButtonOnClickHandler = () => {
-        setUploadModal({ isOpen: true, isLoading: false });
+        setUploadModal({isOpen: true, isLoading: false});
     }
-    
+
     const uploadModalOnCloseHandler = () => {
         setAlertNone();
-        setUploadModal({ isOpen: false, isLoading: false });
+        setUploadModal({isOpen: false, isLoading: false});
     }
-    
+
     const uploadModalOnConfirmHandler = () => {
         setAlertNone();
-        setUploadModal({ isOpen: true, isLoading: true })
+        setUploadModal({isOpen: true, isLoading: true})
     }
 
 
     return (
-       <div className={cx('homepageContainer')} >
-            <div className={cx('topBar')} >
-                <p>by James Miles & Kevin Mcgonigle</p>
+        <div className={cx('homepageContainer')}>
+            <div className={cx('topBar')}>
+                <p>by James Miles & Kevin McGonigle</p>
             </div>
-            <div className={cx('logoContainer')} >
+            <div className={cx('logoContainer')}>
                 <h1>comet.</h1>
                 <h2>code metrics - made simple</h2>
                 <div className={cx('logo')}>
-                    <img src={comet} width="200px" height="200px" />
-                        
+                    <img src={comet} width="200px" height="200px" alt={"Comet logo."}/>
+
                     <div>
                         <CreateModalContainer
                             history={history}
@@ -70,7 +70,7 @@ const Homepage = props => {
                             createModalOnCloseHandler={createModalOnCloseHandler}
                             createModalOnFailureHandler={createModalOnFailureHandler}
                         />
-    
+
                         <UploadModalContainer
                             history={history}
                             uploadModal={uploadModal}
@@ -91,14 +91,14 @@ const Homepage = props => {
                             id='uploadButton'
                             className={cx('uploadButton')}
                             onClick={uploadButtonOnClickHandler}
-                            marginRight={12} 
+                            marginRight={12}
                             height={48}>
                             Upload
-                        </Button>                    
+                        </Button>
                     </div>
                 </div>
             </div>
-       </div>
+        </div>
     );
 };
 

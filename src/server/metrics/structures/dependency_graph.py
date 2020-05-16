@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Sequence, Any, List
+from typing import TYPE_CHECKING, Optional, Sequence, List
 
 from metrics.structures.base.graph import Graph, Node
 

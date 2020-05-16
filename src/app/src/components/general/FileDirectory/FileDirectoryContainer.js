@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import FileDirectory from './FileDirectory';
-import { actions as fileActions } from '../../../store/fileData/fileData';
+import {actions as fileActions} from '../../../store/fileData/fileData';
 
 const mapStateToProps = state => ({
     fileNames: console.log(state) || state.fileData.files.map(file => file.name),

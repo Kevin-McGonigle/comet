@@ -8,7 +8,6 @@ from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
 from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
 
-
 calc_args = {
     "python3": {
         "parser": Python3Parser,

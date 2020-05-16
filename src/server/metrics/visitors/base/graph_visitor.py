@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from metrics.structures.base.graph import Graph, Node
 

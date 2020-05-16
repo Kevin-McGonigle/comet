@@ -10,6 +10,7 @@ class Parser(AntlrParser):
     def parse(self) -> ParserRuleContext:
         """
         Generate a parse tree starting from the default entry parser rule.
+
         :return: The parse tree.
         """
         pass

@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import alertReducer from './alert/alert';
 import userFilesReducer from './fileData/fileData';
 import metricsReducer from './metrics/metrics';

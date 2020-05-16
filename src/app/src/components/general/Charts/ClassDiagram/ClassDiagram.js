@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ClassDiagram.css';
 import classnames from 'classnames';
-import { Pane, Popover } from 'evergreen-ui';
+import {Pane, Popover} from 'evergreen-ui';
 
 const cx = args => classnames(styles, args)
 
@@ -34,28 +34,32 @@ function ClassDiagram(node) {
                     alignItems="center"
                     justifyContent="center"
                     flexDirection="column"
-                    >
+                >
                     <div className={cx('classDiagramTable')} id="box">
-                        <div className={cx('className')}>{ id }</div>
-                        <div className={cx('hrLine')}><hr/></div>
-                        <div className={cx('classArgs')}>{ generateClassArgsText(classArgs) }</div>
-                        <div className={cx('hrLine')}><hr/></div>
-                        <div className={cx('classFunctions')}>{ generateFunctionText(classFunctions) }</div>
+                        <div className={cx('className')}>{id}</div>
+                        <div className={cx('hrLine')}>
+                            <hr/>
+                        </div>
+                        <div className={cx('classArgs')}>{generateClassArgsText(classArgs)}</div>
+                        <div className={cx('hrLine')}>
+                            <hr/>
+                        </div>
+                        <div className={cx('classFunctions')}>{generateFunctionText(classFunctions)}</div>
                     </div>
                 </Pane>
             }>
-                <Pane
-                    width={50}
-                    height={50}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor="#3498db"
-                    >
-                        { id }
-                </Pane>
-            </Popover>
+            <Pane
+                width={50}
+                height={50}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                backgroundColor="#3498db"
+            >
+                {id}
+            </Pane>
+        </Popover>
     )
-};
+}
 
 export default ClassDiagram;

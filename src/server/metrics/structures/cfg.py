@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Dict, Any, Sequence, Union
+from typing import TYPE_CHECKING, Optional, Dict, Sequence, Union
 
 from metrics.structures.base.graph import Graph, Node
 
@@ -148,7 +148,8 @@ class CFGIfBlock(CFGBlock):
 
 
 class CFGIfElseBlock(CFGBlock):
-    def __init__(self, success_block: Optional[CFGBlock] = None, fail_block: Optional[CFGBlock] = None, exit_block: Optional[CFGBlock] = None):
+    def __init__(self, success_block: Optional[CFGBlock] = None, fail_block: Optional[CFGBlock] = None,
+                 exit_block: Optional[CFGBlock] = None):
         """
         If-else statement control-flow graph structure.
 
@@ -210,7 +211,8 @@ class CFGLoopBlock(CFGBlock):
 
 
 class CFGLoopElseBlock(CFGBlock):
-    def __init__(self, success_block: Optional[CFGBlock] = None, fail_block: Optional[CFGBlock] = None, exit_block: Optional[CFGBlock] = None):
+    def __init__(self, success_block: Optional[CFGBlock] = None, fail_block: Optional[CFGBlock] = None,
+                 exit_block: Optional[CFGBlock] = None):
         """
         Loop-else control-flow graph structure.
 

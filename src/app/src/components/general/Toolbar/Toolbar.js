@@ -1,14 +1,13 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './Toolbar.css';
 import classnames from 'classnames';
-import { Tab, Tablist, Pane } from 'evergreen-ui';
+import {Pane, Tab, Tablist} from 'evergreen-ui';
 import ToolbarMenu from '../Menu/Menu';
 
 const cx = args => classnames(styles, args);
 
-const Toolbar  = props => {
-    const { tabState, setTabState, tabMapping } = props;
+const Toolbar = props => {
+    const {tabState, setTabState, tabMapping} = props;
 
     const onClickHandler = (event) => {
         const tabTitle = event.currentTarget.id;
@@ -16,7 +15,7 @@ const Toolbar  = props => {
         setTabState({
             ...tabState,
             selectedIndex: tabIndex,
-        });   
+        });
     }
 
     return (
@@ -38,7 +37,7 @@ const Toolbar  = props => {
                 </Tablist>
             </Pane>
 
-            <div className={cx("menu")}><ToolbarMenu/></div> 
+            <div className={cx("menu")}><ToolbarMenu/></div>
         </div>
     )
 };

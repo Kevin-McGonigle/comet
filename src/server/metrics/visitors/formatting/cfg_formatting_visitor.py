@@ -74,7 +74,7 @@ class CFGFormattingVisitor(CFGVisitor):
             self.current_id += 1
 
             self._visited[block] = id_
-        
+
             self._blocks.append({"id": id_})
 
             for child_id in self.visit_children(block):

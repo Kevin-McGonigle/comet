@@ -1,6 +1,6 @@
 import React from 'react';
 import AbstractSyntaxTree from '../AbstractSyntaxTree';
-import { shallow } from 'enzyme';
+import {shallow} from 'enzyme';
 import "../../../../setupTests"
 
 const AST = {
@@ -18,10 +18,10 @@ const AST = {
     ]
 }
 
-test('should render ForceDirectedGraph as expected', () => { 
+test('should render ForceDirectedGraph as expected', () => {
     const component = shallow(
-        <AbstractSyntaxTree 
-            data={AST}         
+        <AbstractSyntaxTree
+            data={AST}
         />
     );
     expect(component.html()).toMatchSnapshot();

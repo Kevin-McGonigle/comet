@@ -4,10 +4,10 @@
     height: 100%;
     padding: 20px;
     width: 250px;
-    left:0;
+    left: 0;
     top: 0;
     position: absolute;
-    border-right: 1px solid white; 
+    border-right: 1px solid white;
     overflow: hidden;
 }
 

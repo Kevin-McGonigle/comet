@@ -1,4 +1,4 @@
-import alertReducer, { initialState, actions } from '../alert';
+import alertReducer, {actions, initialState} from '../alert';
 
 test('should change state to dangerAlert info on SET_ALERT_DANGER', () => {
     const reducedState = alertReducer(initialState, actions.setAlertDanger('Upload error'));
@@ -25,7 +25,7 @@ test('should change state to none on SET_ALERT_NONE', () => {
     expect(reducedState).toEqual({
         id: 'none',
         show: false,
-        title: "Please place your code and filetype below",
+        title: "Please place your code and file type below",
         intent: 'none',
     });
 });

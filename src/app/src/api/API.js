@@ -11,15 +11,15 @@ export const createFormData = data => {
     return formData;
 }
 
-export async function upload_files(data)  {
+export async function upload_files(data) {
     const formData = createFormData(data);
     return await fetch(UPLOAD_URL, {
         method: 'post',
         body: formData
     })
-    .then(r => r.json())
-    .then(data => data)
-    .catch(e => console.log(e));
+        .then(r => r.json())
+        .then(data => data)
+        .catch(e => console.log(e));
 }
 
 export default upload_files;

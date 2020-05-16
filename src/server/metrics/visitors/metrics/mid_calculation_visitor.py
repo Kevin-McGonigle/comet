@@ -8,6 +8,7 @@ class MIDCalculationVisitor(InheritanceTreeVisitor):
     Provides functionality for visiting an inheritance tree and returning its maximum inheritance depth, i.e. the
     maximum path length from any class to the base.
     """
+
     def __init__(self):
         self._visited = {}
         super().__init__()

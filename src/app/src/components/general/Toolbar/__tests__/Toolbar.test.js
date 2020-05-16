@@ -1,10 +1,10 @@
 import React from 'react';
 import Toolbar from '../Toolbar';
-import { shallow, mount } from 'enzyme';
+import {mount, shallow} from 'enzyme';
 import "../../../../setupTests";
 
-test('should render Toolbar succesfully', () => { 
-    const tabState= {
+test('should render Toolbar successfully', () => {
+    const tabState = {
         selectedIndex: 0,
         tabs: ["Metrics", "Inheritance Tree", "Abstract Syntax Tree", "Control Flow Diagram", "Dependency Graph"],
         tabContent: []
@@ -15,7 +15,7 @@ test('should render Toolbar succesfully', () => {
 });
 
 
-test('should change to new tab on tab click succesfully', () => { 
+test('should change to new tab on tab click successfully', () => {
     const tabState = {
         selectedIndex: 0,
         tabs: ["Tab", "Tab2"],
@@ -31,6 +31,6 @@ test('should change to new tab on tab click succesfully', () => {
     const tabButton = component.find("#Tab2").first();
     tabButton.simulate('click');
     expect(setTabState).toHaveBeenCalled();
-    expect(tabState.selectedIndex == 1);
+    expect(tabState.selectedIndex === 1);
 
 });

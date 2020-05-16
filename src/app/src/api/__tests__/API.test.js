@@ -1,10 +1,10 @@
-import upload_files, { createFormData } from '../API';
+import upload_files, {createFormData} from '../API';
 
 
-const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({ json: () => [] }))
+const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({json: () => []}))
 
-test('should create correct FormData on single file', () => { 
-    const file = new File(["test"], "test.txt", { type: "text/plain", size: 4 });
+test('should create correct FormData on single file', () => {
+    const file = new File(["test"], "test.txt", {type: "text/plain", size: 4});
     const expectedFormData = new FormData();
     expectedFormData.append("name", "test");
     expectedFormData.append("size", 4);
@@ -12,14 +12,14 @@ test('should create correct FormData on single file', () => {
     expectedFormData.append("file", file);
 
     const formData = createFormData([file]);
-    for (var key in expectedFormData) {
+    for (let key in expectedFormData) {
         expect(expectedFormData[key]).toEqual(formData[key]);
     }
 });
 
-test('should create correct FormData on multiple file', () => { 
-    const file = new File(["test"], "test.txt", { type: "text/plain", size: 4 });
-    const secondaryFile = new File(["fooo"], "fooo.txt", { type: "text/plain", size: 4 });
+test('should create correct FormData on multiple file', () => {
+    const file = new File(["test"], "test.txt", {type: "text/plain", size: 4});
+    const secondaryFile = new File(["fooo"], "fooo.txt", {type: "text/plain", size: 4});
 
     const expectedFormData = new FormData();
     expectedFormData.append("name", "test");
@@ -32,12 +32,12 @@ test('should create correct FormData on multiple file', () => {
     expectedFormData.append("file", secondaryFile);
 
     const formData = createFormData([file, secondaryFile]);
-    for (var key in expectedFormData) {
+    for (let key in expectedFormData) {
         expect(expectedFormData[key]).toEqual(formData[key]);
     }
 });
 
-test('should upload succesfully', async () => { 
+test('should upload successfully', async () => {
     const formData = new FormData();
     const data = await upload_files([]);
     expect(Array.isArray(data)).toEqual(true);

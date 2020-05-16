@@ -1,7 +1,7 @@
 export const initialState = {
     id: 'none',
     show: 'false',
-    title: 'Please place your code and filetype below',
+    title: 'Please place your code and file type below',
     intent: 'none',
 }
 
@@ -10,7 +10,7 @@ export const SET_ALERT_SUCCESS = 'SET_ALERT_SUCCESS';
 export const SET_ALERT_NONE = 'SET_ALERT_NONE';
 
 const alertReducer = (state = initialState, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case SET_ALERT_DANGER:
             return {
                 id: 'dangerAlert',
@@ -29,7 +29,7 @@ const alertReducer = (state = initialState, action) => {
             return {
                 id: 'none',
                 show: false,
-                title: 'Please place your code and filetype below',
+                title: 'Please place your code and file type below',
                 intent: 'none',
             }
         default:

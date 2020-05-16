@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styles from './CreateModal.css';
 import classnames from 'classnames';
-import { Textarea, Alert, Dialog, Pane, Tablist, Tab, IconButton, TextInput } from 'evergreen-ui';
-import { createFileInformation, shapeFileData } from '../../helpers/helpers';
+import {Alert, Dialog, IconButton, Pane, Tab, Tablist, Textarea, TextInput} from 'evergreen-ui';
+import {createFileInformation, shapeFileData} from '../../helpers/helpers';
 import upload_files from '../../api/API';
 
 const cx = args => classnames(styles, args);
@@ -19,7 +19,7 @@ const CreateModal = props => {
         setAlertDanger,
         setFileData,
         history,
-    } = props; 
+    } = props;
 
     const [fileTabs, setFileTabs] = useState({
         selectedIndex: 0,
@@ -35,11 +35,11 @@ const CreateModal = props => {
     const onTextAreaChangeHandler = (event) => {
         const newFileContent = fileTabs.tabContent;
         newFileContent[fileTabs.selectedIndex] = event.target.value;
-        setFileTabs({ ...fileTabs, tabContent: newFileContent });
+        setFileTabs({...fileTabs, tabContent: newFileContent});
     }
 
     const onPlusIconHandler = () => {
-        setNewFileDialog({ ...newFileDialog, isShown: true });
+        setNewFileDialog({...newFileDialog, isShown: true});
     }
 
     const onDeleteIconHandler = () => {
@@ -67,7 +67,7 @@ const CreateModal = props => {
             if (data) {
                 setFileData(shapedData);
                 setMetrics(data);
-                setAlertSuccess("Uploaded succesfully!")
+                setAlertSuccess("Uploaded successfully!")
                 history.push('/metrics');
             } else {
                 createModalOnFailureHandler();
@@ -87,16 +87,16 @@ const CreateModal = props => {
             tabContent: newTabContent,
             tabs: newTabs
         });
-        setNewFileDialog({ isShown: false, fileName: '' });
+        setNewFileDialog({isShown: false, fileName: ''});
     }
 
     const onTextInputChange = (event) => {
         const value = event.target.value;
-        setNewFileDialog({ ...newFileDialog, fileName: value });
+        setNewFileDialog({...newFileDialog, fileName: value});
     }
 
     const createAlert = () => {
-        if (alertInfo.show){
+        if (alertInfo.show) {
             return (
                 <Alert
                     id={`${alertInfo.intent}Alert`}
@@ -106,7 +106,8 @@ const CreateModal = props => {
                     marginTop={2}
                     marginBottom={8}
                 />
-            )}
+            )
+        }
     }
 
     return (
@@ -118,7 +119,7 @@ const CreateModal = props => {
             confirmLabel={createModal.isLoading ? "Creating & Uploading" : "Upload"}
             onCloseComplete={createModalOnCloseHandler}
         >
-            { createAlert() }
+            {createAlert()}
 
             <div className={cx('fileTab')}>
                 <div className={cx('icons')}>
@@ -139,14 +140,14 @@ const CreateModal = props => {
                     <IconButton id="edit" icon="edit" onClick={onEditIconHandler}/>
                     <IconButton id="trash" icon="trash" intent="danger" onClick={onDeleteIconHandler}/>
                 </div>
-            
+
                 <Pane height={16}>
                     <Tablist marginBottom={14} flexBasis={240} marginRight={24}>
-                        { fileTabs.tabs.map((tab, index) => (
+                        {fileTabs.tabs.map((tab, index) => (
                             <Tab
                                 key={tab}
                                 id={tab}
-                                onSelect={() => setFileTabs({ ...fileTabs, selectedIndex: index })}
+                                onSelect={() => setFileTabs({...fileTabs, selectedIndex: index})}
                                 isSelected={index === fileTabs.selectedIndex}
                                 aria-controls={`panel-${tab}`}
                             >
@@ -159,7 +160,7 @@ const CreateModal = props => {
 
             <div className={cx('createModeContainer')}>
                 <div className={cx('textAreaContainer')}>
-                    <Textarea 
+                    <Textarea
                         name="textArea"
                         id="textAreaId"
                         placholder="Input your code here.."

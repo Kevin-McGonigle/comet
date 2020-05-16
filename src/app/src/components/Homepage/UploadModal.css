@@ -11,19 +11,20 @@
     display: flex;
     align-items: center;
     background-color: #D4EEE2;
-    margin: 8px 0px 4px 0px;
+    margin: 8px 0 4px 0;
 }
+
 .fileItems {
     flex-grow: 1;
     margin: 1em 3em;
-	color: #131516;
-	border-left: 2px solid #131516;
-    padding-left: 1em; 
+    color: #131516;
+    border-left: 2px solid #131516;
+    padding-left: 1em;
 }
 
 .deleteIcon {
     float: right;
-    padding-right: 1em; 
-    padding-left: 1em; 
+    padding-right: 1em;
+    padding-left: 1em;
     cursor: pointer;
 }

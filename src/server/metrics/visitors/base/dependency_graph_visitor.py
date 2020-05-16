@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from metrics.visitors.base.graph_visitor import GraphVisitor
 

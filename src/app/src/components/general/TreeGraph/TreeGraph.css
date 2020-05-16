@@ -1,26 +1,26 @@
 .treeGraphContainer {
-	display: flex;
-	flex-grow: 1;
-	justify-content: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
 }
 
 .node circle {
-	fill: #F3F3FF;
-	stroke: #2593B8;
-	stroke-width: 1.5px;
+    fill: #F3F3FF;
+    stroke: #2593B8;
+    stroke-width: 2px;
 }
 
 .node text {
-	font-size: 12px;
-	fill: black;
+    font-size: 12px;
+    fill: black;
 }
 
 .node {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 path.link {
-	fill: none;
-	stroke: #2593B8;
-	stroke-width: 1px;
+    fill: none;
+    stroke: #2593B8;
+    stroke-width: 1px;
 }

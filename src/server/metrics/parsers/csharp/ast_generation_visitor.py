@@ -1126,7 +1126,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
             declaration = ctx.getChild(0).accept(self)
 
         type_ = ctx.type_().accept(self)
-        if isinstance(declaration, (ASTIndexerDefinitionNode, ASTFunctionDefinitionNode, ASTOperatorOverloadDefinitionNode)):
+        if isinstance(declaration, (ASTIndexerDefinitionNode, ASTFunctionDefinitionNode,
+                                    ASTOperatorOverloadDefinitionNode)):
             declaration["return_type"] = type_
         else:
             declaration["type"] = type_

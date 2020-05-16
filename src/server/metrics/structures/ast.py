@@ -733,7 +733,7 @@ class ASTStatementNode(ASTNode):
 
         :param children: The child nodes of the statement node.
         """
-        super().__init__(**children if children is not None else {})
+        super().__init__(children)
 
     def __str__(self):
         return f"Generic statement.\nChildren: {list(self.children.values())}"
@@ -1305,7 +1305,7 @@ class ASTNamespaceDeclarationNode(ASTStatementNode):
     Namespace declaration.
     """
 
-    def __init__(self, name: ASTNode, body: ASTNode):
+    def __init__(self, name: ASTNode, body: Optional[ASTNode] = None):
         """
         Namespace declaration.
         
@@ -1392,7 +1392,7 @@ class ASTLockStatementNode(ASTStatementNode):
     Lock.
     """
 
-    def __init__(self, lock_object: ASTNode, body: ASTNode):
+    def __init__(self, lock_object: ASTNode, body: Optional[ASTNode] = None):
         """
         Lock.
 
@@ -1719,7 +1719,7 @@ class ASTConstructorDefinitionNode(ASTDefinitionNode):
     Constructor definition.
     """
 
-    def __init__(self, name, parameters: Optional[ASTNode], initializer: Optional[ASTNode] = None,
+    def __init__(self, name, parameters: Optional[ASTNode] = None, initializer: Optional[ASTNode] = None,
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Constructor definition.
@@ -2061,7 +2061,7 @@ class ASTOperatorOverloadDefinitionNode(ASTDefinitionNode):
     Operator overload definition.
     """
 
-    def __init__(self, operator, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None,
+    def __init__(self, operator: ASTNode, return_type: Optional[ASTNode] = None, parameters: Optional[ASTNode] = None,
                  body: Optional[ASTNode] = None, attributes=None, modifiers=None):
         """
         Operator overload definition.
@@ -3498,7 +3498,7 @@ class ASTJoinClauseNode(ASTNode):
     Join clause.
     """
 
-    def __init__(self, target_range_variable: ASTNode, target_source: ASTNode, left_key, right_key):
+    def __init__(self, target_range_variable: ASTNode, target_source: ASTNode, left_key: ASTNode, right_key: ASTNode):
         """
         Join clause.
 
@@ -3900,7 +3900,7 @@ class ASTArrayTypeNode(ASTNode):
     Array type.
     """
 
-    def __init__(self, type_: ASTNode, dimensions: int = 1):
+    def __init__(self, type_: ASTNode, dimensions: Optional[int] = 1):
         """
         Array type.
 

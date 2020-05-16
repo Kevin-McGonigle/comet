@@ -25,13 +25,14 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         if len(children) == 1:
             return children[0].accept(self)
 
-        if isinstance(children[-1], Python3Parser.SubscriptlistContext):
-            return ASTAccessNode(self.build_atom_expr(children[:-1]), children[-1].accept(self))
+        trailer = children[-1].accept(self)
+        if isinstance(trailer, Python3Parser.SubscriptlistContext):
+            return ASTAccessNode(self.build_atom_expr(children[:-1]), trailer.accept(self))
 
-        if isinstance(children[-1], Python3Parser.ArglistContext):
-            return ASTCallNode(self.build_atom_expr(children[:-1]), children[-1].accept(self))
+        if isinstance(trailer, Python3Parser.ArglistContext):
+            return ASTCallNode(self.build_atom_expr(children[:-1]), trailer.accept(self))
 
-        return ASTMemberNode(self.build_atom_expr(children[:-1]), ASTIdentifierNode(children[-1].getText()))
+        return ASTMemberNode(self.build_atom_expr(children[:-1]), ASTIdentifierNode(trailer.getText()))
 
     def build_parameters(self, ctx: Union[Python3Parser.TypedargslistContext, Python3Parser.VarargslistContext]) -> \
             Optional[List[Union[ASTParametersNode, ASTParameterNode, ASTPositionalArgumentsParameterNode,
@@ -466,7 +467,10 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         return self.build_bin_op(ASTLogicalOperation.AND, self.visitChildren(ctx))
 
     def visitNot_test(self, ctx: Python3Parser.Not_testContext):
-        return ASTUnaryOperationNode(ASTLogicalOperation.NOT, ctx.getChild(1).accept(self))
+        if ctx.NOT():
+            return ASTUnaryOperationNode(ASTLogicalOperation.NOT, ctx.not_test().accept(self))
+
+        return ctx.comparison().accept(self)
 
     def visitComparison(self, ctx: Python3Parser.ComparisonContext):
         return self.build_bin_op_choice(self.visitChildren(ctx))
@@ -515,7 +519,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         }
 
         return self.build_bin_op_choice(
-            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()]
+            [child.accept(self) if isinstance(child, Python3Parser.TermContext) else operators[child.getText()]
              for child in ctx.getChildren()])
 
     def visitTerm(self, ctx: Python3Parser.TermContext):
@@ -528,7 +532,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         }
 
         return self.build_bin_op_choice(
-            [child.accept(self) if isinstance(child, Python3Parser.Arith_exprContext) else operators[child.getText()]
+            [child.accept(self) if isinstance(child, Python3Parser.FactorContext) else operators[child.getText()]
              for child in ctx.getChildren()])
 
     def visitFactor(self, ctx: Python3Parser.FactorContext):
@@ -551,9 +555,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
         await_ = ctx.AWAIT()
 
         if await_:
-            return ASTAwaitNode(self.build_atom_expr(self.visitChildren(ctx)))
+            return ASTAwaitNode(self.build_atom_expr(list(ctx.getChildren())))
 
-        return self.build_atom_expr(self.visitChildren(ctx))
+        return self.build_atom_expr(list(ctx.getChildren()))
 
     def visitAtom(self, ctx: Python3Parser.AtomContext):
         testlist_comp = ctx.testlist_comp()

@@ -172,8 +172,8 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :return: Dot-separated string of parent and member. Unknown class if anything other than identifiers are found.
         :rtype: str or UnknownClass
         """
-        if isinstance(node['parent'], ASTIdentifierNode) or isinstance(node['parent'], ASTMemberNode):
-            if isinstance(node['member'], ASTIdentifierNode or isinstance(node['member'], ASTMemberNode)):
+        if isinstance(node['parent'], (ASTIdentifierNode, ASTMemberNode)):
+            if isinstance(node['member'], (ASTIdentifierNode, ASTMemberNode)):
                 parent = node['parent'].accept(self)
                 if isinstance(parent, UnknownClass):
                     return parent
@@ -201,7 +201,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         :rtype: Class or None
         """
         if type_:
-            if isinstance(type_, ASTIdentifierNode) or isinstance(type_, ASTMemberNode):
+            if isinstance(type_, (ASTIdentifierNode, ASTMemberNode)):
                 type_name = type_.accept(self)
                 if isinstance(type_name, Class):
                     return type_name

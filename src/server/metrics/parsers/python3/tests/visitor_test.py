@@ -1,5 +1,3 @@
-from sys import stdin
-
 from antlr4 import InputStream, CommonTokenStream
 
 from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
@@ -8,8 +6,8 @@ from metrics.parsers.python3.base.Python3Parser import Python3Parser
 
 
 def main():
-    with open("test.txt", "r") as f:
-        content = f.read
+    with open("test.txt") as f:
+        content = f.read()
     input_stream = InputStream(content)
     lexer = Python3Lexer(input_stream)
     tokens = CommonTokenStream(lexer)

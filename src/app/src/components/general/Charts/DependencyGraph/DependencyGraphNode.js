@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './DependencyGraphNode.css';
 import classnames from 'classnames';
-import { Pane, Popover } from 'evergreen-ui';
+import {Pane, Popover} from 'evergreen-ui';
 
 const cx = args => classnames(styles, args)
 
@@ -28,7 +28,7 @@ function DependencyGraphNode(props) {
                     alignItems="center"
                     justifyContent="center"
                     flexDirection="column"
-                    >
+                >
                     <div className={cx('dependencyGraphNode')} id="box">
                         <div className={cx('nodeItem')}>Afferent Coupling: {afferentCoupling.value}</div>
                         <div className={cx('nodeItem')}>Efferent Coupling: {efferentCoupling.value}</div>
@@ -36,18 +36,18 @@ function DependencyGraphNode(props) {
                     </div>
                 </Pane>
             }>
-                <Pane
-                    width={50}
-                    height={50}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor="#3498db"
-                    >
-                        { nodeId }
-                </Pane>
-            </Popover>
+            <Pane
+                width={50}
+                height={50}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                backgroundColor="#3498db"
+            >
+                {nodeId}
+            </Pane>
+        </Popover>
     )
-};
+}
 
 export default DependencyGraphNode;

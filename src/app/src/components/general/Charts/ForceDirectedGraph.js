@@ -1,7 +1,7 @@
 import React from 'react';
-import { Graph } from 'react-d3-graph';
-import { Pane } from 'evergreen-ui';
-import { configMapping } from './configs';
+import {Graph} from 'react-d3-graph';
+import {Pane} from 'evergreen-ui';
+import {configMapping} from './configs';
 import styles from './ForceDirectedGraph.css';
 import classnames from 'classnames';
 
@@ -27,10 +27,12 @@ const ForceDirectedGraph = (props) => {
             flexGrow={1}
             marginRight="10"
             background="tint2"
-            elevation={4}   
+            elevation={4}
         >
-                        
-            <div className={cx("title")}>{ title }<hr/></div>
+
+            <div className={cx("title")}>{title}
+                <hr/>
+            </div>
             <Graph
                 borderStyle="solid"
                 id="graph-id"

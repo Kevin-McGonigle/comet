@@ -7,7 +7,7 @@
     width: 400px;
     height: 200px;
     color: white;
-    font-family: 'Raleway';
+    font-family: 'Raleway', "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
     font-size: 12px;
 }
 
@@ -15,7 +15,7 @@
     background: #11182f;
     position: relative;
     border-color: white;
-    border-radius: var(3px);
+    border-radius: 3px;
 }
 
 .nodeItem {

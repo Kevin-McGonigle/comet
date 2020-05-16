@@ -1,7 +1,7 @@
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Metrics from './Metrics';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     fileDirectory: true,
     selected: state.fileData.selected,
     metrics: state.metrics,

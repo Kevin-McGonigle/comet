@@ -6,7 +6,7 @@
 .title {
     color: #13b3c2;
     margin: 15px;
-    font-family: 'Gill Sans', 'Verdana';
+    font-family: 'Gill Sans', "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
     font-size: 11px;
     line-height: 14px;
     text-transform: uppercase;

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Sequence, Any
+from typing import TYPE_CHECKING, Optional, Sequence, List
 
 from metrics.structures.base.graph import Graph, Node
 
@@ -50,7 +50,7 @@ class DependencyGraph(Graph):
         """
         del self.root
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and visit each of the classes in the graph.
 
@@ -85,7 +85,7 @@ class Class(Node):
         return f"Class(name={self.name}, dependencies={self.dependencies})"
 
     @property
-    def dependencies(self) -> Optional[Sequence["Class"]]:
+    def dependencies(self) -> List["Class"]:
         """
         Getter for dependencies property.
 
@@ -94,7 +94,7 @@ class Class(Node):
         return self.children
 
     @dependencies.setter
-    def dependencies(self, new_dependencies: Optional[Sequence["Class"]]):
+    def dependencies(self, new_dependencies: List["Class"]):
         """
         Setter for dependencies property.
 
@@ -109,7 +109,7 @@ class Class(Node):
         """
         del self.children
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and call its visit_class method.
 
@@ -157,7 +157,7 @@ class KnownClass(Class):
     def __repr__(self):
         return f"KnownClass(name={self.name}, dependencies={self.dependencies})"
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and call its visit_known_class method.
 
@@ -193,7 +193,7 @@ class UnknownClass(Class):
     def __repr__(self):
         return f"UnknownClass(name={self.name}, dependencies={self.dependencies}, reason={self.reason})"
 
-    def accept(self, visitor: "DependencyGraphVisitor") -> Any:
+    def accept(self, visitor: "DependencyGraphVisitor"):
         """
         Accept a dependency graph visitor and call its visit_unknown_class method.
 

@@ -4,19 +4,27 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from api.serializers import *
 from metrics.formatter import Formatter
-from metrics.parsers.python3.ast_generation_visitor import ASTGenerationVisitor
+
 from metrics.parsers.python3.base.Python3Lexer import Python3Lexer
 from metrics.parsers.python3.base.Python3Parser import Python3Parser
+from metrics.parsers.csharp.ast_generation_visitior import ASTGenerationVisitor
 
+from metrics.parsers.csharp.base.CSharpLexer import CSharpLexer
+from metrics.parsers.chsharp.base.CSharpParser import CSharpParser
+from metrics.parsers.csharp.ast_generation_visitior import ASTGenerationVisitor
 
 calc_args = {
-    "python3": {
+    "py": {
         "parser": Python3Parser,
         "lexer": Python3Lexer,
         "visitor": ASTGenerationVisitor,
+    }, 
+    "cs": {
+        "parser": CSharpParser,
+        "lexer": CSharpLexer,
+        "visitor": ASTGenerationVisitor,
     }
 }
-
 
 class FileUploadViewset(viewsets.ModelViewSet):
     """
@@ -41,16 +49,17 @@ class FileUploadViewset(viewsets.ModelViewSet):
             self.perform_create(serializer)
 
             file_name = str(self.queryset.get(hash=serializer.data['hash']).file)
-            # with open(f'../server/uploads/{file_name}') as f:
-            #    content = f.read()
+            file_type = file_name.rsplit(".")[-1]
+            
+            calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
 
+            with open(f'../server/uploads/{file_name}') as f:
+                content = f.read()
+            
             formatter = Formatter(file_name)
             data = formatter.generate()
             return_data.append(data)
 
-        # Hardcoded for now
-        # file_type = calc_args["python3"]
-        # calc = Calculator(content, file_type['lexer'], file_type['parser'], file_type['visitor'])
         return JsonResponse(return_data, status=status.HTTP_201_CREATED, safe=False)
 
 

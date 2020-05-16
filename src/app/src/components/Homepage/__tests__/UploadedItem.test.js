@@ -1,21 +1,22 @@
 import React from 'react';
 import UploadedItem from '../UploadedItem';
-import { mount } from 'enzyme';
+import {mount} from 'enzyme';
 
-test('should render UploadedItem succesfully', () => { 
+test('should render UploadedItem successfully', () => {
     const component = mount(
-        <UploadedItem 
+        <UploadedItem
             name='name'
             fileType='file type'
             size='size'
-            deleteOnClickHandler={() => {}}
-       />);
+            deleteOnClickHandler={() => {
+            }}
+        />);
     expect(component.html()).toMatchSnapshot();
 });
 
 test('should call deleteOnClickHandler on delete icon click', () => {
     const component = mount(
-        <UploadedItem 
+        <UploadedItem
             name='name'
             fileType='file type'
             size='size'

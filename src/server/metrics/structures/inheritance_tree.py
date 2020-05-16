@@ -1,17 +1,21 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Sequence, List, Union
 
-from metrics.structures.base.graph import *
+from metrics.structures.base.graph import Graph, Node
 
 if TYPE_CHECKING:
-    from metrics.visitors.base.inheritance_tree_visitor import *
+    from metrics.visitors.base.inheritance_tree_visitor import InheritanceTreeVisitor
 
 
 class InheritanceTree(Graph):
-    def __init__(self, base=None):
+    """
+    Inheritance tree.
+    """
+
+    def __init__(self, base: Optional["Class"] = None):
         """
         Inheritance tree.
+
         :param base: The base class in the given language.
-        :type base: Class or None
         """
         super().__init__(base if base is not None else KnownClass("object"))
 
@@ -22,20 +26,20 @@ class InheritanceTree(Graph):
         return f"InheritanceTree(base={self.base})"
 
     @property
-    def base(self):
+    def base(self) -> Optional["Class"]:
         """
         Getter for base property.
+
         :return: The base class in the tree.
-        :rtype: Class or None
         """
         return self.root
 
     @base.setter
-    def base(self, new_base):
+    def base(self, new_base: Optional["Class"]):
         """
         Setter for base property.
+
         :param new_base: The value to assign to base.
-        :type new_base: Class or None
         """
         self.root = new_base
 
@@ -46,13 +50,12 @@ class InheritanceTree(Graph):
         """
         del self.root
 
-    def accept(self, visitor):
+    def accept(self, visitor: "InheritanceTreeVisitor"):
         """
         Accept an inheritance tree visitor.
+
         :param visitor: The inheritance tree visitor to accept.
-        :type visitor: InheritanceTreeVisitor
         :return: The result of the accept.
-        :rtype: Any
         """
         return self.base.accept(visitor)
 
@@ -65,20 +68,15 @@ class Class(Node):
     directly inherit the class.
     """
 
-    def __init__(self, name=None, subclasses=None):
+    def __init__(self, name: Optional[str] = None, subclasses: Optional[Sequence["Class"]] = None):
         """
         Class.
-        :param name: The name of the class
-        :type name: str
+
+        :param name: The name of the class.
         :param subclasses: The classes that directly inherit from the class.
-        :type subclasses: list[Class]
         """
+        super().__init__(*(subclasses if subclasses is not None else []))
         self.name = name
-
-        if subclasses is None:
-            subclasses = []
-
-        super().__init__(*subclasses)
 
     def __str__(self):
         return f"Class.\nName: {self.name}\nSubclasses: {self.subclasses}"
@@ -87,20 +85,20 @@ class Class(Node):
         return f"Class(name={self.name}, subclasses={self.subclasses})"
 
     @property
-    def subclasses(self):
+    def subclasses(self) -> List["Class"]:
         """
         Getter for subclasses property.
+
         :return: The classes that directly inherit from the class.
-        :rtype: list[Class]
         """
         return self.children
 
     @subclasses.setter
-    def subclasses(self, new_subclasses):
+    def subclasses(self, new_subclasses: List["Class"]):
         """
         Setter for subclasses property.
+
         :param new_subclasses: The value to assign to subclasses.
-        :type new_subclasses: list[Class]
         """
         self.children = new_subclasses
 
@@ -111,29 +109,28 @@ class Class(Node):
         """
         del self.children
 
-    def accept(self, visitor):
+    def accept(self, visitor: "InheritanceTreeVisitor"):
         """
         Accept an inheritance tree visitor and call its visit_class method.
-        :param visitor: The inheritance tree visitor to accept.
-        :type visitor: InheritanceTreeVisitor
+
+        :param visitor: The inheritance tree visitor to accept
         :return: The result of the accept.
-        :rtype: Any
         """
         return visitor.visit_class(self)
 
-    def add_subclass(self, subclass):
+    def add_subclass(self, subclass: "Class"):
         """
         Add a subclass to the class.
+
         :param subclass: The subclass to add.
-        :type subclass: Class
         """
         self.add_child(subclass)
 
-    def add_superclass(self, superclass):
+    def add_superclass(self, superclass: "Class"):
         """
         Add a superclass to the class.
+
         :param superclass: The superclass to add.
-        :type superclass: Class
         """
         superclass.add_subclass(self)
 
@@ -145,21 +142,17 @@ class KnownClass(Class):
     A class that is known with a valid identifier.
     """
 
-    def __init__(self, name, subclasses=None, methods=None):
+    def __init__(self, name: str, subclasses: Optional[Sequence["Class"]] = None,
+                 methods: Optional[Sequence["Method"]] = None):
         """
         Known class.
+
         :param name: The name of the class represented by the node.
-        :type name: str
         :param subclasses: The classes that directly inherit from the class.
-        :type subclasses: list[Class] or None
-        :param methods: The class' methods.
         :type methods: list[Method] or None
         """
-        if methods is None:
-            methods = []
-        self.methods = methods
-
         super().__init__(name, subclasses)
+        self.methods = methods if methods is not None else []
 
     def __str__(self):
         return f"Known class.\nName: {self.name}\nSubclasses: {self.subclasses}\nMethods: {self.methods}"
@@ -170,10 +163,9 @@ class KnownClass(Class):
     def accept(self, visitor):
         """
         Accept an inheritance tree visitor and call its visit_known_class method.
+
         :param visitor: The inheritance tree visitor to accept.
-        :type visitor: InheritanceTreeVisitor
         :return: The result of the accept.
-        :rtype: Any
         """
         return visitor.visit_known_class(self)
 
@@ -187,19 +179,16 @@ class UnknownClass(Class):
     an identifier that does not map to a known class, etc.
     """
 
-    def __init__(self, name=None, subclasses=None, reason=None):
+    def __init__(self, name: Optional[str] = None, subclasses: Optional[Sequence["Class"]] = None,
+                 reason: Optional[str] = None):
         """
         Unknown class.
         :param name: The name of the class.
-        :type name: str
         :param subclasses: The classes that directly inherit from the class.
-        :type subclasses: list[Class] or None
         :param reason: The reason that the class cannot be identified.
-        :type reason: str or None
         """
-        self.reason = reason
-
         super().__init__(name, subclasses)
+        self.reason = reason
 
     def __str__(self):
         return f"Unknown class.\nName: {self.name}\nSubclasses: {self.subclasses}\nReason: {self.reason}"
@@ -210,24 +199,23 @@ class UnknownClass(Class):
     def accept(self, visitor):
         """
         Accept an inheritance tree visitor and call its visit_unknown_class method.
+
         :param visitor: The inheritance tree visitor to accept.
-        :type visitor: InheritanceTreeVisitor
         :return: The result of the accept.
-        :rtype: Any
         """
         return visitor.visit_unknown_class(self)
 
 
 class Method:
-    def __init__(self, name, parameters=None, return_type=None):
+    def __init__(self, name: str, parameters: Optional[
+        Sequence[Union["Parameter", "PositionalArgumentsParameter", "KeywordArgumentsParameter"]]] = None,
+                 return_type: Optional[str] = None):
         """
         Method.
+
         :param name: The name of the method.
-        :type name: str
         :param parameters: The method's parameters.
-        :type parameters: list[Parameter or PositionalArgumentsParameter or KeywordArgumentsParameter] or None
         :param return_type: The method's return type.
-        :type return_type: str or None
         """
         self.name = name
         self.parameters = parameters if parameters is not None else []
@@ -241,15 +229,13 @@ class Method:
 
 
 class Parameter:
-    def __init__(self, name, type_=None, default=None):
+    def __init__(self, name: str, type_: Optional[str] = None, default: Optional[str] = None):
         """
         Parameter.
+
         :param name: The name of the parameter
-        :type name: str
         :param type_: The parameter's type.
-        :type type_: str or None
         :param default: The parameter's default value.
-        :type default: str or None
         """
         self.name = name
         self.type = type_
@@ -263,13 +249,11 @@ class Parameter:
 
 
 class PositionalArgumentsParameter:
-    def __init__(self, name, type_=None):
+    def __init__(self, name: str, type_: Optional[str] = None):
         """
         Positional arguments parameter.
         :param name: The name of the positional arguments parameter
-        :type name: str
         :param type_: The parameter's type.
-        :type type_: str or None
         """
         self.name = name
         self.type = type_
@@ -282,13 +266,12 @@ class PositionalArgumentsParameter:
 
 
 class KeywordArgumentsParameter:
-    def __init__(self, name, type_=None):
+    def __init__(self, name: str, type_: Optional[str] = None):
         """
         Keyword arguments parameter.
-        :param name: The name of the keyword arguments parameter
-        :type name: str
+
+        :param name: The name of the keyword arguments parameter.
         :param type_: The parameter's type.
-        :type type_: str or None
         """
         self.name = name
         self.type = type_

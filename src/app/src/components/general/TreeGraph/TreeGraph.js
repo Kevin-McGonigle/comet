@@ -16,7 +16,7 @@ const TreeGraph = props => {
                 data={tree}
                 height={900}
                 width={800}
-                svgProps={{ transform: 'rotate(90)'}}
+                svgProps={{transform: 'rotate(90)'}}
             />
         </div>
     );

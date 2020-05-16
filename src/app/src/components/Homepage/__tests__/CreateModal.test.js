@@ -1,14 +1,14 @@
 import React from 'react';
-import { Provider } from 'react-redux'
+import {Provider} from 'react-redux'
 import CreateModal from '../CreateModal';
-import configureStore from 'redux-mock-store' 
-import { mount } from 'enzyme';
+import configureStore from 'redux-mock-store'
+import {mount} from 'enzyme';
 import "../../../setupTests"
 
 const initialState = {
     alert: {
         id: 'successAlert',
-        title: "Please place your code and filetype below",
+        title: "Please place your code and file type below",
         show: 'none',
         intent: 'none',
     }
@@ -16,33 +16,33 @@ const initialState = {
 
 const mockStore = configureStore(initialState);
 
-test('should render CreateModal succesfully', () => { 
+test('should render CreateModal successfully', () => {
     const component = mount(
-        <Provider store={mockStore()} >
+        <Provider store={mockStore()}>
             <CreateModal
-                alertInfo={{ show: 'none', intent: 'none', title: 'none' }}
-                createModal={{ isOpen: true, isLoading: false }}
+                alertInfo={{show: 'none', intent: 'none', title: 'none'}}
+                createModal={{isOpen: true, isLoading: false}}
                 createModalOnConfirmHandler={jest.fn()}
                 createModalOnCloseHandler={jest.fn()}
                 setAlertSuccess={jest.fn()}
                 setAlertDanger={jest.fn()}
-                />       
+            />
         </Provider>
     );
     expect(component.html()).toMatchSnapshot();
 });
 
 test('should render with alert when alertInfo is passed', () => {
-    const success = { show: true, intent: 'success', title: 'success' };
-    const warning = { show: true, intent: 'warning', title: 'warning' };
-    const danger = { show: true, intent: 'danger', title: 'danger' };
+    const success = {show: true, intent: 'success', title: 'success'};
+    const warning = {show: true, intent: 'warning', title: 'warning'};
+    const danger = {show: true, intent: 'danger', title: 'danger'};
 
     [success, warning, danger].forEach(alert => {
         const component = mount(
-            <Provider store={mockStore()} >
+            <Provider store={mockStore()}>
                 <CreateModal
                     alertInfo={alert}
-                    createModal={{ isOpen: true, isLoading: false }}
+                    createModal={{isOpen: true, isLoading: false}}
                     createModalOnConfirmHandler={jest.fn()}
                     createModalOnCloseHandler={jest.fn()}
                     setAlertSuccess={jest.fn()}
@@ -61,20 +61,20 @@ test('should render with alert when alertInfo is passed', () => {
     })
 });
 
-test('should open create file dialog on plus icon click', () => { 
+test('should open create file dialog on plus icon click', () => {
     const component = mount(
-        <Provider store={mockStore()} >
+        <Provider store={mockStore()}>
             <CreateModal
-                alertInfo={{ show: 'none', intent: 'none', title: 'none' }}
-                createModal={{ isOpen: true, isLoading: false }}
+                alertInfo={{show: 'none', intent: 'none', title: 'none'}}
+                createModal={{isOpen: true, isLoading: false}}
                 createModalOnConfirmHandler={jest.fn()}
                 createModalOnCloseHandler={jest.fn()}
                 setAlertSuccess={jest.fn()}
                 setAlertDanger={jest.fn()}
-                />       
+            />
         </Provider>
     );
     const plusButton = component.find('#plus').first();
-    plusButton.simulate('click');    
+    plusButton.simulate('click');
     expect(component.html()).toMatchSnapshot();
 });

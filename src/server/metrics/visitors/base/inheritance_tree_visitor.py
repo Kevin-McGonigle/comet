@@ -12,6 +12,7 @@ class InheritanceTreeVisitor(GraphVisitor):
 
     Base class for visiting inheritance tree structures.
     """
+
     def __init__(self):
         self._visited = []
 

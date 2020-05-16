@@ -14,14 +14,13 @@ export async function readFile(file) {
 }
 
 export const createFileInformation = (fileNames, fileContent) => {
-    const fileData = fileNames.map((file, ind) => {
-        return new File([fileContent[ind]], file, { type: "text/plain", lastModified: "test" })
+    return fileNames.map((file, ind) => {
+        return new File([fileContent[ind]], file, {type: "text/plain", lastModified: "test"})
     });
-    return fileData;
 }
 
 export const shapeFileData = (fileData) => {
-    const shapedData = fileData.map((file) => {
+    return fileData.map((file) => {
         const data = readFile(file);
         return {
             name: file.name,
@@ -31,6 +30,5 @@ export const shapeFileData = (fileData) => {
             content: data,
         };
     });
-    return shapedData;
 }
 

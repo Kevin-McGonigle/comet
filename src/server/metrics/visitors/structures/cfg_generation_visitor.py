@@ -1,6 +1,7 @@
 from typing import Optional, Sequence, Union
 
-from metrics.structures.cfg import *
+from metrics.structures.cfg import CFG, CFGBlock, CFGIfBlock, CFGIfElseBlock, CFGLoopBlock, CFGLoopElseBlock, \
+    CFGBreakBlock, CFGContinueBlock
 from metrics.visitors.base.ast_visitor import ASTVisitor
 
 
@@ -31,7 +32,7 @@ class CFGGenerationVisitor(ASTVisitor):
             return None
 
         if len(sequence) > 1:
-            sequence[0].add_child(self.build_sequence(sequence[1:]))
+            sequence[0].append(self.build_sequence(sequence[1:]))
 
         return sequence[0]
 
@@ -71,7 +72,7 @@ class CFGGenerationVisitor(ASTVisitor):
         :return: The corresponding CFG block.
         """
         if self.loop_scope is not None:
-            return CFGBreakBlock(self.loop_scope.exit_block)
+            return CFGBreakBlock(self.loop_scope["exit_block"])
 
         return CFGBreakBlock()
 

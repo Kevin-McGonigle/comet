@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from metrics.visitors.base.graph_visitor import GraphVisitor
 
@@ -22,7 +22,7 @@ class ASTVisitor(GraphVisitor):
         """
         return super().visit(ast)
 
-    def visit_children(self, node: "ASTNode") -> Any:
+    def visit_children(self, node: "ASTNode"):
         """
         Visit each of an AST node's children.
 
@@ -147,7 +147,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_switch_sections(self, node: ASTSwitchSectionsNode):
+    def visit_switch_sections(self, node: "ASTSwitchSectionsNode"):
         """
         Visit AST switch sections node.
 
@@ -156,7 +156,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_switch_labels(self, node: ASTSwitchLabelsNode):
+    def visit_switch_labels(self, node: "ASTSwitchLabelsNode"):
         """
         Visit AST switch labels node.
 
@@ -165,7 +165,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_variable_declarations(self, node: ASTVariableDeclarationsNode):
+    def visit_variable_declarations(self, node: "ASTVariableDeclarationsNode"):
         """
         Visit AST variable declarations node.
 
@@ -174,7 +174,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_constant_declarations(self, node: ASTConstantDeclarationsNode):
+    def visit_constant_declarations(self, node: "ASTConstantDeclarationsNode"):
         """
         Visit AST constant declarations node.
 
@@ -183,7 +183,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_attributes(self, node: ASTAttributesNode):
+    def visit_attributes(self, node: "ASTAttributesNode"):
         """
         Visit AST attributes node.
 
@@ -192,7 +192,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_attribute_sections(self, node: ASTAttributeSectionsNode):
+    def visit_attribute_sections(self, node: "ASTAttributeSectionsNode"):
         """
         Visit AST attribute sections node.
 
@@ -201,7 +201,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_constraints_clauses(self, node: ASTConstraintsClausesNode):
+    def visit_constraints_clauses(self, node: "ASTConstraintsClausesNode"):
         """
         Visit AST constraints clauses node.
 
@@ -210,7 +210,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_multiples(node)
 
-    def visit_constraints(self, node: ASTConstraintsNode):
+    def visit_constraints(self, node: "ASTConstraintsNode"):
         """
         Visit AST constraints  node.
 
@@ -223,7 +223,7 @@ class ASTVisitor(GraphVisitor):
 
     # region Statements
 
-    def visit_statement(self, node: ASTStatementNode):
+    def visit_statement(self, node: "ASTStatementNode"):
         """
         Visit AST statement node.
 
@@ -385,7 +385,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_try_statement(self, node: ASTTryStatementNode):
+    def visit_try_statement(self, node: "ASTTryStatementNode"):
         """
         Visit AST try statement node.
 
@@ -421,7 +421,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_namespace_declaration(self, node: ASTNamespaceDeclarationNode):
+    def visit_namespace_declaration(self, node: "ASTNamespaceDeclarationNode"):
         """
         Visit AST namespace declaration node.
 
@@ -430,7 +430,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_switch_statement(self, node: ASTSwitchStatementNode):
+    def visit_switch_statement(self, node: "ASTSwitchStatementNode"):
         """
         Visit AST switch statement node.
 
@@ -439,7 +439,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_jump_statement(self, node: ASTJumpStatementNode):
+    def visit_jump_statement(self, node: "ASTJumpStatementNode"):
         """
         Visit AST jump statement node.
 
@@ -448,7 +448,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_lock_statement(self, node: ASTLockStatementNode):
+    def visit_lock_statement(self, node: "ASTLockStatementNode"):
         """
         Visit AST lock statement node.
 
@@ -457,7 +457,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_extern_alias_directive(self, node: ASTExternAliasDirectiveNode):
+    def visit_extern_alias_directive(self, node: "ASTExternAliasDirectiveNode"):
         """
         Visit AST extern alias directive node.
 
@@ -466,7 +466,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_statement(node)
 
-    def visit_constant_declaration(self, node: ASTConstantDeclarationNode):
+    def visit_constant_declaration(self, node: "ASTConstantDeclarationNode"):
         """
         Visit AST constant declaration node.
 
@@ -495,7 +495,7 @@ class ASTVisitor(GraphVisitor):
 
     # region Definitions
 
-    def visit_definition(self, node: ASTDefinitionNode):
+    def visit_definition(self, node: "ASTDefinitionNode"):
         """
         Visit AST definition node.
 
@@ -504,7 +504,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_event_definition(self, node: ASTEventDefinitionNode):
+    def visit_event_definition(self, node: "ASTEventDefinitionNode"):
         """
         Visit AST event definition node.
 
@@ -513,7 +513,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_conversion_operator_definition(self, node: ASTConversionOperatorDefinitionNode):
+    def visit_conversion_operator_definition(self, node: "ASTConversionOperatorDefinitionNode"):
         """
         Visit AST conversion operator definition node.
 
@@ -522,7 +522,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_constructor_definition(self, node: ASTConstructorDefinitionNode):
+    def visit_constructor_definition(self, node: "ASTConstructorDefinitionNode"):
         """
         Visit AST constructor definition node.
 
@@ -531,7 +531,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_destructor_definition(self, node: ASTDestructorDefinitionNode):
+    def visit_destructor_definition(self, node: "ASTDestructorDefinitionNode"):
         """
         Visit AST destructor definition node.
 
@@ -540,7 +540,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_accessor_definition(self, node: ASTAccessorDefinitionNode):
+    def visit_accessor_definition(self, node: "ASTAccessorDefinitionNode"):
         """
         Visit AST accessor definition node.
 
@@ -549,7 +549,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_struct_definition(self, node: ASTStructDefinitionNode):
+    def visit_struct_definition(self, node: "ASTStructDefinitionNode"):
         """
         Visit AST struct definition node.
 
@@ -558,7 +558,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_interface_definition(self, node: ASTInterfaceDefinitionNode):
+    def visit_interface_definition(self, node: "ASTInterfaceDefinitionNode"):
         """
         Visit AST interface definition node.
 
@@ -567,7 +567,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_property_definition(self, node: ASTPropertyDefinitionNode):
+    def visit_property_definition(self, node: "ASTPropertyDefinitionNode"):
         """
         Visit AST property definition node.
 
@@ -576,7 +576,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_enum_definition(self, node: ASTEnumDefinitionNode):
+    def visit_enum_definition(self, node: "ASTEnumDefinitionNode"):
         """
         Visit AST enum definition node.
 
@@ -585,7 +585,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_delegate_definition(self, node: ASTDelegateDefinitionNode):
+    def visit_delegate_definition(self, node: "ASTDelegateDefinitionNode"):
         """
         Visit AST delegate definition node.
 
@@ -594,7 +594,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_indexer_definition(self, node: ASTIndexerDefinitionNode):
+    def visit_indexer_definition(self, node: "ASTIndexerDefinitionNode"):
         """
         Visit AST indexer definition node.
 
@@ -603,7 +603,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_operator_overload_definition(self, node: ASTOperatorOverloadDefinitionNode):
+    def visit_operator_overload_definition(self, node: "ASTOperatorOverloadDefinitionNode"):
         """
         Visit AST operator overload definition node.
 
@@ -612,7 +612,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_fixed_size_buffer_definition(self, node: ASTFixedSizeBufferDefinitionNode):
+    def visit_fixed_size_buffer_definition(self, node: "ASTFixedSizeBufferDefinitionNode"):
         """
         Visit AST fixed size buffer definition node.
 
@@ -906,7 +906,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_conditional_expression(self, node: ASTConditionalExpressionNode):
+    def visit_conditional_expression(self, node: "ASTConditionalExpressionNode"):
         """
         Visit AST conditional expression node.
 
@@ -915,7 +915,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_null_coalescing_expression(self, node: ASTNullCoalescingExpressionNode):
+    def visit_null_coalescing_expression(self, node: "ASTNullCoalescingExpressionNode"):
         """
         Visit AST null coalescing expression node.
 
@@ -924,7 +924,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_type_cast(self, node: ASTTypeCastNode):
+    def visit_type_cast(self, node: "ASTTypeCastNode"):
         """
         Visit AST type cast node.
 
@@ -933,7 +933,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_type(self, node: ASTTypeNode):
+    def visit_type(self, node: "ASTTypeNode"):
         """
         Visit AST type node.
 
@@ -942,7 +942,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_object_creation(self, node: ASTObjectCreationNode):
+    def visit_object_creation(self, node: "ASTObjectCreationNode"):
         """
         Visit AST object creation node.
 
@@ -951,7 +951,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_array_creation(self, node: ASTArrayCreationNode):
+    def visit_array_creation(self, node: "ASTArrayCreationNode"):
         """
         Visit AST array creation node.
 
@@ -960,7 +960,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_initializer(self, node: ASTInitializerNode):
+    def visit_initializer(self, node: "ASTInitializerNode"):
         """
         Visit AST initializer node.
 
@@ -969,7 +969,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_query(self, node: ASTQueryNode):
+    def visit_query(self, node: "ASTQueryNode"):
         """
         Visit AST query node.
 
@@ -978,7 +978,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_from_clause(self, node: ASTFromClauseNode):
+    def visit_from_clause(self, node: "ASTFromClauseNode"):
         """
         Visit AST from clause node.
 
@@ -987,7 +987,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_let_clause(self, node: ASTLetClauseNode):
+    def visit_let_clause(self, node: "ASTLetClauseNode"):
         """
         Visit AST let clause node.
 
@@ -996,7 +996,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_where_clause(self, node: ASTWhereClauseNode):
+    def visit_where_clause(self, node: "ASTWhereClauseNode"):
         """
         Visit AST where clause node.
 
@@ -1005,7 +1005,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_join_clause(self, node: ASTJoinClauseNode):
+    def visit_join_clause(self, node: "ASTJoinClauseNode"):
         """
         Visit AST join clause node.
 
@@ -1014,7 +1014,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_order_by_clause(self, node: ASTOrderByClauseNode):
+    def visit_order_by_clause(self, node: "ASTOrderByClauseNode"):
         """
         Visit AST order by clause node.
 
@@ -1023,7 +1023,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_ordering(self, node: ASTOrderingNode):
+    def visit_ordering(self, node: "ASTOrderingNode"):
         """
         Visit AST ordering node.
 
@@ -1032,7 +1032,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_select_clause(self, node: ASTSelectClauseNode):
+    def visit_select_clause(self, node: "ASTSelectClauseNode"):
         """
         Visit AST select clause node.
 
@@ -1041,7 +1041,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_group_by_clause(self, node: ASTGroupByClauseNode):
+    def visit_group_by_clause(self, node: "ASTGroupByClauseNode"):
         """
         Visit AST group by clause node.
 
@@ -1050,7 +1050,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_into_clause(self, node: ASTIntoClauseNode):
+    def visit_into_clause(self, node: "ASTIntoClauseNode"):
         """
         Visit AST into clause node.
 
@@ -1059,7 +1059,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_label(self, node: ASTLabelNode):
+    def visit_label(self, node: "ASTLabelNode"):
         """
         Visit AST label node.
 
@@ -1068,7 +1068,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_switch_section(self, node: ASTSwitchSectionNode):
+    def visit_switch_section(self, node: "ASTSwitchSectionNode"):
         """
         Visit AST switch section node.
 
@@ -1077,7 +1077,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_case_label(self, node: ASTCaseLabelNode):
+    def visit_case_label(self, node: "ASTCaseLabelNode"):
         """
         Visit AST case label node.
 
@@ -1086,7 +1086,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_default_label(self, node: ASTDefaultLabelNode):
+    def visit_default_label(self, node: "ASTDefaultLabelNode"):
         """
         Visit AST default label node.
 
@@ -1095,7 +1095,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_attribute_section(self, node: ASTAttributeSectionNode):
+    def visit_attribute_section(self, node: "ASTAttributeSectionNode"):
         """
         Visit AST attribute section node.
 
@@ -1104,7 +1104,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_attribute(self, node: ASTAttributeNode):
+    def visit_attribute(self, node: "ASTAttributeNode"):
         """
         Visit AST attribute node.
 
@@ -1113,7 +1113,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_pointer_type(self, node: ASTPointerTypeNode):
+    def visit_pointer_type(self, node: "ASTPointerTypeNode"):
         """
         Visit AST pointer type node.
 
@@ -1122,7 +1122,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_nullable_type(self, node: ASTNullableTypeNode):
+    def visit_nullable_type(self, node: "ASTNullableTypeNode"):
         """
         Visit AST nullable type node.
 
@@ -1131,7 +1131,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_array_type(self, node: ASTArrayTypeNode):
+    def visit_array_type(self, node: "ASTArrayTypeNode"):
         """
         Visit AST array type node.
 
@@ -1140,7 +1140,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_constraints_clause(self, node: ASTConstraintsClauseNode):
+    def visit_constraints_clause(self, node: "ASTConstraintsClauseNode"):
         """
         Visit AST constraints clause node.
 
@@ -1149,7 +1149,7 @@ class ASTVisitor(GraphVisitor):
         """
         return self.visit_children(node)
 
-    def visit_stack_allocation(self, node: ASTStackAllocationNode):
+    def visit_stack_allocation(self, node: "ASTStackAllocationNode"):
         """
         Visit AST stack allocation node.
 

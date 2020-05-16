@@ -1,6 +1,6 @@
-import metricReducer, { initialState, actions } from '../metrics';
+import metricReducer, {actions, initialState} from '../metrics';
 
-const metricExample =   {
+const metricExample = {
     "fileName": null,
     "structures": {
         "controlFlowGraph": null,

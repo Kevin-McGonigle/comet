@@ -1,6 +1,6 @@
 import React from 'react';
 import TreeGraph from '../TreeGraph';
-import { mount } from 'enzyme';
+import {mount} from 'enzyme';
 import "../../../../setupTests"
 
 const initialState = {
@@ -59,6 +59,6 @@ const initialState = {
 };
 
 test('Should render TreeGraph successfully', () => {
-    const component = mount(<TreeGraph tree={initialState} />);
+    const component = mount(<TreeGraph tree={initialState}/>);
     expect(component.html()).toMatchSnapshot();
 });

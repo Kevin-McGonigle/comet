@@ -48,7 +48,7 @@ class CCCalculationVisitor(CFGVisitor):
         :param block: The parent block whose children to visit.
         :type block: CFGBlock
         """
-        for child in block.children:
+        for child in block.children.values():
             child.accept(self)
 
     def visit_block(self, block):

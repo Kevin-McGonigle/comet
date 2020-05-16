@@ -5,21 +5,21 @@ export const createFormData = data => {
     data.forEach(file => {
         formData.append("name", file.name);
         formData.append("size", file.size);
-        formData.append("file_type", file.type);
+        formData.append("file_type", "text/plain");
         formData.append("file", file);
     });
     return formData;
 }
 
-export async function upload_files(data)  {
+export async function upload_files(data) {
     const formData = createFormData(data);
     return await fetch(UPLOAD_URL, {
         method: 'post',
         body: formData
     })
-    .then(r => r.json())
-    .then(data => data)
-    .catch(e => console.log(e));
+        .then(r => console.log(data) || r.json())
+        .then(data => data)
+        .catch(e => console.log(e));
 }
 
 export default upload_files;

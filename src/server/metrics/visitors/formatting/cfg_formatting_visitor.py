@@ -49,8 +49,8 @@ class CFGFormattingVisitor(CFGVisitor):
         """
         results = []
         if block.children:
-            for child in block.children:
-                result = child.accept(self)
+            for child in block.children.values():
+                result = child.accept(self) if child is not None else None
                 if result:
                     if isinstance(result, list):
                         results.extend(result)
@@ -74,7 +74,7 @@ class CFGFormattingVisitor(CFGVisitor):
             self.current_id += 1
 
             self._visited[block] = id_
-        
+
             self._blocks.append({"id": id_})
 
             for child_id in self.visit_children(block):

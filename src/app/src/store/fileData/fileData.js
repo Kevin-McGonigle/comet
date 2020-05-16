@@ -8,7 +8,7 @@ export const SET_SELECTED_FILE = 'SET_SELECTED_FILE';
 
 
 const fileDataReducer = (state = initialState, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case SET_FILE_DATA:
             const files = action.payload;
             return {

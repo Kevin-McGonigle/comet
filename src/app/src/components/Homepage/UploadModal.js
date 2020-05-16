@@ -20,7 +20,6 @@ export const removeFileFromUploadedFiles = (files, name) => {
 
 const UploadModal = props => {
     const {
-        setRedirect,
         fileData,
         alertInfo,
         uploadModal,
@@ -77,7 +76,7 @@ const UploadModal = props => {
                 setFileData(shapedData);
                 setMetrics(data);
                 setAlertSuccess("Uploaded successfully!")
-                history.push('/metrics');
+                history.push("/metrics");
             } else {
                 setAlertDanger("Could not upload, please try again!")
             }

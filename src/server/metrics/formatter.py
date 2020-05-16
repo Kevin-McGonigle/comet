@@ -1,4 +1,4 @@
-from metrics.calculator import CalculatorStub
+from metrics.calculator import Python3CalculatorStub
 from metrics.visitors.formatting.ast_formatting_visitor import ASTFormattingVisitor
 from metrics.visitors.formatting.cfg_formatting_visitor import CFGFormattingVisitor
 from metrics.visitors.formatting.inheritance_tree_formatting_visitor import InheritanceTreeFormattingVisitor
@@ -12,9 +12,9 @@ class Formatter(object):
     """
 
     def __init__(self, file_name: str):
-        self.calculator = CalculatorStub()
+        self.calculator = Python3CalculatorStub()
         self.metric_info = {
-            "fileName": file_name,
+            "fileName": "test.py",
             "structures": {},
             "metrics": {}
         }
@@ -29,7 +29,7 @@ class Formatter(object):
         self.generate_dependency_graph()
         self.generate_ast()
         self.generate_control_flow_graph()
-        # self.generate_class_diagram()
+        self.generate_class_diagram()
 
     def generate_metrics(self):
         self.metric_info["metrics"]["logicalLinesOfCode"] = self.calculator.logical_lines_of_code()

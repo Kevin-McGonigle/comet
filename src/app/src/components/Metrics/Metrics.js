@@ -2,13 +2,13 @@ import React, {useState} from 'react';
 import styles from './Metrics.css';
 import classnames from 'classnames';
 import Toolbar from '../general/Toolbar/Toolbar';
-import {FileDirectoryContainer} from '../general/FileDirectory/FileDirectoryContainer';
+import { FileDirectoryContainer } from '../general/FileDirectory/FileDirectoryContainer';
 import AbstractSyntaxTree from '../general/Charts/AbstractSyntaxTree';
-import {classDiagramData} from '../general/Charts/configs';
+import { classDiagramData } from '../general/Charts/configs';
 import ForceDirectedGraph from '../general/Charts/ForceDirectedGraph';
-import  { browserHistory } from 'react-router';
 
 const cx = args => classnames(styles, args)
+
 
 const tabMapping = {
     "ClassDiagram": "Class Diagram",
@@ -19,8 +19,7 @@ const tabMapping = {
 }
 
 const Metrics = props => {
-    const {fileDirectory, selected, metrics} = props;
-    console.log(metrics)
+    const { fileDirectory, selected, metrics } = props;
     const selectedMetrics = Object.values(metrics).filter(value => value.fileName === selected)[0]
 
     const [tabState, setTabState] = useState({

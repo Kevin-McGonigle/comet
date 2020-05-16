@@ -3,6 +3,7 @@
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: end;
+    overflow: hidden;
 }
 
 .metricTabContainer {

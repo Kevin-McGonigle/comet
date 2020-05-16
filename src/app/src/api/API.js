@@ -17,7 +17,7 @@ export async function upload_files(data) {
         method: 'post',
         body: formData
     })
-        .then(r => r.json())
+        .then(r => console.log(data) || r.json())
         .then(data => data)
         .catch(e => console.log(e));
 }

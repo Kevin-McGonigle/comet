@@ -50,7 +50,7 @@ class CFGFormattingVisitor(CFGVisitor):
         results = []
         if block.children:
             for child in block.children.values():
-                result = child.accept(self)
+                result = child.accept(self) if child is not None else None
                 if result:
                     if isinstance(result, list):
                         results.extend(result)

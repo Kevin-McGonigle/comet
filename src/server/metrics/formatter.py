@@ -95,9 +95,11 @@ class Formatter(object):
                     "returnType": method.return_type
                 }
 
-            formatted_class_diagram["nodes"].append({"id": cls.name, "classArgs": attributes, "classFunctions": methods})
+            formatted_class_diagram["nodes"].append({"id": cls.name, "classArgs": attributes,
+                                                     "classFunctions": methods})
 
             for relationship in cls.relationships:
-                formatted_class_diagram["links"].append({"source": cls.name, "target": relationship.relation.name, "label": str(relationship.type), "value": 1})
+                formatted_class_diagram["links"].append({"source": cls.name, "target": relationship.relation.name,
+                                                         "label": str(relationship.type), "value": 1})
 
         self.metric_info["structures"]["classDiagram"] = formatted_class_diagram

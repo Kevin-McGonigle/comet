@@ -134,7 +134,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
     def visitNamespace_or_type_name(self, ctx: CSharpParser.Namespace_or_type_nameContext):
         children = list(ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
-                                                                  CSharpParser.Type_argument_listContext)))
+                                                                        CSharpParser.Type_argument_listContext)))
 
         members = []
         i = 0

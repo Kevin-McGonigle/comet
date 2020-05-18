@@ -42,7 +42,7 @@ class ASTGenerationVisitor(ParseTreeVisitor):
 
     # region Helpers
     def build_multi(self, sequence: Optional[Sequence[ASTNode]], multi_node: Type[ASTMultiplesNode]) -> Optional[
-        ASTNode]:
+            ASTNode]:
         """
         Build an AST multiples node structure for the supplied sequence.
 

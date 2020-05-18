@@ -145,7 +145,7 @@ class TestKnownClass(TestCase):
 
         known_class.accept(mock_visitor)
 
-        mock_visitor.known_class.assert_called_with(known_class)
+        mock_visitor.visit_known_class.assert_called_with(known_class)
 
 
 class TestUnknownClass(TestCase):
@@ -164,4 +164,4 @@ class TestUnknownClass(TestCase):
 
         unknown_class.accept(mock_visitor)
 
-        mock_visitor.unknown_class.assert_called_with(unknown_class)
+        mock_visitor.visit_unknown_class.assert_called_with(unknown_class)

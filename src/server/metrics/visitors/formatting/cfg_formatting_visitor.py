@@ -40,7 +40,7 @@ class CFGFormattingVisitor(CFGVisitor):
 
         return self._blocks, self._links
 
-    def visit_children(self, block) -> List[str]:
+    def visit_children(self, block) -> List:
         """
         Visit each of a block's children.
 

@@ -101,7 +101,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
     @staticmethod
     def add_to_multi(multi: ASTMultiplesNode, child: ASTNode):
         if isinstance(child, ASTMultiplesNode):
-            for child in child.children:
+            for child in child.children.values():
                 multi.add_child(child)
         elif child:
             multi.add_child(child)
@@ -134,13 +134,13 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
     def visitNamespace_or_type_name(self, ctx: CSharpParser.Namespace_or_type_nameContext):
         children = list(ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
-                                                                  CSharpParser.Type_argument_listContext)))
+                                                                        CSharpParser.Type_argument_listContext)))
 
         members = []
         i = 0
         while i < len(children):
             if isinstance(children[i], CSharpParser.IdentifierContext):
-                if isinstance(children[i + 1], CSharpParser.Type_argument_listContext):
+                if i + 1 < len(children) and isinstance(children[i + 1], CSharpParser.Type_argument_listContext):
                     members.append(ASTTypeNode(children[i].accept(self), children[i + 1].accept(self)))
                     i += 1
                 else:
@@ -213,14 +213,16 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
     def visitArgument(self, ctx: CSharpParser.ArgumentContext):
         value = ctx.expression().accept(self)
 
-        modifiers = ctx.refout()
-        if modifiers:
-            modifiers = [modifiers.getText()]
+        modifiers = []
+        if ctx.REF():
+            modifiers.append(ctx.REF().getText())
+        if ctx.OUT():
+            modifiers.append(ctx.OUT().getText())
 
         if ctx.VAR():
             value = ASTVariableDeclarationNode(value, ASTIdentifierNode(ctx.VAR().getText()))
         elif ctx.type_():
-            value = ASTVariableDeclarationNode(value, ASTIdentifierNode(ctx.type_().accept(self)))
+            value = ASTVariableDeclarationNode(value, ctx.type_().accept(self))
 
         parameter = ctx.identifier()
         if parameter:
@@ -1006,7 +1008,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         modifiers = ctx.all_member_modifiers()
         if modifiers:
-            declared_type.modifiers.extend(modifiers)
+            declared_type.modifiers.extend(modifiers.accept(self))
 
         attributes = ctx.attributes()
         if attributes:
@@ -1037,7 +1039,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return ASTParameterNode(identifier)
 
     def visitClass_base(self, ctx: CSharpParser.Class_baseContext):
-        return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
+        return self.build_multi([ASTArgumentNode(base) for base in self.visitChildren(ctx)], ASTArgumentsNode)
 
     def visitInterface_type_list(self, ctx: CSharpParser.Interface_type_listContext):
         return self.build_multi(self.visitChildren(ctx), ASTArgumentsNode)
@@ -1077,7 +1079,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         modifiers = ctx.all_member_modifiers()
         if modifiers:
-            class_member.modifiers.extend(modifiers)
+            class_member.modifiers.extend(modifiers.accept(self))
 
         attributes = ctx.attributes()
         if attributes:
@@ -1119,11 +1121,11 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         return definition
 
     def visitTyped_member_declaration(self, ctx: CSharpParser.Typed_member_declarationContext):
-        if ctx.getChildCount() == 2:
-            declaration = ctx.getChild(1).accept(self)
+        if ctx.getChildCount() == 4:
+            declaration = ctx.getChild(3).accept(self)
             declaration["name"] = ASTMemberNode(ctx.namespace_or_type_name().accept(self), declaration["name"])
         else:
-            declaration = ctx.getChild(0).accept(self)
+            declaration = ctx.getChild(1).accept(self)
 
         type_ = ctx.type_().accept(self)
         if isinstance(declaration, (ASTIndexerDefinitionNode, ASTFunctionDefinitionNode,
@@ -1539,7 +1541,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         if void:
             return ASTPointerTypeNode(ASTIdentifierNode(void.getText()))
 
-        return self.build_array_or_pointer_type(ctx.getChildren())
+        return self.build_array_or_pointer_type(list(ctx.getChildren()))
 
     def visitFixed_pointer_declarators(self, ctx: CSharpParser.Fixed_pointer_declaratorsContext):
         return self.build_multi(self.visitChildren(ctx), ASTStatementsNode)
@@ -1795,8 +1797,8 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
                                          body=ctx.expression().accept(self))
 
     def visitMethod_member_name(self, ctx: CSharpParser.Method_member_nameContext):
-        children = ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
-                                                                   CSharpParser.Type_argument_listContext))
+        children = list(ctx.getChildren(lambda child: self.filter_child(child, CSharpParser.IdentifierContext,
+                                                                   CSharpParser.Type_argument_listContext)))
 
         members = []
 

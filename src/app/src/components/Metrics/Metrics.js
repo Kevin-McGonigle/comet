@@ -35,7 +35,7 @@ const Metrics = props => {
         tabContent: [
             <ForceDirectedGraph
                 title="Class Diagram"
-                data={classDiagramData}
+                data={selectedMetrics.structures.classDiagram}
                 graphType="classDiagram"
             />,
             <ForceDirectedGraph

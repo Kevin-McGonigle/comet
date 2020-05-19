@@ -485,9 +485,9 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, Python3Visitor):
             "<=": ASTComparisonOperation.LESS_THAN_OR_EQUAL,
             ">=": ASTComparisonOperation.GREATER_THAN_OR_EQUAL,
             "in": ASTComparisonOperation.IN,
-            "not in": [ASTLogicalOperation.NOT, ASTComparisonOperation.IN],
+            "not in": [ASTUnaryOperation.LOGICAL_NEGATION, ASTComparisonOperation.IN],
             "is": ASTComparisonOperation.IS,
-            "is not": [ASTLogicalOperation.NOT, ASTComparisonOperation.IS]
+            "is not": [ASTUnaryOperation.LOGICAL_NEGATION, ASTComparisonOperation.IS]
         }[ctx.getText()]
 
     def visitStar_expr(self, ctx: Python3Parser.Star_exprContext):

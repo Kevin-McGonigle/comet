@@ -19,10 +19,16 @@ class ECCalculationVisitor(DependencyGraphVisitor):
 
     def visit(self, graph) -> Dict[Class, int]:
         self._visited = []
-        self.efferent_couplings = {cls: 0 for cls in graph.classes}
-
+        self.efferent_couplings = {}
         for cls in graph.classes:
-            cls.accept(self)
+            for node in cls:
+                self.efferent_couplings[node] = 0
+
+        copy = {}
+        while copy != self.efferent_couplings:
+            copy = self.efferent_couplings.copy()
+            for cls in copy:
+                cls.accept(self)
 
         return self.efferent_couplings
 

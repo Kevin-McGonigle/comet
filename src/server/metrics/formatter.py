@@ -54,11 +54,12 @@ class Formatter(object):
             "nodes": [],
             "links": [],
         }
-        for node in self.calculator.dependency_graph().classes:
-            dependency_graph_graph_data["nodes"].append({"id": node.name})
+        for cls in self.calculator.dependency_graph().classes:
+            for node in cls:
+                dependency_graph_graph_data["nodes"].append({"id": node.name})
 
-            for dependency in node.dependencies:
-                dependency_graph_graph_data["links"].append({"source": dependency.name, "target": node.name})
+                for dependency in node.dependencies:
+                    dependency_graph_graph_data["links"].append({"source": node.name, "target": dependency.name})
 
         self.metric_info["structures"]["dependencyGraph"] = dependency_graph_graph_data
 
@@ -87,7 +88,7 @@ class Formatter(object):
 
             for method in cls.methods:
                 parameters = {}
-                for parameter in method.parameters:
+                for parameter in method.parameters if isinstance(method.parameters, list) else [method.parameters]:
                     parameters[parameter.name] = parameter.type if parameter.type is not None else ""
 
                 methods[method.name] = {
@@ -95,9 +96,11 @@ class Formatter(object):
                     "returnType": method.return_type
                 }
 
-            formatted_class_diagram["nodes"].append({"id": cls.name, "classArgs": attributes, "classFunctions": methods})
+            formatted_class_diagram["nodes"].append({"id": cls.name, "classArgs": attributes,
+                                                     "classFunctions": methods})
 
             for relationship in cls.relationships:
-                formatted_class_diagram["links"].append({"source": cls.name, "target": relationship.relation.name, "label": str(relationship.type), "value": 1})
+                formatted_class_diagram["links"].append({"source": cls.name, "target": relationship.relation.name,
+                                                         "label": relationship.type.value, "value": 1})
 
         self.metric_info["structures"]["classDiagram"] = formatted_class_diagram

@@ -20,10 +20,16 @@ class ACCalculationVisitor(DependencyGraphVisitor):
 
     def visit(self, graph) -> Dict[Class, int]:
         self._visited = []
-        self.afferent_couplings = {cls: 0 for cls in graph.classes}
-
+        self.afferent_couplings = {}
         for cls in graph.classes:
-            cls.accept(self)
+            for node in cls:
+                self.afferent_couplings[node] = 0
+
+        copy = {}
+        while copy != self.afferent_couplings:
+            copy = self.afferent_couplings.copy()
+            for cls in copy:
+                cls.accept(self)
 
         return self.afferent_couplings
 

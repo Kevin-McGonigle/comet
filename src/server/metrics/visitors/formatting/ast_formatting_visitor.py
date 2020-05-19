@@ -209,3 +209,177 @@ class ASTFormattingVisitor(ASTVisitor):
 
     def visit_decorator(self, node: "ASTDecoratorNode"):
         return {"name": "Decorator", "children": self.visit_children(node)}
+
+    def visit_switch_sections(self, node: "ASTSwitchSectionsNode"):
+        return {"name": "Switch sections", "children": self.visit_children(node)}
+
+    def visit_switch_labels(self, node: "ASTSwitchLabelsNode"):
+        return {"name": "Switch labels", "children": self.visit_children(node)}
+
+    def visit_variable_declarations(self, node: "ASTVariableDeclarationsNode"):
+        return {"name": "Variable declarations", "children": self.visit_children(node)}
+
+    def visit_constant_declarations(self, node: "ASTConstantDeclarationsNode"):
+        return {"name": "Constant declarations", "children": self.visit_children(node)}
+
+    def visit_attributes(self, node: "ASTAttributesNode"):
+        return {"name": "Attributes", "children": self.visit_children(node)}
+
+    def visit_attribute_sections(self, node: "ASTAttributeSectionsNode"):
+        return {"name": "Attribute", "children": self.visit_children(node)}
+
+    def visit_constraints_clauses(self, node: "ASTConstraintsClausesNode"):
+        return {"name": "Constraints clauses", "children": self.visit_children(node)}
+
+    def visit_constraints(self, node: "ASTConstraintsNode"):
+        return {"name": "Constraints", "children": self.visit_children(node)}
+
+    def visit_namespace_declaration(self, node: "ASTNamespaceDeclarationNode"):
+        return {"name": "Namespace declaration", "children": self.visit_children(node)}
+
+    def visit_switch_statement(self, node: "ASTSwitchStatementNode"):
+        return {"name": "Switch statement", "children": self.visit_children(node)}
+
+    def visit_jump_statement(self, node: "ASTJumpStatementNode"):
+        return {"name": "Jump statement", "children": self.visit_children(node)}
+
+    def visit_lock_statement(self, node: "ASTLockStatementNode"):
+        return {"name": "Lock statement", "children": self.visit_children(node)}
+
+    def visit_extern_alias_directive(self, node: "ASTExternAliasDirectiveNode"):
+        return {"name": "Extern aliasd directive", "children": self.visit_children(node)}
+
+    def visit_constant_declaration(self, node: "ASTConstantDeclarationNode"):
+        return {"name": "Constant declaration", "children": self.visit_children(node)}
+
+    def visit_definition(self, node: "ASTDefinitionNode"):
+        return {"name": "Definition", "children": self.visit_children(node)}
+
+    def visit_event_definition(self, node: "ASTEventDefinitionNode"):
+        return {"name": "Event definition", "children": self.visit_children(node)}
+
+    def visit_conversion_operator_definition(self, node: "ASTConversionOperatorDefinitionNode"):
+        return {"name": "Conversion operator definition", "children": self.visit_children(node)}
+
+    def visit_constructor_definition(self, node: "ASTConstructorDefinitionNode"):
+        return {"name": "Constructor definition", "children": self.visit_children(node)}
+
+    def visit_destructor_definition(self, node: "ASTDestructorDefinitionNode"):
+        return {"name": "Destructor definition", "children": self.visit_children(node)}
+
+    def visit_accessor_definition(self, node: "ASTAccessorDefinitionNode"):
+        return {"name": "Accessor definition", "children": self.visit_children(node)}
+
+    def visit_struct_definition(self, node: "ASTStructDefinitionNode"):
+        return {"name": "Struct definition", "children": self.visit_children(node)}
+
+    def visit_interface_definition(self, node: "ASTInterfaceDefinitionNode"):
+        return {"name": "Interface definition", "children": self.visit_children(node)}
+
+    def visit_property_definition(self, node: "ASTPropertyDefinitionNode"):
+        return {"name": "Property definition", "children": self.visit_children(node)}
+
+    def visit_enum_definition(self, node: "ASTEnumDefinitionNode"):
+        return {"name": "Enum definition", "children": self.visit_children(node)}
+
+    def visit_delegate_definition(self, node: "ASTDelegateDefinitionNode"):
+        return {"name": "Delegate definition", "children": self.visit_children(node)}
+
+    def visit_indexer_definition(self, node: "ASTIndexerDefinitionNode"):
+        return {"name": "Indexer definition", "children": self.visit_children(node)}
+
+    def visit_operator_overload_definition(self, node: "ASTOperatorOverloadDefinitionNode"):
+        return {"name": "Operator overload definition", "children": self.visit_children(node)}
+
+    def visit_fixed_size_buffer_definition(self, node: "ASTFixedSizeBufferDefinitionNode"):
+        return {"name": "Fixed size buffer definition", "children": self.visit_children(node)}
+
+    def visit_positional_only_parameter(self, node: "ASTPositionalOnlyParameterNode"):
+        return {"name": "Positional-only parameter", "children": self.visit_children(node)}
+
+    def visit_keyword_only_parameter(self, node: "ASTKeywordOnlyParameterNode"):
+        return {"name": "Keyword-only parameter", "children": self.visit_children(node)}
+
+    def visit_conditional_expression(self, node: "ASTConditionalExpressionNode"):
+        return {"name": "Conditional expression", "children": self.visit_children(node)}
+
+    def visit_null_coalescing_expression(self, node: "ASTNullCoalescingExpressionNode"):
+        return {"name": "Null-coalescing expression", "children": self.visit_children(node)}
+
+    def visit_type_cast(self, node: "ASTTypeCastNode"):
+        return {"name": "Type case", "children": self.visit_children(node)}
+
+    def visit_type(self, node: "ASTTypeNode"):
+        return {"name": "Type", "children": self.visit_children(node)}
+
+    def visit_object_creation(self, node: "ASTObjectCreationNode"):
+        return {"name": "Object creation", "children": self.visit_children(node)}
+
+    def visit_array_creation(self, node: "ASTArrayCreationNode"):
+        return {"name": "Array creation", "children": self.visit_children(node)}
+
+    def visit_initializer(self, node: "ASTInitializerNode"):
+        return {"name": "Initializer", "children": self.visit_children(node)}
+
+    def visit_query(self, node: "ASTQueryNode"):
+        return {"name": "Query", "children": self.visit_children(node)}
+
+    def visit_from_clause(self, node: "ASTFromClauseNode"):
+        return {"name": "From clause", "children": self.visit_children(node)}
+
+    def visit_let_clause(self, node: "ASTLetClauseNode"):
+        return {"name": "Let clause", "children": self.visit_children(node)}
+
+    def visit_where_clause(self, node: "ASTWhereClauseNode"):
+        return {"name": "Where clause", "children": self.visit_children(node)}
+
+    def visit_join_clause(self, node: "ASTJoinClauseNode"):
+        return {"name": "Join clause", "children": self.visit_children(node)}
+
+    def visit_order_by_clause(self, node: "ASTOrderByClauseNode"):
+        return {"name": "Order-by clause", "children": self.visit_children(node)}
+
+    def visit_ordering(self, node: "ASTOrderingNode"):
+        return {"name": "Ordering", "children": self.visit_children(node)}
+
+    def visit_select_clause(self, node: "ASTSelectClauseNode"):
+        return {"name": "Select clause", "children": self.visit_children(node)}
+
+    def visit_group_by_clause(self, node: "ASTGroupByClauseNode"):
+        return {"name": "Group-by clause", "children": self.visit_children(node)}
+
+    def visit_into_clause(self, node: "ASTIntoClauseNode"):
+        return {"name": "Into clause", "children": self.visit_children(node)}
+
+    def visit_label(self, node: "ASTLabelNode"):
+        return {"name": "Label", "children": self.visit_children(node)}
+
+    def visit_switch_section(self, node: "ASTSwitchSectionNode"):
+        return {"name": "Switch section", "children": self.visit_children(node)}
+
+    def visit_case_label(self, node: "ASTCaseLabelNode"):
+        return {"name": "Case label", "children": self.visit_children(node)}
+
+    def visit_default_label(self, node: "ASTDefaultLabelNode"):
+        return {"name": "Default label", "children": self.visit_children(node)}
+
+    def visit_attribute_section(self, node: "ASTAttributeSectionNode"):
+        return {"name": "Attribute section", "children": self.visit_children(node)}
+
+    def visit_attribute(self, node: "ASTAttributeNode"):
+        return {"name": "Attribute", "children": self.visit_children(node)}
+
+    def visit_pointer_type(self, node: "ASTPointerTypeNode"):
+        return {"name": "Pointer type", "children": self.visit_children(node)}
+
+    def visit_nullable_type(self, node: "ASTNullableTypeNode"):
+        return {"name": "Nullable type", "children": self.visit_children(node)}
+
+    def visit_array_type(self, node: "ASTArrayTypeNode"):
+        return {"name": "Array type", "children": self.visit_children(node)}
+
+    def visit_constraints_clause(self, node: "ASTConstraintsClauseNode"):
+        return {"name": "Constraints clause", "children": self.visit_children(node)}
+
+    def visit_stack_allocation(self, node: "ASTStackAllocationNode"):
+        return {"name": "Stack allocation", "children": self.visit_children(node)}

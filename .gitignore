@@ -29,3 +29,17 @@ __pycache__/
 
 # Ignore temporary calculator stubs
 /src/server/metrics/calculator_stubs.py
+
+# Ignore ANTLR generated files
+/src/server/metrics/parsers/python3/base/
+/src/server/metrics/parsers/csharp/base/
+
+# Preserve __init__.py files in parser bases
+!/src/server/metrics/parsers/python3/base/__init__.py
+!/src/server/metrics/parsers/csharp/base/__init__.py
+
+# Preserve modified ANTLR files
+!/src/server/metrics/parsers/csharp/base/ModifiedCSharpLexer.py
+
+# Ignore Django database
+/src/server/db.sqlite3

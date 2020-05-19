@@ -33,7 +33,13 @@ class ASTGenerationVisitor(ParseTreeVisitor):
         return super().defaultResult()
 
     def aggregateResult(self, aggregate, next_result):
-        return aggregate + [next_result] if next_result is not None else aggregate
+        if not next_result:
+            return aggregate
+        
+        if isinstance(next_result, list):
+            return aggregate + next_result
+
+        return aggregate + [next_result]
 
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)
@@ -42,7 +48,7 @@ class ASTGenerationVisitor(ParseTreeVisitor):
 
     # region Helpers
     def build_multi(self, sequence: Optional[Sequence[ASTNode]], multi_node: Type[ASTMultiplesNode]) -> Optional[
-        ASTNode]:
+            ASTNode]:
         """
         Build an AST multiples node structure for the supplied sequence.
 
@@ -167,7 +173,7 @@ class ASTGenerationVisitor(ParseTreeVisitor):
         for context in contexts:
             if isinstance(context, int) and isinstance(child, TerminalNodeImpl) and child.symbol.type == context:
                 return True
-            elif isinstance(context, ParserRuleContext) and isinstance(child, context):
+            elif isinstance(context, type) and issubclass(context, ParserRuleContext) and isinstance(child, context):
                 return True
 
         return False

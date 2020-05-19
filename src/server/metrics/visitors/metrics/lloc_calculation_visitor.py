@@ -16,7 +16,7 @@ class LLOCCalculationVisitor(ASTVisitor):
         :param node: The parent AST node whose children to visit.
         :return: The number of statements in the node's subtree.
         """
-        return sum([child.accept(self) for child in node.children])
+        return sum([child.accept(self) for child in node.children.values() if child is not None])
 
     @staticmethod
     def visit_identifier(node) -> int:

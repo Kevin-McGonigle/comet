@@ -167,7 +167,7 @@ class ASTGenerationVisitor(ParseTreeVisitor):
         for context in contexts:
             if isinstance(context, int) and isinstance(child, TerminalNodeImpl) and child.symbol.type == context:
                 return True
-            elif isinstance(context, ParserRuleContext) and isinstance(child, context):
+            elif isinstance(context, type) and issubclass(context, ParserRuleContext) and isinstance(child, context):
                 return True
 
         return False

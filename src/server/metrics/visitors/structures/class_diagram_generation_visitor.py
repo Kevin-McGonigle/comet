@@ -127,10 +127,10 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def visit_class_definition(self, node):
         name = node['name'].accept(self)
 
-        superclasses = node['bases'].accept(self) if node['bases'] else None
-        interfaces = node['interfaces'].accept(self) if node['interfaces'] else None
+        superclasses = node['bases'].accept(self) if 'bases' in node and node['bases'] else None
+        interfaces = node['interfaces'].accept(self) if 'interfaces' in node and node['interfaces'] else None
 
-        if node['body']:
+        if 'body' in node and node['body']:
             body = node['body'].accept(self)
 
             attributes = [attribute for attribute in body if isinstance(attribute, Attribute)]

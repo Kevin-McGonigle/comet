@@ -1,8 +1,6 @@
+from metrics.structures.ast import *
 from metrics.structures.dependency_graph import *
 from metrics.visitors.base.ast_visitor import ASTVisitor
-
-if TYPE_CHECKING:
-    from metrics.structures.ast import *
 
 
 class DependencyGraphGenerationVisitor(ASTVisitor):
@@ -58,6 +56,7 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         return None
 
     def visit(self, ast):
+        ast.accept(self)
         return DependencyGraph(self.base, list(self.classes.values()))
 
     def visit_children(self, node):
@@ -71,8 +70,8 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         """
         child_results = []
         for child in node.children.values():
-            child_result = child.accept(self)
-            if child_results:
+            child_result = child.accept(self) if child is not None else None
+            if child_result:
                 if isinstance(child_result, list):
                     child_results += child_result
                 elif child_result:
@@ -96,6 +95,8 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         superclasses = [self.base]
         if node['bases']:
             superclasses = node['bases'].accept(self)
+            if not isinstance(superclasses, list):
+                superclasses = [superclasses]
 
         # Dependencies inside the class
         scope_tmp = self.scope
@@ -106,7 +107,10 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         self.scope = scope_tmp
 
         # Create class
-        self.classes[name] = Class(name, list(set(superclasses + inner_dependencies)))
+        if name in self.classes:
+            self.classes[name].append(Class(name, list(set(superclasses + inner_dependencies))))
+        else:
+            self.classes[name] = [Class(name, list(set(superclasses + inner_dependencies)))]
 
     def visit_argument(self, node):
         return self.get_dependency(node['value'])

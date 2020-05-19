@@ -54,11 +54,12 @@ class Formatter(object):
             "nodes": [],
             "links": [],
         }
-        for node in self.calculator.dependency_graph().classes:
-            dependency_graph_graph_data["nodes"].append({"id": node.name})
+        for cls in self.calculator.dependency_graph().classes:
+            for node in cls:
+                dependency_graph_graph_data["nodes"].append({"id": node.name})
 
-            for dependency in node.dependencies:
-                dependency_graph_graph_data["links"].append({"source": dependency.name, "target": node.name})
+                for dependency in node.dependencies:
+                    dependency_graph_graph_data["links"].append({"source": dependency.name, "target": node.name})
 
         self.metric_info["structures"]["dependencyGraph"] = dependency_graph_graph_data
 

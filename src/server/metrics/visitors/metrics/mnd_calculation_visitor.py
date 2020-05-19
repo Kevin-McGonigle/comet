@@ -26,7 +26,7 @@ class MNDCalculationVisitor(CFGVisitor):
 
         self._visited.append(block)
 
-        if block["exit_block"]:
+        if "exit_block" in block and block["exit_block"]:
             exit_depth = block["exit_block"].accept(self)
         else:
             exit_depth = 1
@@ -53,12 +53,12 @@ class MNDCalculationVisitor(CFGVisitor):
 
         self._visited.append(block)
 
-        if block["exit_block"]:
+        if "exit_block" in block and block["exit_block"]:
             exit_depth = block["exit_block"].accept(self)
         else:
             exit_depth = 1
 
-        if block["case_blocks"]:
+        if "case_blocks" in block and block["case_blocks"]:
             cases_depth = 1 + max([case.accept(self) for case in block["case_blocks"]])
         else:
             cases_depth = 2
@@ -71,14 +71,17 @@ class MNDCalculationVisitor(CFGVisitor):
 
         self._visited.append(block)
 
-        if block["exit_block"]:
+        if "exit_block" in block and block["exit_block"]:
             exit_depth = block["exit_block"].accept(self)
         else:
             exit_depth = 1
 
-        success_depth = 1 + block["success_block"].accept(self)
+        if "success_block" in block and block["success_block"]:
+            success_depth = 1 + block["success_block"].accept(self)
+        else:
+            success_depth = 1
 
-        if isinstance(block, (CFGIfElseBlock, CFGLoopElseBlock)):
+        if "fail_block" in block and block["fail_block"]:
             return max(exit_depth, success_depth, 1 + block["fail_block"].accept(self))
 
         return max(exit_depth, success_depth)

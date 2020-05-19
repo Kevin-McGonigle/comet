@@ -47,7 +47,7 @@ class CFGGenerationVisitor(ASTVisitor):
         :param ast: The AST to visit.
         :return: The generated CFG.
         """
-        return CFG(super().visit(ast))
+        return CFG(CFGBlock({"exit_block": super().visit(ast)}))
 
     def visit_children(self, node) -> Optional[CFGBlock]:
         """
@@ -58,7 +58,7 @@ class CFGGenerationVisitor(ASTVisitor):
         """
         sequence = []
         for child in node.children.values():
-            child_result = child.accept(self)
+            child_result = child.accept(self) if child is not None else None
             if isinstance(child_result, CFGBlock):
                 sequence.append(child_result)
 
@@ -95,10 +95,10 @@ class CFGGenerationVisitor(ASTVisitor):
         :param node: The AST if statement node to visit.
         :return: The corresponding CFG block.
         """
-        if node['else_body'] is not None:
-            return CFGIfElseBlock(node['body'].accept(self), node['else'].accept(self))
+        if node["else_body"] is not None:
+            return CFGIfElseBlock(node["body"].accept(self), node["else_body"].accept(self))
 
-        return CFGIfBlock(node['body'].accept(self))
+        return CFGIfBlock(node["body"].accept(self))
 
     def visit_loop_statement(self, node) -> CFGLoopBlock:
         """
@@ -108,12 +108,13 @@ class CFGGenerationVisitor(ASTVisitor):
         """
         outer_loop_scope = self.loop_scope
 
-        if node['else_body'] is not None:
-            self.loop_scope = loop = CFGLoopElseBlock(fail_block=node['else_body'])
+        if node["else_body"] is not None:
+            self.loop_scope = loop = CFGLoopElseBlock(fail_block=node["else_body"].accept(self))
         else:
             self.loop_scope = loop = CFGLoopBlock()
 
-        loop.success_block = node['body'].accept(self)
+        loop["success_block"] = node["body"].accept(self)
+        loop["success_block"].append(loop)
 
         self.loop_scope = outer_loop_scope
 

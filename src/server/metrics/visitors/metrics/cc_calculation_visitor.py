@@ -49,7 +49,8 @@ class CCCalculationVisitor(CFGVisitor):
         :type block: CFGBlock
         """
         for child in block.children.values():
-            child.accept(self)
+            if child is not None:
+                child.accept(self)
 
     def visit_block(self, block):
         """

@@ -126,8 +126,13 @@ class CFGIfBlock(CFGBlock):
         :param success_block: The block to visit if the condition is true.
         :param exit_block: The block following the if statement.
         """
-        if success_block and exit_block:
-            success_block.append(exit_block)
+        if success_block is None:
+            success_block = CFGBlock()
+
+        if exit_block is None:
+            exit_block = CFGBlock()
+
+        success_block.append(exit_block)
 
         super().__init__({"success_block": success_block, "exit_block": exit_block})
 
@@ -157,11 +162,17 @@ class CFGIfElseBlock(CFGBlock):
         :param fail_block: The block to visit if the condition is false.
         :param exit_block: The block following the if-else statement.
         """
-        if exit_block:
-            if success_block:
-                success_block.append(exit_block)
-            if fail_block:
-                fail_block.append(exit_block)
+        if success_block is None:
+            success_block = CFGBlock()
+
+        if fail_block is None:
+            fail_block = CFGBlock()
+
+        if exit_block is None:
+            exit_block = CFGBlock()
+
+        success_block.append(exit_block)
+        fail_block.append(exit_block)
 
         super().__init__({"success_block": success_block, "fail_block": fail_block})
 
@@ -170,6 +181,14 @@ class CFGIfElseBlock(CFGBlock):
 
     def __repr__(self):
         return f"CFGIfElseBlock(success_block={self['success_block']}, fail_block={self['fail_block']})"
+
+    def append(self, block):
+        """
+        Append a block to the if-else's success block.
+
+        :param block: The block to append.
+        """
+        self["success_block"].append(block)
 
     def accept(self, visitor: "CFGVisitor"):
         """
@@ -189,8 +208,13 @@ class CFGLoopBlock(CFGBlock):
         :param success_block: The block to visit if the condition is true.
         :param exit_block: The block to following the while statement.
         """
-        if success_block:
-            success_block.append(self)
+        if success_block is None:
+            success_block = CFGBlock()
+
+        if exit_block is None:
+            exit_block = CFGBlock()
+
+        success_block.append(self)
 
         super().__init__({"success_block": success_block, "exit_block": exit_block})
 
@@ -220,11 +244,17 @@ class CFGLoopElseBlock(CFGBlock):
         :param fail_block: The block to visit if the condition is false.
         :param exit_block: The block following the while-else statement.
         """
-        if success_block:
-            success_block.append(self)
+        if success_block is None:
+            success_block = CFGBlock()
 
-        if fail_block and exit_block:
-            fail_block.append(exit_block)
+        if fail_block is None:
+            fail_block = CFGBlock()
+
+        if exit_block is None:
+            exit_block = CFGBlock()
+
+        success_block.append(self)
+        fail_block.append(exit_block)
 
         super().__init__({"success_block": success_block, "fail_block": fail_block})
 
@@ -233,6 +263,14 @@ class CFGLoopElseBlock(CFGBlock):
 
     def __repr__(self):
         return f"CFGLoopElseBlock(success_block={self['success_block']}, fail_block={self['fail_block']})"
+
+    def append(self, block):
+        """
+        Append a block to the loop-else's fail block.
+
+        :param block: The block to append.
+        """
+        self["fail_block"].append(block)
 
     def accept(self, visitor: "CFGVisitor"):
         """
@@ -252,17 +290,42 @@ class CFGSwitchBlock(CFGBlock):
         :param case_blocks: The blocks representing each respective case.
         :param exit_block: The block following the switch statement.
         """
+        if case_blocks is None:
+            case_blocks = []
+
+        if exit_block is None:
+            exit_block = []
+
         if case_blocks:
             for case_block in case_blocks:
                 case_block.append(exit_block)
-
-        super().__init__({"case_blocks": case_blocks})
+            super().__init__({"case_blocks": case_blocks})
+        else:
+            super().__init__({"exit_block": exit_block})
 
     def __str__(self):
         return f"Switch block.\nCase blocks: {self['case_blocks']}"
 
     def __repr__(self):
         return f"CFGSwitchBlock(case_blocks={self['case_blocks']})"
+
+    def append(self, block: Optional[CFGBlock]) -> None:
+        """
+        Append a block to the switch block's firsst case block, if one exists. Otherwise, append to
+        the exit block.
+
+        :param block: The block to append.
+        """
+        if "case_blocks" in self:
+            for case_block in self["case_blocks"]:
+                if "exit_block" in case_block and case_block["exit_block"]:
+                    case_block.append(block)
+                    return
+
+            for case_block in self["case_blocks"]:
+                case_block["exit_block"] = block
+
+        super().append(block)
 
     def accept(self, visitor: "CFGVisitor"):
         """

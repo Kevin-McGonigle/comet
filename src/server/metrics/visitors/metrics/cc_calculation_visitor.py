@@ -63,6 +63,6 @@ class CCCalculationVisitor(CFGVisitor):
             self._visited.append(block)
 
             self._node_count += 1
-            self._edge_count += len(block.children)
+            self._edge_count += len([child for child in block.children.values() if child is not None])
 
             self.visit_children(block)

@@ -145,8 +145,10 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         # Method parameters
         parameters = None
         if node['parameters']:
-            parameters = [parameter for parameter in node['parameters'].accept(self) if
-                          isinstance(parameter, (Parameter, PositionalArgumentsParameter, KeywordArgumentsParameter))]
+            if isinstance(node['parameters'], ASTMultiplesNode):
+                parameters = self.visit_children(node['parameters'])
+            else:
+                parameters = [node["parameters"].accept(self)]
 
         # Method return type
         return_type = None
@@ -157,7 +159,8 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         tmp = self.scope
         self.scope = f"{self.scope}.{name}.<locals>" if self.scope else f"{name}.<locals>"
 
-        node['body'].accept(self)
+        if node["body"]:
+            node['body'].accept(self)
 
         self.scope = tmp
 

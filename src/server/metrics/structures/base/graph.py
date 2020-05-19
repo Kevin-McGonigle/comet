@@ -63,9 +63,9 @@ class Node(object):
         if isinstance(child, Node) and child not in self.children:
             self.children.append(child)
         elif not isinstance(child, Node):
-            raise TypeError(f"Node.remove_child(child): child is not Node (child={child}, type={type(child)}).")
+            raise TypeError(f"Node.add_child(child): child is not Node (child={child}, type={type(child)}).")
         else:
-            raise ValueError(f"Node.remove_child(child): supplied child is already a child of the parent node.")
+            raise ValueError(f"Node.add_child(child): supplied child is already a child of the parent node.")
 
     def remove_child(self, child: "Node") -> None:
         """

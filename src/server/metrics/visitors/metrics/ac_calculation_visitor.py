@@ -25,8 +25,11 @@ class ACCalculationVisitor(DependencyGraphVisitor):
             for node in cls:
                 self.afferent_couplings[node] = 0
 
-        for cls in self.afferent_couplings:
-            cls.accept(self)
+        copy = {}
+        while copy != self.afferent_couplings:
+            copy = self.afferent_couplings.copy()
+            for cls in copy:
+                cls.accept(self)
 
         return self.afferent_couplings
 

@@ -59,7 +59,7 @@ class Formatter(object):
                 dependency_graph_graph_data["nodes"].append({"id": node.name})
 
                 for dependency in node.dependencies:
-                    dependency_graph_graph_data["links"].append({"source": dependency.name, "target": node.name})
+                    dependency_graph_graph_data["links"].append({"source": node.name, "target": dependency.name})
 
         self.metric_info["structures"]["dependencyGraph"] = dependency_graph_graph_data
 
@@ -88,7 +88,7 @@ class Formatter(object):
 
             for method in cls.methods:
                 parameters = {}
-                for parameter in method.parameters:
+                for parameter in method.parameters if isinstance(method.parameters, list) else [method.parameters]:
                     parameters[parameter.name] = parameter.type if parameter.type is not None else ""
 
                 methods[method.name] = {

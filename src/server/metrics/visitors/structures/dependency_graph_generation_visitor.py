@@ -130,7 +130,10 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
 
         dependencies = []
         if node['parameters']:
-            dependencies = [class_ for class_ in node['parameters'].accept(self) if isinstance(class_, Class)]
+            parameters = node["parameters"].accept(self)
+            if not isinstance(parameters, list):
+                parameters = [parameters]
+            dependencies = [class_ for class_ in parameters if isinstance(class_, Class)]
 
         return_dependency = self.get_dependency(node['return_type'])
         if return_dependency:
@@ -139,7 +142,8 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
         scope_tmp = self.scope
         self.scope = f"{self.scope}.{name}.<locals>" if self.scope else f"{name}.<locals>"
 
-        node['body'].accept(self)
+        if node["body"]:
+            node['body'].accept(self)
 
         self.scope = scope_tmp
 
@@ -219,8 +223,10 @@ class DependencyGraphGenerationVisitor(ASTVisitor):
                 if class_:
                     return class_
 
-                return UnknownClass(name=type_name, dependencies=[self.base],
+                class_ = UnknownClass(name=type_name, dependencies=[self.base],
                                     reason=Reason.not_found(type_name, self.scope))
+                self.add_class(class_)
+                return class_
             return UnknownClass(dependencies=[self.base], reason=Reason.unsupported(type_))
 
 

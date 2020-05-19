@@ -9,7 +9,7 @@ export const generateFunctionText = funcData => {
     return Object.keys(funcData).map(func => {
         const args = funcData[func].arguments;
         const ret = funcData[func].returnType;
-        return `+ ${func}(${Object.keys(args).map(arg => `${arg} : ${args[arg]}`)}) : ${ret}`;
+        return `+ ${func}(${Object.keys(args).map(arg => `${arg} : ${args[arg]}`)}) : ${ret}\n`;
     })
 }
 

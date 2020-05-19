@@ -54,7 +54,7 @@ class FileUploadViewset(viewsets.ModelViewSet):
                 content = f.read()
 
             calculator = Calculator(content, **(calculator_args[file_name.rsplit(".")[-1]]))
-            formatter = Formatter(calculator, file_name)
+            formatter = Formatter(calculator, file_name.split("_")[-1])
 
             return_data.append(formatter.generate())
 

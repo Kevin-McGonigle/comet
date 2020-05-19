@@ -24,8 +24,11 @@ class ECCalculationVisitor(DependencyGraphVisitor):
             for node in cls:
                 self.efferent_couplings[node] = 0
 
-        for cls in self.efferent_couplings:
-            cls.accept(self)
+        copy = {}
+        while copy != self.efferent_couplings:
+            copy = self.efferent_couplings.copy()
+            for cls in copy:
+                cls.accept(self)
 
         return self.efferent_couplings
 

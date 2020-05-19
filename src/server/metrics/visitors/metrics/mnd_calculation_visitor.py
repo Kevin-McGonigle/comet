@@ -16,9 +16,8 @@ class MNDCalculationVisitor(CFGVisitor):
         return cfg.accept(self)
 
     def visit_children(self, block) -> int:
-        if block.children:
-            return max([child.accept(self) for child in block.children.values() if isinstance(child, CFGBlock)])
-        return 1
+        children = [child.accept(self) for child in  block.children.values() if isinstance(child, CFGBlock)]
+        return max(children) if children else 1
 
     def visit_block(self, block) -> int:
         if block in self._visited:

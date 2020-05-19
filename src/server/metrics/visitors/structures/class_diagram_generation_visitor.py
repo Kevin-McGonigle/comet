@@ -14,22 +14,25 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
 
     def __init__(self):
         self.classes: Dict[str, Class] = {}
+        self.interfaces: Dict[str, Class] = {}
 
     def __create_relationships(self) -> None:
         """
         Iterate over the classes and store corresponding relationships based on attributes, method parameters and
         return types, bases, etc.
         """
-        for cls in self.classes.values():
+        for cls in list(self.classes.values()) + list(self.interfaces.values()):
             # Implementation
             for interface in cls.interfaces:
-                if interface in self.classes:
-                    self.__add_relationship(cls, self.classes[interface], RelationshipType.IMPLEMENTATION)
+                if interface in self.interfaces:
+                    self.__add_relationship(cls, self.interfaces[interface], RelationshipType.IMPLEMENTATION)
 
             # Inheritance
             for superclass in cls.superclasses:
-                if superclass in self.classes:
+                if superclass in self.classes or cls in self.interfaces.values():
                     self.__add_relationship(cls, self.classes[superclass], RelationshipType.INHERITANCE)
+                elif superclass in self.interfaces:
+                    self.__add_relationship(cls, self.interfaces[superclass], RelationshipType.IMPLEMENTATION)
 
             # Nesting
             for nested_class in cls.nested_classes:
@@ -74,7 +77,7 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
                 if method.return_type in self.classes:
                     relation = self.classes[method.return_type]
                 elif method.parameters:
-                    for parameter in method.parameters:
+                    for parameter in method.parameters if isinstance(method.parameters, list) else [method.parameters]:
                         if parameter.type in self.classes:
                             relation = self.classes[parameter.type]
                             break
@@ -100,12 +103,13 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         :return: The generated class diagram.
         """
         self.classes = {}
+        self.interfaces = {}
 
         super().visit(ast)
 
         self.__create_relationships()
 
-        return ClassDiagram(list(self.classes.values()))
+        return ClassDiagram(list(self.classes.values()) + list(self.interfaces.values()))
 
     def visit_children(self, node) -> List:
         """
@@ -137,6 +141,8 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
 
         if 'body' in node and node['body']:
             body = node['body'].accept(self)
+            if not isinstance(body, list):
+                body = [body]
 
             attributes = [attribute for attribute in body if isinstance(attribute, Attribute)]
             methods = [method for method in body if isinstance(method, Method)]
@@ -149,6 +155,30 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         self.classes[name] = class_
 
         return class_
+
+    def visit_interface_definition(self, node):
+        name = node["name"].accept(self)
+
+        bases = node["bases"].accept(self) if "bases" in node and node["bases"] else []
+        if not isinstance(bases, list):
+            bases = [bases]
+
+        if "body" in node and node["body"]:
+            body = node["body"].accept(self)
+            if not isinstance(body, list):
+                body = [body]
+
+            attributes = [attribute for attribute in body if isinstance(attribute, Attribute)]
+            methods = [method for method in body if isinstance(method, Method)]
+            nested_classes = [nested_class.name for nested_class in body if isinstance(nested_class, Class)]
+
+            interface = Class(name, attributes, methods, superclasses=bases, nested_classes=nested_classes)
+        else:
+            interface = Class(name, superclasses=bases)
+
+        self.interfaces[name] = interface
+
+        return interface
 
     def visit_function_definition(self, node):
         return_type = node['return_type'].accept(self) if isinstance(node['return_type'], ASTIdentifierNode) else None

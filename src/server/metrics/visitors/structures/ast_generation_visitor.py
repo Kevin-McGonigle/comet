@@ -33,7 +33,13 @@ class ASTGenerationVisitor(ParseTreeVisitor):
         return super().defaultResult()
 
     def aggregateResult(self, aggregate, next_result):
-        return aggregate + [next_result] if next_result is not None else aggregate
+        if not next_result:
+            return aggregate
+        
+        if isinstance(next_result, list):
+            return aggregate + next_result
+
+        return aggregate + [next_result]
 
     def shouldVisitNextChild(self, node, current_result):
         return super().shouldVisitNextChild(node, current_result)

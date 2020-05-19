@@ -180,6 +180,18 @@ class ASTMultiplesNode(ASTNode):
     def __repr__(self):
         return f"ASTMultiplesNode(children={self.children})"
 
+    def add_child(self, child: "ASTNode"):
+        if isinstance(child, Node) and child not in self.children.values():
+            key = 0
+            for k in self.children.keys():
+                if k >= key:
+                    key = k + 1
+            self.children[key] = child
+        elif not isinstance(child, Node):
+            raise TypeError(f"Node.remove_child(child): child is not Node (child={child}, type={type(child)}).")
+        else:
+            raise ValueError(f"Node.remove_child(child): supplied child is already a child of the parent node.")
+
     def accept(self, visitor):
         """
         Accept AST visitor and call its visit_multiples method.

@@ -140,7 +140,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
         i = 0
         while i < len(children):
             if isinstance(children[i], CSharpParser.IdentifierContext):
-                if isinstance(children[i + 1], CSharpParser.Type_argument_listContext):
+                if i + 1 < len(children) and isinstance(children[i + 1], CSharpParser.Type_argument_listContext):
                     members.append(ASTTypeNode(children[i].accept(self), children[i + 1].accept(self)))
                     i += 1
                 else:
@@ -1006,7 +1006,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         modifiers = ctx.all_member_modifiers()
         if modifiers:
-            declared_type.modifiers.extend(modifiers)
+            declared_type.modifiers.extend(modifiers.accept(self))
 
         attributes = ctx.attributes()
         if attributes:
@@ -1077,7 +1077,7 @@ class ASTGenerationVisitor(BaseASTGenerationVisitor, CSharpParserVisitor):
 
         modifiers = ctx.all_member_modifiers()
         if modifiers:
-            class_member.modifiers.extend(modifiers)
+            class_member.modifiers.extend(modifiers.accept(self))
 
         attributes = ctx.attributes()
         if attributes:

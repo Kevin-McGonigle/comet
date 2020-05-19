@@ -86,11 +86,11 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def __add_relationship(cls: Class, relation: Class, relationship_type: RelationshipType) -> Relationship:
         for relationship in cls.relationships:
             if relationship.type == relationship_type and relationship.relation == relation:
-                break
-            else:
-                new_relationship = Relationship(relationship_type, relation)
-                cls.relationships.append(new_relationship)
-                return new_relationship
+                return relationship
+
+        new_relationship = Relationship(relationship_type, relation)
+        cls.relationships.append(new_relationship)
+        return new_relationship
 
     def visit(self, ast) -> ClassDiagram:
         """
@@ -115,8 +115,8 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
         """
         child_results = []
         for child in node.children.values():
-            child_result = child.accept(self)
-            if child_results:
+            child_result = child.accept(self) if child is not None else None
+            if child_result:
                 if isinstance(child_result, list):
                     child_results += child_result
                 elif child_result:
@@ -127,8 +127,13 @@ class ClassDiagramGenerationVisitor(ASTVisitor):
     def visit_class_definition(self, node):
         name = node['name'].accept(self)
 
-        superclasses = node['bases'].accept(self) if 'bases' in node and node['bases'] else None
-        interfaces = node['interfaces'].accept(self) if 'interfaces' in node and node['interfaces'] else None
+        superclasses = node['bases'].accept(self) if 'bases' in node and node['bases'] else []
+        if not isinstance(superclasses, list):
+            superclasses = [superclasses]
+
+        interfaces = node['interfaces'].accept(self) if 'interfaces' in node and node['interfaces'] else []
+        if not isinstance(interfaces, list):
+            interfaces = [interfaces]
 
         if 'body' in node and node['body']:
             body = node['body'].accept(self)

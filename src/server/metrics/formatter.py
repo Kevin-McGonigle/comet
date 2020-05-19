@@ -101,6 +101,6 @@ class Formatter(object):
 
             for relationship in cls.relationships:
                 formatted_class_diagram["links"].append({"source": cls.name, "target": relationship.relation.name,
-                                                         "label": str(relationship.type), "value": 1})
+                                                         "label": relationship.type.value, "value": 1})
 
         self.metric_info["structures"]["classDiagram"] = formatted_class_diagram

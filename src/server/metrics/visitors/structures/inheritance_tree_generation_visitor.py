@@ -65,6 +65,7 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         :return: The generated inheritance tree.
         :rtype: InheritanceTree
         """
+        ast.accept(self)
         return InheritanceTree(self.base)
 
     def visit_children(self, node):
@@ -78,8 +79,8 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         """
         child_results = []
         for child in node.children.values():
-            child_result = child.accept(self)
-            if child_results:
+            child_result = child.accept(self) if child is not None else None
+            if child_result:
                 if isinstance(child_result, list):
                     child_results += child_result
                 elif child_result:
@@ -102,8 +103,15 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
         # Class bases
         if node['bases']:
             superclasses = node['bases'].accept(self)
+            if not isinstance(superclasses, list):
+                superclasses = [superclasses]
         else:
             superclasses = [self.base]
+
+        # Consolidate Unknown Classes
+        for superclass in superclasses:
+            if isinstance(superclass, UnknownClass):
+                superclass.add_superclass(self.base)
 
         # Class methods
         tmp = self.scope
@@ -199,7 +207,6 @@ class InheritanceTreeGenerationVisitor(ASTVisitor):
             cls = UnknownClass(
                 reason=f"{node['value']} unsupported for class identification. Type: {type(node['value'])}")
 
-        cls.add_superclass(self.base)
         return cls
 
     def visit_member(self, node):

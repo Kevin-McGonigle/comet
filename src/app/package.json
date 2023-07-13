@@ -20,7 +20,7 @@
     "react-dom": "^16.9.0",
     "react-redux": "^7.1.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^5.0.1",
     "react-svg-radar-chart": "^1.2.0",
     "react-tree-graph": "^4.0.1",
     "react-vertical-tree": "^1.1.7",
